@@ -1,0 +1,15 @@
+# The box's default server: a name that isn't one of its sites gets no answer (444 on HTTP, no TLS handshake on
+# HTTPS), instead of whichever site Nginx happened to load first. Installed to /etc/nginx/sites-available/ and linked
+# from sites-enabled. ipv6only is not repeated here: Distill's [::]:443 already sets it, and Nginx allows it once.
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    return 444;
+}
+server {
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    server_name _;
+    ssl_reject_handshake on;
+}

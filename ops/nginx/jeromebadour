@@ -1,0 +1,10 @@
+# jeromebadour.com and www (www goes to the root). Plain HTTP until certbot adds HTTPS to this file and turns this
+# block into a redirect, as it did for Distill. Installed to /etc/nginx/sites-available/ and linked from sites-enabled.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name jeromebadour.com www.jeromebadour.com;
+    server_tokens off;
+    default_type text/plain;
+    include snippets/jeromebadour-app.conf;
+}
