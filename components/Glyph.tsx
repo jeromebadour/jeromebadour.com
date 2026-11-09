@@ -7,50 +7,56 @@ type Name =
   | "forum" | "shop" | "console" | "translate" | "region"
   | "search" | "tested" | "mail" | "shield" | "expand" | "close" | "pause" | "signout";
 
-const paths: Record<Name, string> = {
-  upwork: "M4 5v6a4 4 0 0 0 8 0V5M12 11c1-3 3-5 5-5a3 3 0 0 1 0 6c-2 0-4-1-5-3M12 12l-1 7",
-  message: "M4 5h16v11H9l-5 4z",
-  ask: "M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0",
-  live: "M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0M12 12m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0",
-  release: "M5 4h10l4 4v12H5zM14 4v5h5M8 13h8M8 17h5",
-  demo: "M3 5h18v11H3zM8 20h8M12 16v4",
-  code: "M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14",
-  screen: "M4 5h16v14H4zM4 15l5-4 4 3 3-2 4 3",
-  work: "M4 8h16v11H4zM9 8V5h6v3",
-  how: "M6 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4M18 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4M8 19h8.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H16",
-  services: "M4 7h16M4 12h16M4 17h10",
-  about: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 20c1-4 4-6 8-6s7 2 8 6",
-  arrow: "M5 12h14M13 6l6 6-6 6",
-  github: "M9 19c-4 1-4-2-6-2m12 4v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21",
-  discord: "M7.5 6.5c3-1 6-1 9 0 1.7 2.5 2.6 5.3 2.5 8.6-1.4 1.2-3 2-4.6 2.5l-1-1.8M7.5 6.5C5.8 9 4.9 11.8 5 15.1c1.4 1.2 3 2 4.6 2.5l1-1.8M8 15c2.6 1.3 5.4 1.3 8 0M9.2 11.2a.8.8 0 1 0 0 1.6.8.8 0 1 0 0-1.6M14.8 11.2a.8.8 0 1 0 0 1.6.8.8 0 1 0 0-1.6",
-  pulse: "M3 12h4l2-5 4 10 2-5h6",
-  chevron: "M7 10l5 5 5-5",
-  web: "M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0M4 12h16M12 4c2.5 2.5 2.5 13.5 0 16M12 4c-2.5 2.5-2.5 13.5 0 16",
-  app: "M4 5h16v14H4zM4 9h16M7 7h.01M10 7h.01",
-  desktop: "M3 4h18v12H3zM9 20h6M12 16v4M6 8h5M6 11h8",
-  ai: "M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8zM18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z",
-  server: "M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01M12 7h4M12 17h4",
-  forum: "M4 5h12v8H9l-4 3zM9 16h7l3 3v-9h-3",
-  shop: "M5 8h14l-1 12H6zM9 8a3 3 0 0 1 6 0",
-  console: "M4 5h16v14H4zM8 10l3 2-3 2M13 15h3",
-  translate: "M4 6h9M8.5 4v2M6 6c.5 3 2.5 5.5 5 7M11 6c-.5 3-2.5 5.5-5 7M13 20l4-9 4 9M14.5 17h5",
-  region: "M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10zM10 11a2 2 0 1 0 4 0 2 2 0 1 0-4 0",
-  search: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14M20 20l-4-4",
-  tested: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M8 12.5l2.7 2.7L16 9.8",
-  mail: "M3 6h18v12H3zM3 7l9 6 9-6",
-  shield: "M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9.5 12l2 2 3.5-3.5",
-  expand: "M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",
-  close: "M6 6l12 12M18 6L6 18",
-  pause: "M9 6v12M15 6v12",
-  signout: "M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10",
-  grid: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
+// Night shift glyphs (BUILD-RULES 2.27): drawn for this site on a 24 grid, 1.8 stroke, round caps and joins, soft
+// 2-unit corners, and on most glyphs one filled "signal" dot that marks the live or active part. Each action keeps its
+// own glyph (2.1). The brand marks below stay the official logos.
+type G = { d: string; dot?: [number, number] };
+const paths: Record<Name, G> = {
+  upwork: { d: "M5 6v5.5a3.5 3.5 0 0 0 7 0V6M12 11.5c1-3 2.6-4.5 4.6-4.5a3 3 0 0 1 0 6c-2 0-3.6-.9-4.6-2.4M12 13l-1 6" },
+  message: { d: "M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-5 4V6a1 1 0 0 1 1-1z", dot: [15.5, 10.5] },
+  ask: { d: "M12 20a8 8 0 1 0-6.9-4L4 20l4-1.1A8 8 0 0 0 12 20zM9.8 9.6a2.3 2.3 0 1 1 3 2.2c-.6.2-.8.6-.8 1.2", dot: [12, 15.6] },
+  live: { d: "M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M9 9a4.2 4.2 0 0 0 0 6M15 9a4.2 4.2 0 0 1 0 6", dot: [12, 12] },
+  release: { d: "M12 4v10M8 10.5l4 4 4-4M5 19h14" , dot: [19, 19] },
+  demo: { d: "M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM9 20h6M12 16v4M10 8.5v4l3.5-2z" },
+  code: { d: "M8.5 8l-4 4 4 4M15.5 8l4 4-4 4", dot: [12, 12] },
+  screen: { d: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM4 15l4.5-3.5 3.5 3 3-2 5 3.5", dot: [15.5, 8.5] },
+  work: { d: "M5 8h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M4 13h16" },
+  how: { d: "M4 19h5v-5h5V9h5", dot: [19, 5.5] },
+  services: { d: "M4 6.5h16M4 12h11M4 17.5h7", dot: [19, 17.5] },
+  about: { d: "M12 11.5a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2zM5 20c.9-3.6 3.6-5.5 7-5.5s6.1 1.9 7 5.5" },
+  arrow: { d: "M5 12h13M13.5 7l5 5-5 5" },
+  github: { d: "M9 19c-4 1-4-2-6-2m12 4v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" },
+  discord: { d: "M7.5 6.5c3-1 6-1 9 0 1.7 2.5 2.6 5.3 2.5 8.6-1.4 1.2-3 2-4.6 2.5l-1-1.8M7.5 6.5C5.8 9 4.9 11.8 5 15.1c1.4 1.2 3 2 4.6 2.5l1-1.8M8 15c2.6 1.3 5.4 1.3 8 0M9.2 11.2a.8.8 0 1 0 0 1.6.8.8 0 1 0 0-1.6M14.8 11.2a.8.8 0 1 0 0 1.6.8.8 0 1 0 0-1.6" },
+  pulse: { d: "M3 13h3.5l2-5 3.5 9 2.5-6.5 1.5 2.5H21", dot: [21, 13] },
+  chevron: { d: "M7.5 10l4.5 4.5 4.5-4.5" },
+  web: { d: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM4 9h16M8 13.5h8M8 16.5h5", dot: [7, 6.5] },
+  app: { d: "M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM4 9h16M9 9v11", dot: [6.8, 6.5] },
+  desktop: { d: "M4 4h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM9 20h6M12 16v4M6.5 8h6M6.5 11.5h9" },
+  ai: { d: "M12 4l1.7 4.3L18 10l-4.3 1.7L12 16l-1.7-4.3L6 10l4.3-1.7z", dot: [18.5, 17.5] },
+  server: { d: "M5 4h14a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM5 14h14a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zM12 7h4.5M12 17h4.5", dot: [7.5, 7] },
+  grid: { d: "M5 4h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM14 4h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM5 13h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z", dot: [16.5, 16.5] },
+  forum: { d: "M5 4h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9l-4 3V5a1 1 0 0 1 1-1zM16 9h3a1 1 0 0 1 1 1v10l-3-2.5h-6a1 1 0 0 1-1-1V16" },
+  shop: { d: "M5.5 8h13l-1 11a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1zM9 8V7a3 3 0 0 1 6 0v1", dot: [12, 13.5] },
+  console: { d: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 9.5l3 2.5-3 2.5", dot: [15.5, 14.5] },
+  translate: { d: "M4 6h9M8.5 4v2M6 6c.5 3 2.5 5.5 5 7M11 6c-.5 3-2.5 5.5-5 7M13 20l4-9 4 9M14.5 17h5" },
+  region: { d: "M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z", dot: [12, 10.5] },
+  search: { d: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4", dot: [11, 11] },
+  tested: { d: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12.5l2.8 2.8L16 10" },
+  mail: { d: "M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM3.5 7l8.5 6 8.5-6" },
+  shield: { d: "M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9.5 12l2 2 3.5-3.5" },
+  expand: { d: "M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4" },
+  close: { d: "M6.5 6.5l11 11M17.5 6.5l-11 11" },
+  pause: { d: "M9 6v12M15 6v12" },
+  signout: { d: "M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 8l-4 4 4 4M6 12h10" },
 };
 
 export function Glyph({ name, size = 16 }: { name: Name; size?: number }) {
+  const g = paths[name];
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d={paths[name]} />
+      strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d={g.d} />
+      {g.dot && <circle cx={g.dot[0]} cy={g.dot[1]} r="1.7" fill="currentColor" stroke="none" />}
     </svg>
   );
 }
