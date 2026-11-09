@@ -14,13 +14,14 @@ export function SocialsProvider({ value, children }: { value: Social[]; children
 const CLASS: Record<string, string> = { discord: "t-discord", github: "t-gh", upwork: "t-up" };
 const BRANDS = new Set(["discord", "github", "upwork"]);
 
-/** The socials as chips. On proposal pages (upwork) only the ones marked for them. */
+/** The socials as chips. On proposal pages (upwork) only the ones marked for them; in Upwork mode (proxy.ts) the
+ *  others are hidden too (off-up). */
 export function SocialChips({ upwork = false }: { upwork?: boolean }) {
   const list = useContext(Ctx).filter((s) => !upwork || s.onProposals);
   return (
     <>
       {list.map((s) => (
-        <a key={s.url} href={s.url} className={CLASS[s.kind] ?? "t-blue"}>
+        <a key={s.url} href={s.url} className={`${CLASS[s.kind] ?? "t-blue"}${s.onProposals ? "" : " off-up"}`}>
           {BRANDS.has(s.kind) ? <Brand name={s.kind as BrandName} size={14} /> : <Glyph name="web" size={14} />}{s.label}
         </a>
       ))}

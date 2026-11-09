@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { EFooter, EHeader, ETabbar } from "./Shell";
-import { Glyph, type GlyphName } from "./Glyph";
+import { Brand, Glyph, type GlyphName } from "./Glyph";
+import { out } from "@/lib/links";
 
 // /ask (plan §2, §6): Ask about my work, full size. The home field opens here with the question in (?q=).
 // Answers come only from the site's pages; each point carries proof chips; a point without a valid proof is not shown.
@@ -69,8 +70,10 @@ function Answer({ t }: { t: Turn }) {
         {t.stopped && <p className="k-note"><Glyph name="pause" size={14} />{t.stopped}</p>}
         {!t.live && t.points.length > 0 && t.id && (
           <div className="k-next">
-            <a className="e-btn e-hire" href={`/message?from=${t.id}`}><Glyph name="message" size={15} />Turn this into a message</a>
-            <span>The brief is written from this conversation, and you check it before it is sent.</span>
+            <a className="e-btn e-hire off-up" href={`/message?from=${t.id}`}><Glyph name="message" size={15} />Turn this into a message</a>
+            <span className="off-up">The brief is written from this conversation, and you check it before it is sent.</span>
+            <a className="e-btn e-hire on-up" href={out.upwork}><Brand name="upwork" size={15} />Hire on Upwork</a>
+            <span className="on-up">Our conversation stays on Upwork.</span>
           </div>
         )}
       </div>

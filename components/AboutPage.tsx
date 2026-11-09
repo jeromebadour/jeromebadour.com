@@ -31,7 +31,7 @@ export function AboutPage() {
             <span className="a-role">Founder and Lead Developer of W3Arena</span>
             <p className="e-line">I build and run live products: websites, web apps, Windows desktop apps, AI features and the servers behind them.</p>
             <div className="e-soc">
-              <a href="mailto:jerome@jeromebadour.com" className="t-mail"><Glyph name="mail" size={14} />jerome@jeromebadour.com</a>
+              <a href="mailto:jerome@jeromebadour.com" className="t-mail off-up"><Glyph name="mail" size={14} />jerome@jeromebadour.com</a>
               <ESocials />
             </div>
           </div>

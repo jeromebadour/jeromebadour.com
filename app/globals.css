@@ -955,3 +955,14 @@ a.c-who:hover b { text-decoration: underline; text-underline-offset: 3px; }
 .c-link-danger { display: inline-flex; align-items: center; gap: 7px; background: none; font-size: 13px; color: var(--t-red); }
 .c-link-danger:hover { text-decoration: underline; text-underline-offset: 3px; }
 .c-r form { display: inline; }
+
+/* Upwork mode (proxy.ts): a visit from Upwork shows no way to reach Jerome off Upwork. .off-up are the contact routes
+   (Message, the email address, socials not marked for proposal pages, Ask's handoff to Message); .on-up is the line
+   that takes their place. */
+html[data-via="upwork"] .off-up { display: none !important; }
+html:not([data-via="upwork"]) .on-up { display: none !important; }
+.e-foot-up { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted); }
+.e-foot-up svg { color: var(--t-green); }
+.m-upwork { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.m-upwork p { display: inline-flex; align-items: center; gap: 10px; margin: 0; font-size: 16px; color: var(--ink); }
+.m-upwork p svg { color: var(--t-green); }

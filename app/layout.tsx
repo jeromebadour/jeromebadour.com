@@ -1,6 +1,8 @@
 import "./globals.css";
 import { SocialsProvider } from "@/components/Socials";
 import { shownSocials } from "@/lib/server/socials";
+import { headers } from "next/headers";
+import { UpworkMode } from "@/components/UpworkMode";
 
 // Link previews need full addresses; APP_URL is the site's own (https://jeromebadour.com on the box).
 export const metadata = { metadataBase: new URL(process.env.APP_URL ?? "https://jeromebadour.com"), title: "Jerome Badour" };
@@ -9,8 +11,9 @@ export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body><SocialsProvider value={await shownSocials()}>{children}</SocialsProvider></body>
+    // data-via="upwork": a visit from Upwork (proxy.ts); the contact routes are hidden by CSS.
+    <html lang="en" data-via={(await headers()).get("x-via") === "upwork" ? "upwork" : undefined}>
+      <body><SocialsProvider value={await shownSocials()}>{children}</SocialsProvider><UpworkMode /></body>
     </html>
   );
 }

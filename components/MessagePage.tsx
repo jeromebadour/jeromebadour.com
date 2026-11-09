@@ -3,7 +3,7 @@ import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { EFooter, EHeader, ETabbar } from "./Shell";
 import { out } from "@/lib/links";
-import { Glyph, type GlyphName } from "./Glyph";
+import { Brand, Glyph, type GlyphName } from "./Glyph";
 import { sendMessageAction, type MessageState } from "@/app/actions/message";
 import { emailHints } from "@/lib/email-hints";
 
@@ -45,12 +45,18 @@ export function MessagePage({ from, draft = "", paused = false }: { from?: { id:
           <span className="e-tile p-big t-violet"><Glyph name="message" size={26} /></span>
           <div>
             <h1>Message</h1>
-            <p className="e-line">A short brief, written from your questions. Nothing is sent until you press Send.</p>
+            <p className="e-line off-up">A short brief, written from your questions. Nothing is sent until you press Send.</p>
           </div>
         </div>
       </section>
 
-      <section className="m-board">
+      {/* A visit from Upwork (proxy.ts): no form, the conversation stays on Upwork. */}
+      <section className="m-board on-up m-upwork">
+        <p><Brand name="upwork" size={16} />Our conversation stays on Upwork.</p>
+        <a className="e-btn e-hire" href={out.upwork}><Brand name="upwork" size={15} />Hire on Upwork</a>
+      </section>
+
+      <section className="m-board off-up">
         <form className="m-form" action={action}>
           {from && (
             <div className="m-from">
