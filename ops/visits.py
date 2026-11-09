@@ -10,8 +10,8 @@ addresses are private links), not from bots. Where visitors came from is kept as
 days, like the console. Each day found in the logs is written whole (deleted and written again in one transaction),
 so running it again changes nothing. Days older than 30 are dropped by the site's own purge.
 
-Env: VISITS_LOGS (default /var/log/nginx/jeromebadour.access.log*), VISITS_PSQL (the psql command; default the
-site's database container).
+Env: VISITS_LOGS (default /var/log/nginx/jeromebadour.access.log*), VISITS_PSQL (the psql command; default psql inside
+the site's database container, found by its compose labels).
 """
 import glob
 import gzip
@@ -26,7 +26,7 @@ from zoneinfo import ZoneInfo
 
 ZONE = ZoneInfo("Europe/Istanbul")
 LOGS = os.environ.get("VISITS_LOGS", "/var/log/nginx/jeromebadour.access.log*")
-PSQL = os.environ.get("VISITS_PSQL", "docker compose -p jeromebadour exec -T db psql -U postgres -d site")
+PSQL = os.environ.get("VISITS_PSQL", "")
 OWN = {"jeromebadour.com"}
 SKIP = re.compile(r"^/(_next|api|admin|sign-in|m)(/|$)")
 FILE = re.compile(r"\.[a-z0-9]{2,5}$", re.I)
@@ -66,6 +66,17 @@ def count():
     return views
 
 
+def psql():
+    if PSQL:
+        return PSQL.split()
+    db = subprocess.run(["docker", "ps", "-q", "--filter", "label=com.docker.compose.project=jeromebadour",
+                         "--filter", "label=com.docker.compose.service=db"], capture_output=True, text=True).stdout.strip()
+    if not db:
+        print("visits: the database container is not running", file=sys.stderr)
+        sys.exit(1)
+    return ["docker", "exec", "-i", db, "psql", "-U", "postgres", "-d", "site"]
+
+
 def quote(s):
     return "'" + s.replace("'", "''") + "'"
 
@@ -82,7 +93,7 @@ def main():
     for i in range(0, len(rows), 500):
         sql.append("insert into visits_daily (day, path, referrer, views) values %s;" % ", ".join(rows[i:i + 500]))
     sql.append("commit;")
-    run = subprocess.run(PSQL.split() + ["-X", "-q", "-v", "ON_ERROR_STOP=1"], input="\n".join(sql), text=True, capture_output=True)
+    run = subprocess.run(psql() + ["-X", "-q", "-v", "ON_ERROR_STOP=1"], input="\n".join(sql), text=True, capture_output=True)
     if run.returncode != 0:
         print("visits: the database refused:", run.stderr.strip(), file=sys.stderr)
         sys.exit(1)

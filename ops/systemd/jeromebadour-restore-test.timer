@@ -1,0 +1,10 @@
+# Every Sunday at 03:27 UTC, after that night's backup and Distill's restore test. Installed by scripts/deploy.sh.
+[Unit]
+Description=jeromebadour.com: weekly restore test
+
+[Timer]
+OnCalendar=Sun *-*-* 03:27:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

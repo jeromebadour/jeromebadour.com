@@ -1,0 +1,10 @@
+# Every 15 minutes. Installed by scripts/deploy.sh.
+[Unit]
+Description=jeromebadour.com: count visits every 15 minutes
+
+[Timer]
+OnCalendar=*:00/15
+Persistent=true
+
+[Install]
+WantedBy=timers.target

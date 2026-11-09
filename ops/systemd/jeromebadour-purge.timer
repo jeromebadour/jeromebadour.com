@@ -1,0 +1,10 @@
+# Every hour, so nothing stays more than an hour past its time. Installed by scripts/deploy.sh.
+[Unit]
+Description=jeromebadour.com: delete what is past its time, hourly
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

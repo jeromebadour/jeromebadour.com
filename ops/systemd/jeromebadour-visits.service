@@ -1,0 +1,11 @@
+# Counts the site's visits from Nginx's own log for the console (ops/visits.py). Installed by scripts/deploy.sh.
+[Unit]
+Description=jeromebadour.com: count visits from the Nginx log
+After=docker.service nginx.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/sites/tools/jeromebadour/visits.py
+Nice=10
+TimeoutStartSec=5min

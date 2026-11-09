@@ -1,0 +1,10 @@
+# Every night at 02:57 UTC, ten minutes after Distill's, so the two never run together. Installed by scripts/deploy.sh.
+[Unit]
+Description=jeromebadour.com: nightly database backup
+
+[Timer]
+OnCalendar=*-*-* 02:57:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

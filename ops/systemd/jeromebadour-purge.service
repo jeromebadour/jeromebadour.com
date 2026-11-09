@@ -1,0 +1,11 @@
+# Deletes what is past its time, as the Privacy Policy says (ops/purge.sh). Installed by scripts/deploy.sh.
+[Unit]
+Description=jeromebadour.com: delete what is past its time
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/sites/tools/jeromebadour/purge.sh
+Nice=10
+TimeoutStartSec=5min

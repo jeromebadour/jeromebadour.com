@@ -95,6 +95,27 @@ jobs:
             -e OWNER_DATABASE_URL=postgres://postgres:ci-owner-only@db:5432/site app node ops/set-owner.mjs
           psql -Atc "select email from owner_account" | grep -qx image@example.com
 
+      - name: The purge, a backup, and its restore
+        # The real scripts, as root, as the box's timers run them.
+        run: |
+          sudo ops/purge.sh | grep -q '"questions"'
+          sudo BACKUP_DIR=/tmp/site-backups ops/backup.sh
+          sudo BACKUP_DIR=/tmp/site-backups ops/restore-test.sh | tee /tmp/restore.txt
+          grep -q "RESTORE OK" /tmp/restore.txt
+          sudo test "$(sudo stat -c %a /tmp/site-backups)" = 700
+
+      - name: The backup goes off the box encrypted, and that copy restores
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq rclone age > /dev/null
+          sudo sh -c 'age-keygen -o /tmp/offsite-age.key 2> /dev/null'
+          off="OFFSITE_REMOTE=:local:/tmp/offsite OFFSITE_KEY=/tmp/offsite-age.key BACKUP_DIR=/tmp/site-backups"
+          sudo env $off ops/backup.sh | tee /tmp/offsite.txt
+          grep -q "kept off the box" /tmp/offsite.txt
+          sudo sh -c 'head -c 21 "$(ls /tmp/offsite/*.age | head -1)"' | grep -q "age-encryption.org"
+          sudo env $off ops/restore-test.sh | tee /tmp/restore-offsite.txt
+          grep -q "from off the box" /tmp/restore-offsite.txt
+          grep -q "RESTORE OK" /tmp/restore-offsite.txt
+
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
