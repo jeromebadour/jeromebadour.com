@@ -95,6 +95,19 @@ jobs:
             -e OWNER_DATABASE_URL=postgres://postgres:ci-owner-only@db:5432/site app node ops/set-owner.mjs
           psql -Atc "select email from owner_account" | grep -qx image@example.com
 
+      - name: The box's owner script uses the running image and shreds the password file
+        run: |
+          before=$(docker images -q | sort -u | wc -l)
+          printf 'box-password-1234\n' > /tmp/owner-pw
+          sudo env POSTGRES_PASSWORD=ci-owner-only ops/set-owner.sh box@example.com /tmp/owner-pw | tee /tmp/set-owner.txt
+          psql -Atc "select email from owner_account" | grep -qx box@example.com
+          grep -q "owner updated: box@example.com" /tmp/set-owner.txt
+          test ! -e /tmp/owner-pw || { echo "the password file was not shredded"; exit 1; }
+          [ "$(docker images -q | sort -u | wc -l)" = "$before" ] || { echo "the owner script built an image"; exit 1; }
+          printf 'short\n' > /tmp/owner-pw
+          if sudo env POSTGRES_PASSWORD=ci-owner-only ops/set-owner.sh box@example.com /tmp/owner-pw; then echo "a short password was taken"; exit 1; fi
+          test ! -e /tmp/owner-pw || { echo "the password file was kept after a refusal"; exit 1; }
+
       - name: The purge, a backup, and its restore
         # The real scripts, as root, as the box's timers run them.
         run: |

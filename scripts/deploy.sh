@@ -92,7 +92,7 @@ print("PASSED" if ok else "NOT PASSED")') || stop "could not read CI from GitHub
   # the weekly restore test. The visits and the purge run once now, so the console is current at once.
   echo "== the site's timers"
   install -d -m 755 "$tools"
-  install -m 755 "$app/ops/visits.py" "$app/ops/purge.sh" "$app/ops/backup.sh" "$app/ops/restore-test.sh" "$tools/"
+  install -m 755 "$app/ops/visits.py" "$app/ops/purge.sh" "$app/ops/backup.sh" "$app/ops/restore-test.sh" "$app/ops/set-owner.sh" "$tools/"
   install -m 644 "$app/ops/offsite.sh" "$tools/"
   install -m 644 "$app"/ops/systemd/jeromebadour-*.service "$app"/ops/systemd/jeromebadour-*.timer /etc/systemd/system/
   systemctl daemon-reload
