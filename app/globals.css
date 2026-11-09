@@ -604,7 +604,18 @@ html:has([data-v="e"]), body:has([data-v="e"]) { background: #15191c; }
 .m-chips button.on { --tone: var(--accent); color: var(--ink); border-color: color-mix(in srgb, var(--tone) 55%, transparent); background: color-mix(in srgb, var(--tone) 12%, transparent); }
 .m-chips button.on svg { color: var(--tone); }
 [data-v="e"] .m-chips button.t-amber.on { --tone: var(--t-amber); } [data-v="e"] .m-chips button.t-blue.on { --tone: var(--t-blue); } [data-v="e"] .m-chips button.t-green.on { --tone: var(--t-green); }
-.m-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* Name and email: sized to what they hold (a name is shorter than an address). */
+.m-two { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 420px); gap: 16px; align-items: start; }
+.m-in { position: relative; display: flex; align-items: center; }
+.m-in.ok input { padding-right: 38px; }
+.m-ok { position: absolute; right: 12px; display: flex; color: var(--t-green); }
+.m-field input::placeholder { color: var(--faint); }
+.m-hints { display: flex; flex-wrap: wrap; gap: 6px; min-height: 0; }
+.m-hints:empty { display: none; }
+.m-hint { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--rule-strong); border-radius: 7px; background: none; color: var(--muted); font-family: var(--mono); font-size: 12.5px; cursor: pointer; }
+.m-hint:hover { color: var(--ink); background: var(--card); }
+.m-hint.fix { font-family: var(--body); font-size: 13px; color: var(--ink); border-color: color-mix(in srgb, var(--t-amber) 55%, transparent); background: color-mix(in srgb, var(--t-amber) 10%, transparent); }
+.m-hint.fix svg { color: var(--t-amber); }
 .m-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .m-send { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding-top: 4px; }
 .m-send span { font-size: 13px; color: var(--muted); }

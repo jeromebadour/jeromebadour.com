@@ -5,6 +5,7 @@ import { EFooter, EHeader, ETabbar } from "./Shell";
 import { out } from "@/lib/links";
 import { Glyph, type GlyphName } from "./Glyph";
 import { sendMessageAction, type MessageState } from "@/app/actions/message";
+import { emailHints } from "@/lib/email-hints";
 
 // /message (plan §7): the brief, written from the Ask conversation (or empty without one), checked and edited by the
 // client, then sent. 3 messages an hour per visitor, a hidden trap field, no captcha. Sending lands on /m/<token>.
@@ -93,8 +94,11 @@ export function MessagePage({ from, draft = "", paused = false }: { from?: { id:
           </div>
 
           <div className="m-two">
-            <label className="m-field"><span className="m-l"><Glyph name="about" size={14} />Your name</span><input name="name" autoComplete="name" maxLength={80} required defaultValue={typeof v.name === "string" ? v.name : ""} aria-invalid={!!e.name} /><Err text={e.name} /></label>
-            <label className="m-field"><span className="m-l"><Glyph name="mail" size={14} />Your email</span><input name="email" type="email" autoComplete="email" maxLength={200} required defaultValue={typeof v.email === "string" ? v.email : ""} aria-invalid={!!e.email} /><Err text={e.email} /></label>
+            <label className="m-field"><span className="m-l"><Glyph name="about" size={14} />Your name</span>
+              <span className="m-in"><input name="name" autoComplete="name" maxLength={80} required placeholder="Alex Morgan" defaultValue={typeof v.name === "string" ? v.name : ""} aria-invalid={!!e.name} /></span>
+              <Err text={e.name} />
+            </label>
+            <EmailField initial={typeof v.email === "string" ? v.email : ""} error={e.email} />
           </div>
           <input className="m-trap" tabIndex={-1} autoComplete="off" aria-hidden="true" name="website" />
 
@@ -124,6 +128,35 @@ export function MessagePage({ from, draft = "", paused = false }: { from?: { id:
 
       <EFooter />
       <ETabbar on="message" />
+    </div>
+  );
+}
+
+/** The email field: finishing hints for the common domains while typing, a fix for a likely typo, and a tick once the
+ *  address looks complete. A hint only changes the field when clicked. */
+function EmailField({ initial, error }: { initial: string; error?: string }) {
+  const [value, setValue] = useState(initial);
+  const [focus, setFocus] = useState(false);
+  const hints = emailHints(value);
+  const done = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(value.trim()) && !hints.fix;
+  return (
+    <div className="m-field">
+      <label className="m-l" htmlFor="m-email"><Glyph name="mail" size={14} />Your email</label>
+      <span className={`m-in${done ? " ok" : ""}`}>
+        <input id="m-email" name="email" type="email" autoComplete="email" maxLength={200} required placeholder="you@company.com"
+          value={value} onChange={(x) => setValue(x.target.value)} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} aria-invalid={!!error} aria-describedby="m-email-hints" />
+        {done && <span className="m-ok" aria-hidden="true"><Glyph name="tested" size={15} /></span>}
+      </span>
+      <div className="m-hints" id="m-email-hints" aria-live="polite">
+        {hints.fix && (
+          <button type="button" className="m-hint fix" onMouseDown={(x) => x.preventDefault()} onClick={() => setValue(hints.fix!)}><Glyph name="search" size={12} /><span>Did you mean <b>{hints.fix}</b>?</span></button>
+        )}
+        {/* Finishing hints only while typing in the field; mousedown keeps the focus so the click lands. */}
+        {focus && hints.finish.map((h) => (
+          <button type="button" key={h} className="m-hint" onMouseDown={(x) => x.preventDefault()} onClick={() => setValue(h)}>@{h.split("@")[1]}</button>
+        ))}
+      </div>
+      <Err text={error} />
     </div>
   );
 }
