@@ -6,19 +6,19 @@ import type { Card } from "./meta";
 
 // The link-preview card (1200 × 630), drawn from the site's own theme: its colours, its three fonts (static copies in
 // og/, as the renderer can't read variable or woff2 fonts) and the profile photo.
-const C = { bg: "#121518", card: "#181c20", rule: "#252b30", strong: "#353d43", ink: "#eaede9", muted: "#a7afab", accent: "#a7b37a", onAccent: "#141a0c" };
+const C = { bg: "#0c0e0f", card: "#131617", rule: "#1f2427", strong: "#2a3134", ink: "#e9ecea", muted: "#9aa3a0", accent: "#6cc59c", onAccent: "#08130e" };
 
-let assets: Promise<{ fonts: { name: string; data: Buffer; weight: 400 | 500 | 600 }[]; photo: string }> | null = null;
+let assets: Promise<{ fonts: { name: string; data: Buffer; weight: 400 | 500 | 600 | 900 }[]; photo: string }> | null = null;
 function load() {
   assets ??= (async () => {
     const f = (n: string) => readFile(join(process.cwd(), "og", n));
     const [display, body, mono, photo] = await Promise.all([
-      f("manrope-latin-600-normal.woff"), f("ibm-plex-sans-latin-400-normal.woff"), f("jetbrains-mono-latin-500-normal.woff"),
+      f("archivo-latin-900-normal.woff"), f("archivo-latin-400-normal.woff"), f("martian-mono-latin-500-normal.woff"),
       readFile(join(process.cwd(), "public", "jerome.jpg")),
     ]);
     return {
       fonts: [
-        { name: "Manrope", data: display, weight: 600 as const },
+        { name: "Manrope", data: display, weight: 900 as const },
         { name: "Plex", data: body, weight: 400 as const },
         { name: "Mono", data: mono, weight: 500 as const },
       ],

@@ -1070,3 +1070,29 @@ html:not([data-via="upwork"]) .on-up { display: none !important; }
 [data-v="e"] .n-art { z-index: 0; }
 [data-v="e"] .n-stage::before { z-index: 1; }
 [data-v="e"] .n-stage-l, [data-v="e"] .n-stage-r { z-index: 2; }
+
+/* ===== Night shift: inner pages ===== */
+/* Stats read like the home's: a coloured rule, a big number, a quiet label (no boxes). */
+[data-v="e"] .w-stats { gap: 0; }
+[data-v="e"] .w-stats .e-stat { background: none; border: 0; border-left: 2px solid var(--tone); border-radius: 0; padding: 4px 22px 4px 16px; }
+[data-v="e"] .w-stats .e-stat .e-tile { display: none; }
+[data-v="e"] .w-stats .e-stat b { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1; }
+[data-v="e"] .w-stats .e-stat small { font-size: 13px; margin-top: 6px; }
+/* Need, Built, Result as numbered stages on one line, like an incident runbook. */
+[data-v="e"] .p-nbr { counter-reset: nbr; }
+[data-v="e"] .p-nbr li { counter-increment: nbr; position: relative; }
+[data-v="e"] .p-nbr .p-k { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--tone); }
+[data-v="e"] .p-nbr .p-k svg { display: none; }
+[data-v="e"] .p-nbr .p-k::before { content: counter(nbr); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--tone); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0; color: var(--tone); }
+[data-v="e"] .p-nbr p { font-size: 15.5px; }
+/* Titles in the heavy display cut. */
+[data-v="e"] .w-title h1, [data-v="e"] .a-name, [data-v="e"] .page h1 { font-family: var(--display); font-weight: 900; letter-spacing: -.02em; }
+/* The board's release line at laptop width. */
+@media (max-width: 1380px) { [data-v="e"] .n-svc-k > span:last-child { display: none; } }
+/* Phone: Hire on Upwork stays in the header (the tab bar has no Upwork). */
+@media (max-width: 720px) {
+  [data-v="e"] .n-wm { display: none; }
+  [data-v="e"] .e-hdr-r .e-hire { display: inline-flex; padding: 8px 12px; }
+  [data-v="e"] .e-hdr-r .e-hire .e-long { display: none; }
+  [data-v="e"] .w-stats .e-stat { padding: 4px 14px 4px 12px; }
+}
