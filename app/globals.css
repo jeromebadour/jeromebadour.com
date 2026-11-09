@@ -919,3 +919,11 @@ a.c-who:hover b { text-decoration: underline; text-underline-offset: 3px; }
 .c-mono a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 .c-toggle button { background: none; padding: 0; }
 .c-toggle button:hover .c-tag { filter: brightness(1.2); }
+/* Console: brakes and socials dialogs */
+.c-danger { background: color-mix(in srgb, var(--t-red) 85%, var(--bg)); color: #1a0f0d; }
+.c-check { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--ink); cursor: pointer; }
+.c-check input { width: 16px; height: 16px; accent-color: var(--t-amber); }
+.c-remove { padding-top: 12px; border-top: 1px solid var(--rule); }
+.c-link-danger { display: inline-flex; align-items: center; gap: 7px; background: none; font-size: 13px; color: var(--t-red); }
+.c-link-danger:hover { text-decoration: underline; text-underline-offset: 3px; }
+.c-r form { display: inline; }

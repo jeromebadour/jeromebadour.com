@@ -10,3 +10,8 @@ delete from messages;
 delete from proposals;
 delete from visits_daily;
 update brakes set paused = false, reason = null;
+delete from socials;
+insert into socials (kind, label, url, on_proposals, sort) values
+  ('discord', 'Discord', 'https://discord.com/users/792855756872613958', false, 1),
+  ('github', 'GitHub', 'https://github.com/jeromebadour', true, 2),
+  ('upwork', 'Upwork', 'https://www.upwork.com/freelancers/~018fb626b478552f9f', true, 3);

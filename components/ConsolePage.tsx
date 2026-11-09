@@ -5,7 +5,8 @@ import type { BrakeRow, MessageRow, ProposalRow, QuestionRow, SocialRow } from "
 import type { MessageDetail } from "@/lib/server/messages";
 import { ReplyForm } from "./ReplyForm";
 import { ProposalForm, type ProofChoice } from "./ProposalForm";
-import { toggleProposalAction } from "@/app/actions/console";
+import { removeSocialAction, resumeAction, toggleProposalAction } from "@/app/actions/console";
+import { PauseForm, SocialForm } from "./ConsoleForms";
 
 // /admin (plan §9): Jerome's own console. Hidden: anyone else gets 404. Every table starts with #, pages of 15, every
 // column carries its meaning in colour and glyph (BUILD-RULES §3). Edits open in dialogs. Every action is on record.
@@ -27,8 +28,8 @@ export type ConsoleData =
   | { tab: "proposals"; total: number; rows: ProposalRow[]; dialog: boolean; made: string | null; choices: ProofChoice[] }
   | { tab: "visits"; days: { day: string; views: number }[]; pages: { path: string; views: number }[]; from: { referrer: string; views: number }[]; messages: number }
   | { tab: "spend"; month: number; today: number; days: { day: string; usd: number }[] }
-  | { tab: "brakes"; rows: BrakeRow[] }
-  | { tab: "socials"; rows: SocialRow[] };
+  | { tab: "brakes"; rows: BrakeRow[]; pause: BrakeRow["name"] | null }
+  | { tab: "socials"; rows: SocialRow[]; edit: string | null };
 
 const SOON = { this_week: ["amber", "This week"], this_month: ["blue", "This month"], no_rush: ["green", "No rush"] } as const;
 export const MONTH_CAP = 8;
@@ -262,13 +263,23 @@ function Brakes({ d }: { d: Extract<ConsoleData, { tab: "brakes" }> }) {
                 <td><span className="c-q"><Glyph name={g} size={14} /><b className="c-strong">{t}</b></span></td>
                 <td className="c-brief">{r.paused ? r.reason : what}</td>
                 <td>{r.paused ? <span className="c-tag t-red"><Glyph name="pause" size={12} />Paused</span> : <span className="c-tag t-green"><Glyph name="live" size={12} />Running</span>}</td>
-                <td className="c-r"><button type="button" className="e-btn e-ghost c-sm"><Glyph name={r.paused ? "live" : "pause"} size={13} />{r.paused ? "Resume" : "Pause"}</button></td>
+                <td className="c-r">{r.paused
+                  ? <form action={resumeAction}><input type="hidden" name="name" value={r.name} /><button type="submit" className="e-btn e-ghost c-sm"><Glyph name="live" size={13} />Resume</button></form>
+                  : <a className="e-btn e-ghost c-sm" href={`?tab=brakes&pause=${r.name}`}><Glyph name="pause" size={13} />Pause</a>}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
       <p className="c-foot"><Glyph name="shield" size={13} />A pause asks for a reason; visitors see a calm note, never an error.</p>
+      {d.pause && (
+        <div className="c-dlg-wrap">
+          <div className="c-dlg" role="dialog" aria-label={`Pause ${BRAKE[d.pause][1]}`}>
+            <header><span className="e-tile t-red"><Glyph name="pause" size={15} /></span><b>Pause {BRAKE[d.pause][1]}</b><a href="?tab=brakes" aria-label="Close"><Glyph name="close" size={16} /></a></header>
+            <PauseForm name={d.pause} what={BRAKE[d.pause][1]} />
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -278,7 +289,7 @@ const SOCIAL_CLASS: Record<string, string> = { discord: "t-discord", github: "t-
 function Socials({ d }: { d: Extract<ConsoleData, { tab: "socials" }> }) {
   return (
     <>
-      <div className="c-bar"><span className="c-sub">Shown under the name, in the footer and on About. Proposal pages show only the ones marked.</span><button type="button" className="e-btn e-hire"><Glyph name="about" size={15} />Add account</button></div>
+      <div className="c-bar"><span className="c-sub">Shown under the name, in the footer and on About. Proposal pages show only the ones marked.</span><a className="e-btn e-hire" href="?tab=socials&edit=new"><Glyph name="about" size={15} />Add account</a></div>
       <table className="c-table">
         <thead><tr><th>#</th><th>Account</th><th>Link</th><th>On proposal pages</th><th></th></tr></thead>
         <tbody>
@@ -289,11 +300,24 @@ function Socials({ d }: { d: Extract<ConsoleData, { tab: "socials" }> }) {
               <td><span className={`c-soc ${SOCIAL_CLASS[r.kind] ?? "t-blue"}`}>{r.kind in SOCIAL_CLASS ? <Brand name={r.kind as BrandName} size={14} /> : <Glyph name="web" size={14} />}{r.label}</span></td>
               <td className="c-mono">{r.url.replace(/^https:\/\/(www\.)?/, "")}</td>
               <td>{r.on_proposals ? <span className="c-tag t-green"><Glyph name="tested" size={12} />Shown</span> : <span className="c-tag t-red"><Glyph name="close" size={12} />Hidden</span>}</td>
-              <td className="c-r"><button type="button" className="e-btn e-ghost c-sm"><Glyph name="code" size={13} />Edit</button></td>
+              <td className="c-r"><a className="e-btn e-ghost c-sm" href={`?tab=socials&edit=${r.id}`}><Glyph name="code" size={13} />Edit</a></td>
             </tr>
           ))}
         </tbody>
       </table>
+      {d.edit && (() => {
+        const r = d.rows.find((x) => x.id === d.edit);
+        if (d.edit !== "new" && !r) return null;
+        return (
+          <div className="c-dlg-wrap">
+            <div className="c-dlg" role="dialog" aria-label={r ? `Edit ${r.label}` : "Add account"}>
+              <header><span className="e-tile t-blue"><Glyph name="about" size={15} /></span><b>{r ? `Edit ${r.label}` : "Add account"}</b><a href="?tab=socials" aria-label="Close"><Glyph name="close" size={16} /></a></header>
+              <SocialForm id={r?.id ?? null} initial={r ? { kind: r.kind, label: r.label, url: r.url, onProposals: r.on_proposals } : { kind: "linkedin", label: "", url: "", onProposals: false }} />
+              {r && <form action={removeSocialAction} className="c-remove"><input type="hidden" name="id" value={r.id} /><button type="submit" className="c-link-danger"><Glyph name="close" size={13} />Remove {r.label} from the site</button></form>}
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }

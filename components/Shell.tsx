@@ -1,5 +1,6 @@
 import { Brand, Glyph } from "./Glyph";
 import { out, page } from "@/lib/links";
+import { SocialChips } from "./Socials";
 
 // The header, footer and phone tab bar every page shares, the home page included.
 export type NavKey = "apps" | "services" | "how" | "about" | "ask" | "message" | "none";
@@ -46,13 +47,7 @@ export function EHeader({ on = "apps", upwork = false }: { on?: NavKey; upwork?:
 }
 
 export function ESocials({ upwork = false }: { upwork?: boolean }) {
-  return (
-    <>
-      {!upwork && <a href={out.discord} className="t-discord"><Brand name="discord" size={14} />Discord</a>}
-      <a href={out.github} className="t-gh"><Brand name="github" size={14} />GitHub</a>
-      <a href={out.upwork} className="t-up"><Brand name="upwork" size={14} />Upwork</a>
-    </>
-  );
+  return <SocialChips upwork={upwork} />;
 }
 
 export function EFooter({ upwork = false }: { upwork?: boolean }) {

@@ -9,7 +9,7 @@ import { PROOF_PARTS, proofCard } from "@/components/W3Part";
 export const metadata = { title: "Console · Jerome Badour", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ tab?: string; page?: string; open?: string; new?: string; made?: string }> }) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ tab?: string; page?: string; open?: string; new?: string; made?: string; pause?: string; edit?: string }> }) {
   await requireOwner();
   const sp = await searchParams;
   const tab: Tab = TABS.includes(sp.tab as Tab) ? (sp.tab as Tab) : "inbox";
@@ -21,8 +21,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ t
     case "proposals": data = { tab, ...(await load.proposals(pageNo)), dialog: sp.new === "1", made: sp.made && /^[a-z0-9-]{3,60}$/.test(sp.made) ? sp.made : null, choices: PROOF_PARTS.map((id) => { const c = proofCard(id)!; return { id, title: c.title, g: c.g }; }) }; break;
     case "visits": data = { tab, ...(await load.visits()) }; break;
     case "spend": data = { tab, ...(await load.spend()) }; break;
-    case "brakes": data = { tab, rows: await load.brakes() }; break;
-    case "socials": data = { tab, rows: await load.socials() }; break;
+    case "brakes": data = { tab, rows: await load.brakes(), pause: sp.pause === "ask" || sp.pause === "messages" || sp.pause === "proposals" ? sp.pause : null }; break;
+    case "socials": data = { tab, rows: await load.socials(), edit: sp.edit && /^(new|[0-9a-f-]{36})$/.test(sp.edit) ? sp.edit : null }; break;
   }
   return <ConsolePage data={data} pageNo={pageNo} newCount={await load.newMessageCount()} signOut={signOutAction} />;
 }
