@@ -34,7 +34,7 @@ export function ForPage({ p, cards }: { p: Proposal; cards: ProofCard[] }) {
             <div className="f-img"><img src={c.img} alt="" className={c.fit ? "fit" : undefined} /></div>
             <div className="f-txt">
               <div className="f-n"><span className="h-n">{String(n + 1).padStart(2, "0")}</span><span className="e-tile"><Glyph name={c.g} size={15} /></span></div>
-              <b>{c.title}</b>
+              <b>{p.headlines[n] || c.title}</b>
               <p>{c.line}</p>
               <div className="e-pc">
                 <a href={c.href} className="pc-page"><Glyph name="arrow" size={12} />{c.title}</a>

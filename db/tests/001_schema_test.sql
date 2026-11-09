@@ -102,6 +102,22 @@ do $$ begin
     insert into proposals (slug, title, job_url, note, proofs) values ('elsewhere', 'Not on Upwork', 'https://example.com/job', 'A short note for the client.', '{a,b,c}');
     raise exception 'a job link off Upwork was stored';
   exception when check_violation then null; end;
+  -- Headlines: three, empty by default, at most 80 characters each.
+  if (select headlines from proposals where slug = 'payments-booking-app') <> '{"","",""}' then
+    raise exception 'headlines are not three empty strings by default';
+  end if;
+  begin
+    update proposals set headlines = '{a,b,c,d}' where slug = 'payments-booking-app';
+    raise exception 'four headlines were stored';
+  exception when check_violation then null; end;
+  begin
+    update proposals set headlines = array[repeat('x', 81), '', ''] where slug = 'payments-booking-app';
+    raise exception 'an 81-character headline was stored';
+  exception when check_violation then null; end;
+  begin
+    update proposals set headlines = array[null, '', ''] where slug = 'payments-booking-app';
+    raise exception 'a null headline was stored';
+  exception when check_violation then null; end;
 end $$;
 
 -- 6. Brakes: a pause needs a reason; resuming clears it.

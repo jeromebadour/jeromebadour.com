@@ -16,7 +16,7 @@ export async function replyAction(id: string, _: ReplyState, form: FormData): Pr
   return r.ok ? { sent: true } : { error: r.error };
 }
 
-export type ProposalState = { errors?: ProposalErrors; values?: { title: string; jobUrl: string; note: string; proofs: string[] } };
+export type ProposalState = { errors?: ProposalErrors; values?: { title: string; jobUrl: string; note: string; proofs: string[]; headlines: Record<string, string> } };
 
 export async function createProposalAction(_: ProposalState, form: FormData): Promise<ProposalState> {
   await requireOwner();
@@ -25,7 +25,9 @@ export async function createProposalAction(_: ProposalState, form: FormData): Pr
     jobUrl: String(form.get("job_url") ?? "").slice(0, 500),
     note: String(form.get("note") ?? "").slice(0, 600),
     proofs: form.getAll("proofs").map(String).slice(0, 10),
+    headlines: {} as Record<string, string>,
   };
+  for (const id of values.proofs) values.headlines[id] = String(form.get(`headline:${id}`) ?? "").slice(0, 200);
   const r = await createProposal(values);
   if (!r.ok) return { errors: r.errors, values };
   revalidatePath("/admin");

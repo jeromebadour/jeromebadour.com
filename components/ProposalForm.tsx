@@ -14,13 +14,16 @@ function Make() {
 
 const Err = ({ text }: { text?: string }) => (text ? <span className="m-err"><Glyph name="close" size={13} />{text}</span> : null);
 
-/** The New page dialog: the job's title and Upwork link, two lines for the client, and exactly three proofs. */
+/** The New page dialog: the job's title and Upwork link, two lines for the client, exactly three proofs, and an
+ *  optional headline for each picked proof (empty: the proof keeps its own title). */
 export function ProposalForm({ choices }: { choices: ProofChoice[] }) {
   const [state, action] = useActionState<ProposalState, FormData>(createProposalAction, {});
   const v = state.values;
   const e = state.errors ?? {};
   const [title, setTitle] = useState(v?.title ?? "");
   const [picked, setPicked] = useState<string[]>(v?.proofs ?? []);
+  const [heads, setHeads] = useState<Record<string, string>>(v?.headlines ?? {});
+  const byId = new Map(choices.map((c) => [c.id, c]));
   const flip = (id: string) => setPicked((x) => (x.includes(id) ? x.filter((p) => p !== id) : x.length < 3 ? [...x, id] : x));
   return (
     <form action={action} className="c-dlg-form">
@@ -37,6 +40,22 @@ export function ProposalForm({ choices }: { choices: ProofChoice[] }) {
         </div>
         <Err text={e.proofs} />
       </div>
+      {picked.length > 0 && (
+        <div className="m-field"><span className="m-l"><Glyph name="release" size={14} />Headlines (optional)</span>
+          <div className="c-hls">
+            {picked.map((id, n) => {
+              const c = byId.get(id);
+              return (
+                <label key={id} className="c-hl">
+                  <span><span className="h-n">{String(n + 1).padStart(2, "0")}</span>{c && <Glyph name={c.g} size={13} />}</span>
+                  <input name={`headline:${id}`} maxLength={80} placeholder={c?.title} value={heads[id] ?? ""} onChange={(x) => setHeads((h) => ({ ...h, [id]: x.target.value }))} aria-label={`Headline for ${c?.title ?? id}`} />
+                </label>
+              );
+            })}
+          </div>
+          <Err text={e.headlines} />
+        </div>
+      )}
       <div className="c-addr"><Glyph name="web" size={13} />jeromebadour.com/for/<b>{slugify(title || "job")}</b></div>
       {e.form && <p className="m-err">{e.form}</p>}
       <footer><a className="e-btn e-ghost" href="?tab=proposals">Cancel</a><Make /></footer>

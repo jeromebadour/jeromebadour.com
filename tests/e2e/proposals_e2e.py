@@ -35,11 +35,23 @@ with sync_playwright() as p:
     check("a fourth proof can't be picked", op.is_disabled(".c-dlg .m-chips button:has-text('Forum')"))
     check("the counter says 3 of 3", op.inner_text(".c-picked") == "3 of 3")
     check("the address follows the title", op.inner_text(".c-addr b") == "booking-payments-for-a-clinic")
+    check("one headline field per picked proof, in order", op.locator(".c-hl input").count() == 3 and op.get_attribute(".c-hl:nth-child(1) input", "placeholder") == "Shop")
+    op.fill(".c-hl:nth-child(1) input", "x" * 81)
+    op.evaluate("document.querySelectorAll('.c-hl input').forEach(e => e.removeAttribute('maxlength'))")
+    op.fill(".c-hl:nth-child(1) input", "x" * 81)
+    op.click("button:has-text('Make page')")
+    # Step 1's errors are still on screen, so wait for this answer's own error, not any error.
+    op.wait_for_selector(".c-dlg .m-err:has-text('at most 80')", timeout=10000)
+    check("a headline over 80 characters is refused", "at most 80" in op.inner_text(".c-dlg") and sql("select count(*) from proposals") == "0")
+    check("the picks and headlines stay", op.locator(".m-chips button.on").count() == 3 and len(op.input_value(".c-hl:nth-child(1) input")) == 81)
+    op.fill(".c-hl:nth-child(1) input", "  Card payments,   refunds and receipts ")
     op.click("button:has-text('Make page')")
     op.wait_for_url(re.compile(r".*made=booking-payments-for-a-clinic"), timeout=10000)
     check("the page is made and linked", op.is_visible(".c-made a[href='/for/booking-payments-for-a-clinic']"))
     row = sql("select slug, proofs, is_on, opens from proposals")
     check("stored with its three proofs, on, no opens", row == "booking-payments-for-a-clinic|{shop,console,distill}|t|0", row)
+    row = sql("select headlines from proposals")
+    check("the headline is stored tidied, the empty ones empty", row == '{"Card payments, refunds and receipts","",""}', row)
     check("making it is on record", sql("select count(*) from audit_log where action = 'proposal.create'") == "1")
 
     # 3. The owner's own look isn't counted.
@@ -53,7 +65,8 @@ with sync_playwright() as p:
     check("the client gets the page", r.status == 200)
     check("the job's title and the note show", pg.inner_text("h1") == "Booking payments for a clinic" and "three pieces of my own work" in pg.inner_text(".f-note"))
     titles = [t.strip() for t in pg.locator(".f-proof b").all_inner_texts()]
-    check("three proofs, in the order picked", titles == ["Shop", "Admin console", "Distill"], str(titles))
+    check("three proofs in the order picked, the headline in place of its title", titles == ["Card payments, refunds and receipts", "Admin console", "Distill"], str(titles))
+    check("the proof's link keeps its own title", pg.inner_text(".f-proof:nth-child(1) .pc-page").strip() == "Shop")
     check("each proof links its page", pg.locator(".f-proof a[href='/work/w3arena/shop']").count() == 1 and pg.locator(".f-proof a[href='/work/distill']").count() == 1)
     check("Reply on Upwork goes to the job", pg.get_attribute("a:has-text('Reply on Upwork')", "href") == JOB)
     check("no Message button, no email, no Ask", pg.locator("a[href='/message']").count() == 0 and pg.locator("a[href^='mailto:']").count() == 0 and pg.locator("a[href='/ask']").count() == 0)
