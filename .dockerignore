@@ -1,0 +1,10 @@
+.git
+.github
+.next
+node_modules
+tests
+scripts
+docs
+*.md
+.env*
+*.tsbuildinfo

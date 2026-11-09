@@ -855,3 +855,24 @@ html:has([data-v="e"]), body:has([data-v="e"]) { background: #15191c; }
 /* Actions drawn as buttons keep the look of the links beside them */
 button.e-btn { line-height: inherit; }
 button.e-btn.e-ghost { background: none; }
+
+/* /sign-in: the owner's sign-in, one card in the middle */
+.si-page { display: grid; place-items: center; padding: 24px; }
+.si-card { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 22px; padding: 28px; border: 1px solid var(--rule); border-radius: 12px; background: var(--card); }
+.si-form { display: flex; flex-direction: column; gap: 14px; }
+.si-go { justify-content: center; margin-top: 4px; }
+.si-go:disabled { opacity: .7; cursor: default; }
+.si-err { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--t-red); }
+
+/* Console: sign out, empty tables, the pager */
+.c-me form { margin-left: auto; }
+.c-out { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 7px; background: none; color: var(--muted); }
+.c-out:hover { color: var(--t-red); background: color-mix(in srgb, var(--t-red) 12%, transparent); }
+.c-empty td { padding: 22px 14px; color: var(--muted); }
+.c-empty td svg { vertical-align: -2px; margin-right: 8px; color: var(--faint); }
+.c-pager { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-size: 13px; color: var(--muted); }
+.c-pager span:first-child { margin-right: auto; }
+.c-pager a, .c-pager .off { display: inline-flex; align-items: center; gap: 6px; }
+.c-pager a { color: var(--ink); }
+.c-pager .newer svg { transform: rotate(180deg); }
+.c-pager .off { opacity: .45; }

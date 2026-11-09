@@ -1,0 +1,16 @@
+# CI only, on top of compose.yaml: the tests reach the database as its owner, and the site talks to the fake Claude
+# running on the CI machine instead of Anthropic.
+services:
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"
+  app:
+    environment:
+      ANTHROPIC_BASE_URL: http://host.docker.internal:4010
+      # Emails land as files the browser suites read (no Resend in CI).
+      EMAIL_OUTBOX: /outbox
+      APP_URL: http://localhost:3102
+    volumes:
+      - /tmp/site-outbox:/outbox
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

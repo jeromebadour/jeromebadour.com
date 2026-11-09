@@ -1,6 +1,8 @@
 name: CI
 
-# Every push and pull request: the production build of every page (it writes Next's route types), then the types.
+# Every push and pull request. First the code: the production build of every page (it writes Next's route types), the
+# types, and every database suite. Then what ships: the real image and compose.yaml (Postgres, the migration step, the
+# site), with every browser suite run against that container. Nothing broken reaches the server.
 on:
   push:
   pull_request:
@@ -8,7 +10,24 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
     steps:
       - uses: actions/checkout@v7
 
@@ -18,5 +37,78 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run build
-      - run: npm run typecheck
+
+      - name: Build and types
+        run: |
+          npm run build
+          npm run typecheck
+
+      - name: Database suites
+        run: scripts/test-db.sh
+
+  container:
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      # Test-only values for a stack that lives for one CI run.
+      POSTGRES_PASSWORD: ci-owner-only
+      SITE_APP_PASSWORD: 0123456789abcdef0123456789abcdef
+      ANTHROPIC_API_KEY: test-key
+      APP_COMMIT: ${{ github.sha }}
+      COMPOSE: docker compose -f compose.yaml -f compose.ci.yaml
+      PGHOST: 127.0.0.1
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ci-owner-only
+      PGDATABASE: site
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      # The owner script runs from the repo, as on the box it runs from the image.
+      - run: npm ci
+
+      - name: Build and start the stack
+        run: |
+          mkdir -p /tmp/site-outbox && chmod 777 /tmp/site-outbox
+          $COMPOSE up -d --build
+          for i in $(seq 1 90); do curl -sf -o /dev/null http://127.0.0.1:3102/api/health && exit 0; sleep 2; done
+          echo "the site did not start"; $COMPOSE ps -a; $COMPOSE logs; exit 1
+
+      - name: A second deploy applies nothing twice
+        run: |
+          out=$($COMPOSE run --rm migrate)
+          echo "$out"
+          if echo "$out" | grep -q applying; then echo "a migration ran twice"; exit 1; fi
+
+      - name: The owner script works inside the image
+        run: |
+          printf 'image-password-123\n' | $COMPOSE run --rm -T -e OWNER_EMAIL=image@example.com \
+            -e OWNER_DATABASE_URL=postgres://postgres:ci-owner-only@db:5432/site app node ops/set-owner.mjs
+          psql -Atc "select email from owner_account" | grep -qx image@example.com
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Browser
+        run: |
+          pip install playwright==1.63.0
+          python -m playwright install --with-deps chromium
+
+      - name: Browser suites against the container
+        env:
+          BASE_URL: http://localhost:3102
+        run: scripts/test-e2e.sh
+
+      - name: Logs on failure
+        if: failure()
+        run: |
+          $COMPOSE ps -a || true
+          $COMPOSE logs --tail 200 || true
+          for f in /tmp/e2e-*.log; do echo "== $f"; tail -n 60 "$f"; done

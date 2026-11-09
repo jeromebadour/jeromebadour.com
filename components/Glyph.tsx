@@ -5,7 +5,7 @@ type Name =
   | "work" | "how" | "services" | "about" | "arrow" | "github" | "discord" | "pulse"
   | "chevron" | "web" | "app" | "desktop" | "ai" | "server" | "grid"
   | "forum" | "shop" | "console" | "translate" | "region"
-  | "search" | "tested" | "mail" | "shield" | "expand" | "close" | "pause";
+  | "search" | "tested" | "mail" | "shield" | "expand" | "close" | "pause" | "signout";
 
 const paths: Record<Name, string> = {
   upwork: "M4 5v6a4 4 0 0 0 8 0V5M12 11c1-3 3-5 5-5a3 3 0 0 1 0 6c-2 0-4-1-5-3M12 12l-1 7",
@@ -42,6 +42,7 @@ const paths: Record<Name, string> = {
   expand: "M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",
   close: "M6 6l12 12M18 6L6 18",
   pause: "M9 6v12M15 6v12",
+  signout: "M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10",
   grid: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
 };
 
