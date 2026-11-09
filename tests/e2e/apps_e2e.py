@@ -51,6 +51,17 @@ with sync_playwright() as p:
         check(f"{path}: named in the Privacy Policy and the Terms of Use", name in privacy and name in terms)
         if path != "/work/w3arena":
             check(f"{path}: a proof for proposal pages", name in proof_chips, str(proof_chips))
+    # Picture viewers never move on their own (Kami 2026-11-09): no autoplay, no zoom when a picture changes.
+    vp = b.new_page(viewport={"width": 1440, "height": 900})
+    vp.goto(BASE + "/work/w3arena/shop")
+    first = vp.locator(".sv-stage img.on").first.get_attribute("src")
+    vp.wait_for_timeout(6500)
+    check("viewer: no autoplay (same picture after 6.5 s)", vp.locator(".sv-stage img.on").first.get_attribute("src") == first)
+    check("viewer: no progress bar", vp.locator(".sv-bar").count() == 0)
+    vp.locator(".sv-strip button").nth(1).click()
+    tf = vp.evaluate("() => { const i = document.querySelector('.sv-stage img.on'); return [getComputedStyle(i).animationName, getComputedStyle(i).transform]; }")
+    check("viewer: a picked picture fades in without a zoom", tf[0] in ("sv-fade", "none") and tf[1] in ("none", "matrix(1, 0, 0, 1, 0, 0)"), str(tf))
+    check("viewer: the picked picture is shown", vp.locator(".sv-stage img.on").first.get_attribute("src") != first)
     b.close()
 
 finish()

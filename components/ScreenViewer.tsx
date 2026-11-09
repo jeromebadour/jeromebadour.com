@@ -4,8 +4,6 @@ import { Glyph, type GlyphName } from "./Glyph";
 
 export type Shot = { src: string; thumb: string; cap: string; g: GlyphName; path?: string; fit?: "contain" };
 
-const EVERY_MS = 5000;
-
 export function ScreenViewer({ shots, label, host, frame = "browser", icon = "desktop" }: {
   shots: Shot[]; label: string; host: string; frame?: "browser" | "app"; icon?: GlyphName;
 }) {
@@ -13,7 +11,6 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
   const one = shots.length === 1;
   const [i, setI] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
-  const [hold, setHold] = useState(false);
   const [open, setOpen] = useState(false);
   const [still, setStill] = useState(false);
   const strip = useRef<HTMLDivElement>(null);
@@ -32,12 +29,7 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
     return () => m.removeEventListener("change", f);
   }, []);
 
-  const paused = hold || open || still;
-  useEffect(() => {
-    if (paused || shots.length < 2) return;
-    const t = setTimeout(() => go(1), EVERY_MS);
-    return () => clearTimeout(t);
-  }, [i, paused, go, shots.length]);
+  // Pictures change only when the visitor picks one (Kami 2026-11-09: nothing moves on its own).
 
   // Keep the open screen's thumbnail in view without moving the page.
   useEffect(() => {
@@ -63,7 +55,6 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
   }, [open, go]);
 
   const s = shots[i];
-  const bar = (n: number) => n === i && !still ? <span key={`${i}-${paused}`} className={`sv-bar${paused ? " held" : ""}`} /> : null;
 
   const chrome = (
     <div className="sv-chrome">
@@ -76,7 +67,6 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
         <span className="sv-addr app"><Glyph name={icon} size={13} /><b>{host}</b><span>{s.cap}</span></span>
       )}
       <span className="sv-meta">
-        {hold && !still && !open && <span className="sv-held"><Glyph name="pause" size={12} />Paused</span>}
         <span className="sv-live"><span className="dot" />Live</span>
         {!one && <span className="sv-n">{String(i + 1).padStart(2, "0")} / {String(shots.length).padStart(2, "0")}</span>}
       </span>
@@ -99,15 +89,13 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
           onClick={(e) => { e.stopPropagation(); show(n); }}>
           <span className="sv-th"><img src={x.thumb} alt="" loading="lazy" className={x.fit ? "fit" : undefined} /></span>
           <span className="sv-tl"><Glyph name={x.g} size={12} /><span>{x.cap}</span></span>
-          {bar(n)}
         </button>
       ))}
     </div>
   );
 
   return (
-    <div className={one ? "sv one" : "sv"} onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}
-      onFocus={() => setHold(true)} onBlur={() => setHold(false)}>
+    <div className={one ? "sv one" : "sv"}>
       {chrome}
       <div className="sv-body">
         <button className="sv-open" onClick={() => setOpen(true)} aria-label={`Open ${s.cap} full size`}>
