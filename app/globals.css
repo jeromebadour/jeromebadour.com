@@ -66,6 +66,7 @@ input { font: inherit; }
 .e-ask { display: flex; align-items: center; gap: 10px; margin-top: 26px; padding: 6px 6px 6px 14px; border: 1px solid var(--rule-strong); border-radius: 9px; background: var(--field); color: var(--accent); }
 .e-ask input { flex: 1; background: transparent; border: 0; outline: none; color: var(--ink); font-size: 15px; padding: 8px 0; }
 .e-ask input::placeholder { color: var(--faint); }
+.e-ask:focus-within { border-color: var(--accent); }
 .e-stats { display: flex; gap: 12px; margin-top: 22px; }
 .e-stat { display: flex; align-items: center; gap: 11px; padding: 10px 14px 10px 10px; border: 1px solid var(--rule); border-radius: 9px; background: var(--card); }
 .e-stat b { font-family: var(--mono); font-weight: 500; font-size: 15px; }
@@ -148,7 +149,9 @@ input { font: inherit; }
   .e-tabbar a.on { background: var(--card-2); }
   .e-tabbar .e-nt { width: 28px; height: 28px; }
 }
-[data-v="e"] a:focus-visible, [data-v="e"] button:focus-visible, [data-v="e"] input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* The ring is for links, buttons and checkboxes. Text fields show focus on their own frame (the border turns accent),
+   never a second line around it. */
+[data-v="e"] a:focus-visible, [data-v="e"] button:focus-visible, [data-v="e"] input[type=checkbox]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .e-dom { margin-left: 7px; font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--t-red); }
 @media (max-width: 720px) {
@@ -557,6 +560,7 @@ html:has([data-v="e"]), body:has([data-v="e"]) { background: #15191c; }
 .k-field { display: flex; align-items: center; gap: 10px; margin-top: 18px; padding: 6px 6px 6px 14px; border: 1px solid var(--rule-strong); border-radius: 10px; background: var(--field); color: var(--accent); }
 .k-field textarea { flex: 1; min-width: 0; resize: none; field-sizing: content; max-height: 9em; line-height: 1.45; background: transparent; border: 0; outline: none; color: var(--ink); font: inherit; font-size: 15px; padding: 9px 0; }
 .k-field textarea::placeholder { color: var(--faint); }
+.k-field:focus-within { border-color: var(--accent); }
 .k-count { font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
 .k-side { min-width: 0; }
 .k-gap { margin-top: 30px; }

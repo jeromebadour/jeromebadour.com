@@ -132,7 +132,7 @@ export function HomeE({ tab = "all" }: { tab?: "all" | "w3a" | "distill" }) {
             </a>
           ) : (
             <a className="e-board-foot" href={out.w3aChangelog}>
-              <Glyph name="release" size={14} />Latest release W3Arena 5.1.5<span>6 Nov 2026 · 6 changes</span><Glyph name="arrow" size={14} />
+              <Glyph name="release" size={14} />Release W3Arena 5.1.5<span>6 Nov 2026 · 6 changes</span><Glyph name="arrow" size={14} />
             </a>
           )}
         </div>
