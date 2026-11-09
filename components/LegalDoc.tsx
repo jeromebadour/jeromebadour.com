@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, type ReactNode } from "react";
 import { EFooter, EHeader, ETabbar } from "./Shell";
+import { LEGAL_UPDATED } from "@/lib/legal";
 
 export type LegalSection = { id: string; title: string; clauses: ReactNode[] };
 
@@ -27,7 +28,7 @@ export function LegalDoc({ title, sections }: { title: string; sections: LegalSe
       <div className="pv-wrap">
         <article className="pv-doc">
           <h1>{title}</h1>
-          <p className="pv-date">Last updated 9 November 2026</p>
+          <p className="pv-date">Last updated {LEGAL_UPDATED}</p>
 
           {sections.map((s, i) => (
             <section key={s.id} id={s.id} className="pv-sec">

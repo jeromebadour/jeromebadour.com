@@ -1,9 +1,10 @@
+import { pageMeta } from "@/lib/meta";
 import { MessagePage } from "@/components/MessagePage";
 import { isPaused, questionText } from "@/lib/server/messages";
 import { briefFor } from "@/lib/server/ask";
 
 // The brief: empty, or written from an Ask question (/message?from=<question id>).
-export const metadata = { title: "Message · Jerome Badour" };
+export const metadata = pageMeta("message");
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ from?: string }> }) {

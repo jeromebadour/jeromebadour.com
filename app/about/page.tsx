@@ -1,4 +1,5 @@
+import { pageMeta } from "@/lib/meta";
 import { AboutPage } from "@/components/AboutPage";
 
-export const metadata = { title: "About · Jerome Badour" };
+export const metadata = pageMeta("about");
 export default function Page() { return <AboutPage />; }

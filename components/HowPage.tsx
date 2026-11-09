@@ -37,8 +37,11 @@ const groups: Group[] = [
   },
 ];
 
+/** How many things the page lists (its header line and its link preview both say it). */
+export const HOW_COUNT = groups.reduce((n, g) => n + g.items.length, 0);
+
 export function HowPage() {
-  const count = groups.reduce((n, g) => n + g.items.length, 0);
+  const count = HOW_COUNT;
   let i = 0;
   return (
     <div className="page" data-v="e">
