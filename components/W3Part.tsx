@@ -407,3 +407,13 @@ export function W3Part({ id = "website" }: { id?: PartId }) {
     </div>
   );
 }
+
+// A part as a proof card on a proposal page: its title, its line, its first screen and its page. Approved text only.
+export const PROOF_PARTS = Object.keys(parts) as PartId[];
+export type ProofCard = { id: PartId; title: string; g: GlyphName; tone: string; line: string; img: string; fit: boolean; href: string; app: string };
+export function proofCard(id: string): ProofCard | null {
+  if (!(id in parts)) return null;
+  const p = parts[id as PartId];
+  const shot = p.screens[0];
+  return { id: id as PartId, title: p.title, g: p.g, tone: p.tone, line: p.line, img: shot.src, fit: shot.fit === "contain", href: partHref[id as PartId], app: p.app ? p.app.host : "W3Arena" };
+}

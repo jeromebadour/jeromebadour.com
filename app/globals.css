@@ -908,3 +908,14 @@ a.c-who:hover b { text-decoration: underline; text-underline-offset: 3px; }
 .k-chat > .k-note { padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--t-blue) 10%, transparent); margin-bottom: 4px; }
 .k-field textarea:disabled, .k-starters button:disabled { opacity: .55; cursor: default; }
 .k-field button:disabled { opacity: .55; cursor: default; }
+/* Console: the New page dialog, a page just made, the On/Off switch */
+.c-dlg-form { display: flex; flex-direction: column; gap: 14px; }
+.c-dlg-form footer { display: flex; justify-content: flex-end; gap: 10px; }
+.c-picked { margin-left: auto; font-style: normal; font-family: var(--mono); font-size: 12px; font-weight: 400; color: var(--muted); }
+.m-chips button:disabled { opacity: .45; cursor: default; }
+.c-made { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; font-size: 13.5px; color: var(--t-green); background: color-mix(in srgb, var(--t-green) 10%, transparent); }
+.c-made a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.c-mono a { color: inherit; }
+.c-mono a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.c-toggle button { background: none; padding: 0; }
+.c-toggle button:hover .c-tag { filter: brightness(1.2); }

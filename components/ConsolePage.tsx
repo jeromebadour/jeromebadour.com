@@ -4,6 +4,8 @@ import { nowLabel, weekday, when } from "@/lib/time";
 import type { BrakeRow, MessageRow, ProposalRow, QuestionRow, SocialRow } from "@/lib/server/console";
 import type { MessageDetail } from "@/lib/server/messages";
 import { ReplyForm } from "./ReplyForm";
+import { ProposalForm, type ProofChoice } from "./ProposalForm";
+import { toggleProposalAction } from "@/app/actions/console";
 
 // /admin (plan §9): Jerome's own console. Hidden: anyone else gets 404. Every table starts with #, pages of 15, every
 // column carries its meaning in colour and glyph (BUILD-RULES §3). Edits open in dialogs. Every action is on record.
@@ -22,7 +24,7 @@ const tabs: [Tab, GlyphName, string, string][] = [
 export type ConsoleData =
   | { tab: "inbox"; counts: { new: number; read: number; replied_week: number; total: number }; rows: MessageRow[]; open: MessageDetail | null }
   | { tab: "questions"; counts: { week: number; answered: number; refused: number; total: number }; rows: QuestionRow[] }
-  | { tab: "proposals"; total: number; rows: ProposalRow[] }
+  | { tab: "proposals"; total: number; rows: ProposalRow[]; dialog: boolean; made: string | null; choices: ProofChoice[] }
   | { tab: "visits"; days: { day: string; views: number }[]; pages: { path: string; views: number }[]; from: { referrer: string; views: number }[]; messages: number }
   | { tab: "spend"; month: number; today: number; days: { day: string; usd: number }[] }
   | { tab: "brakes"; rows: BrakeRow[] }
@@ -149,9 +151,11 @@ function Questions({ d, pageNo }: { d: Extract<ConsoleData, { tab: "questions" }
 
 function Proposals({ d, pageNo }: { d: Extract<ConsoleData, { tab: "proposals" }>; pageNo: number }) {
   const first = (pageNo - 1) * 15;
+  const title = (id: string) => d.choices.find((c) => c.id === id)?.title ?? id;
   return (
     <>
       <div className="c-bar"><span className="c-sub">Pages made for one proposal each. Not indexed; opens are a count, no cookies.</span><a className="e-btn e-hire" href="?tab=proposals&new=1"><Glyph name="release" size={15} />New page</a></div>
+      {d.made && <p className="c-made"><Glyph name="tested" size={14} />Made: <a href={`/for/${d.made}`}>jeromebadour.com/for/{d.made}</a></p>}
       <table className="c-table">
         <thead><tr><th>#</th><th>Job</th><th>Address</th><th>Proofs</th><th>Opens</th><th>Page</th><th>Made</th></tr></thead>
         <tbody>
@@ -160,16 +164,29 @@ function Proposals({ d, pageNo }: { d: Extract<ConsoleData, { tab: "proposals" }
             <tr key={r.id}>
               <td className="c-n">{first + i + 1}</td>
               <td><b className="c-strong">{r.title}</b></td>
-              <td className="c-mono">/for/{r.slug}</td>
-              <td><span className="c-proofs">{r.proofs.map((x) => <span key={x} className="c-tag t-sage"><Glyph name="arrow" size={11} />{x}</span>)}</span></td>
+              <td className="c-mono"><a href={`/for/${r.slug}`}>/for/{r.slug}</a></td>
+              <td><span className="c-proofs">{r.proofs.map((x) => <span key={x} className="c-tag t-sage"><Glyph name="arrow" size={11} />{title(x)}</span>)}</span></td>
               <td><span className={`c-num t-${r.opens ? "blue" : "amber"}`}>{r.opens}</span></td>
-              <td>{r.is_on ? <span className="c-tag t-green"><Glyph name="live" size={12} />On</span> : <span className="c-tag t-red"><Glyph name="pause" size={12} />Off</span>}</td>
+              <td>
+                <form action={toggleProposalAction} className="c-toggle">
+                  <input type="hidden" name="id" value={r.id} /><input type="hidden" name="on" value={r.is_on ? "0" : "1"} />
+                  <button type="submit" title={r.is_on ? "Switch off" : "Switch on"}>{r.is_on ? <span className="c-tag t-green"><Glyph name="live" size={12} />On</span> : <span className="c-tag t-red"><Glyph name="pause" size={12} />Off</span>}</button>
+                </form>
+              </td>
               <td className="c-time">{when(r.created_at)}</td>
             </tr>
           ))}
         </tbody>
       </table>
       <Pager tab="proposals" pageNo={pageNo} total={d.total} />
+      {d.dialog && (
+        <div className="c-dlg-wrap">
+          <div className="c-dlg" role="dialog" aria-label="New proposal page">
+            <header><span className="e-tile t-amber"><Glyph name="release" size={15} /></span><b>New proposal page</b><a href="?tab=proposals" aria-label="Close"><Glyph name="close" size={16} /></a></header>
+            <ProposalForm choices={d.choices} />
+          </div>
+        </div>
+      )}
     </>
   );
 }
