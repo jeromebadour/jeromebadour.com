@@ -1096,3 +1096,18 @@ html:not([data-via="upwork"]) .on-up { display: none !important; }
   [data-v="e"] .e-hdr-r .e-hire .e-long { display: none; }
   [data-v="e"] .w-stats .e-stat { padding: 4px 14px 4px 12px; }
 }
+
+/* ===== Wide screens (BUILD-RULES 2.17, 2026-11-10) =====
+   Above 1440 the page is one centred column, laid out exactly as at 1440; only the background, the header and footer
+   bars and their rules reach the screen's edges. Nothing changes at 1440 and below. */
+@media (min-width: 1441px) {
+  [data-v="e"].page > * { max-width: 1440px; margin-left: auto; margin-right: auto; width: 100%; }
+  [data-v="e"].page > .n-stage, [data-v="e"].page > .n-awake, [data-v="e"].page > .n-apps { max-width: 1360px; width: auto; }
+  [data-v="e"].page > .n-stage, [data-v="e"].page > .n-awake, [data-v="e"].page > .n-apps { margin-left: max(40px, calc((100% - 1360px) / 2)); margin-right: max(40px, calc((100% - 1360px) / 2)); }
+  [data-v="e"].page > .e-hdr { max-width: none; padding-left: calc(40px + (100% - 1440px) / 2); padding-right: calc(40px + (100% - 1440px) / 2); }
+  [data-v="e"].page > .e-foot { max-width: none; padding-left: calc(56px + (100% - 1440px) / 2); padding-right: calc(56px + (100% - 1440px) / 2); }
+  /* The header holds what it holds at 1440 (the column never gets wider). */
+  [data-v="e"] .n-status .n-live { display: none; }
+  /* A first screen never stretches to a tall monitor's full height. */
+  [data-v="e"] .nf { min-height: min(calc(100vh - 162px), 738px); }
+}
