@@ -1,0 +1,136 @@
+"use client";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Glyph, type GlyphName } from "./Glyph";
+
+export type Shot = { src: string; thumb: string; cap: string; g: GlyphName; path?: string; fit?: "contain" };
+
+const EVERY_MS = 5000;
+
+export function ScreenViewer({ shots, label, host, frame = "browser", icon = "desktop" }: {
+  shots: Shot[]; label: string; host: string; frame?: "browser" | "app"; icon?: GlyphName;
+}) {
+  const [i, setI] = useState(0);
+  const [prev, setPrev] = useState<number | null>(null);
+  const [hold, setHold] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [still, setStill] = useState(false);
+  const strip = useRef<HTMLDivElement>(null);
+  const boxStrip = useRef<HTMLDivElement>(null);
+
+  const show = useCallback((n: number) => {
+    setI((cur) => { if (n !== cur) setPrev(cur); return n; });
+  }, []);
+  const go = useCallback((d: number) => setI((cur) => { setPrev(cur); return (cur + d + shots.length) % shots.length; }), [shots.length]);
+
+  useEffect(() => {
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setStill(m.matches);
+    const f = () => setStill(m.matches);
+    m.addEventListener("change", f);
+    return () => m.removeEventListener("change", f);
+  }, []);
+
+  const paused = hold || open || still;
+  useEffect(() => {
+    if (paused || shots.length < 2) return;
+    const t = setTimeout(() => go(1), EVERY_MS);
+    return () => clearTimeout(t);
+  }, [i, paused, go, shots.length]);
+
+  // Keep the open screen's thumbnail in view without moving the page.
+  useEffect(() => {
+    for (const el of [strip.current, boxStrip.current]) {
+      const t = el?.children[i] as HTMLElement | undefined;
+      if (!el || !t) continue;
+      const tall = el.scrollHeight > el.clientHeight + 1;
+      el.scrollTo(tall ? { top: t.offsetTop - el.clientHeight / 2 + t.clientHeight / 2, behavior: still ? "auto" : "smooth" }
+        : { left: t.offsetLeft - el.clientWidth / 2 + t.clientWidth / 2, behavior: still ? "auto" : "smooth" });
+    }
+  }, [i, open, still]);
+
+  useEffect(() => {
+    if (!open) return;
+    const k = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+      if (e.key === "ArrowRight") go(1);
+      if (e.key === "ArrowLeft") go(-1);
+    };
+    window.addEventListener("keydown", k);
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", k); document.body.style.overflow = ""; };
+  }, [open, go]);
+
+  const s = shots[i];
+  const bar = (n: number) => n === i && !still ? <span key={`${i}-${paused}`} className={`sv-bar${paused ? " held" : ""}`} /> : null;
+
+  const chrome = (
+    <div className="sv-chrome">
+      {frame === "browser" ? (
+        <>
+          <span className="sv-dots" aria-hidden="true"><i /><i /><i /></span>
+          <span className="sv-addr"><Glyph name="shield" size={13} /><b>{host}</b><span>{s.path ?? ""}</span></span>
+        </>
+      ) : (
+        <span className="sv-addr app"><Glyph name={icon} size={13} /><b>{host}</b><span>{s.cap}</span></span>
+      )}
+      <span className="sv-meta">
+        {hold && !still && !open && <span className="sv-held"><Glyph name="pause" size={12} />Paused</span>}
+        <span className="sv-live"><span className="dot" />Live</span>
+        <span className="sv-n">{String(i + 1).padStart(2, "0")} / {String(shots.length).padStart(2, "0")}</span>
+      </span>
+    </div>
+  );
+
+  const stage = (big: boolean) => (
+    <div className={`sv-stage${still ? " still" : ""}`}>
+      {shots.map((x, n) => (
+        <img key={x.src} src={x.src} alt={n === i ? x.cap : ""} aria-hidden={n !== i}
+          className={`${n === i ? "on" : n === prev ? "prev" : ""}${x.fit ? " fit" : ""}`} loading={n < 2 || big ? "eager" : "lazy"} />
+      ))}
+    </div>
+  );
+
+  const thumbs = (ref: React.RefObject<HTMLDivElement | null>) => (
+    <div className="sv-strip" role="tablist" aria-label={label} ref={ref}>
+      {shots.map((x, n) => (
+        <button key={x.src} role="tab" aria-selected={n === i} className={n === i ? "on" : ""}
+          onClick={(e) => { e.stopPropagation(); show(n); }}>
+          <span className="sv-th"><img src={x.thumb} alt="" loading="lazy" className={x.fit ? "fit" : undefined} /></span>
+          <span className="sv-tl"><Glyph name={x.g} size={12} /><span>{x.cap}</span></span>
+          {bar(n)}
+        </button>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="sv" onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}
+      onFocus={() => setHold(true)} onBlur={() => setHold(false)}>
+      {chrome}
+      <div className="sv-body">
+        <button className="sv-open" onClick={() => setOpen(true)} aria-label={`Open ${s.cap} full size`}>
+          {stage(false)}
+          <span className="sv-zoom"><Glyph name="expand" size={15} /></span>
+        </button>
+        <div className="sv-side">{thumbs(strip)}</div>
+      </div>
+
+      {open && (
+        <div className="sv-box" role="dialog" aria-modal="true" aria-label={s.cap} onClick={() => setOpen(false)}>
+          <div className="sv-box-in" onClick={(e) => e.stopPropagation()}>
+            <div className="sv-box-bar">
+              {chrome}
+              <button className="sv-x" onClick={() => setOpen(false)} aria-label="Close"><Glyph name="close" size={17} /></button>
+            </div>
+            <div className="sv-box-stage">
+              {stage(true)}
+              <button className="sv-arrow l" onClick={() => go(-1)} aria-label="Previous"><Glyph name="arrow" size={20} /></button>
+              <button className="sv-arrow r" onClick={() => go(1)} aria-label="Next"><Glyph name="arrow" size={20} /></button>
+            </div>
+            {thumbs(boxStrip)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
