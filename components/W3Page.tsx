@@ -5,7 +5,7 @@ import { ScreenViewer, type Shot } from "./ScreenViewer";
 
 // The platform live at peak hours: the Windows app's main screen, as it was. Its counts are the caption's.
 const live: Shot = { src: "/p/w3a-live.jpg", thumb: "/p/w3a-live-t.jpg", cap: "The Windows app at peak hours", g: "desktop", fit: "contain" };
-export const W3A_LINE = "A platform people use every day: players from South America to Asia meet, talk and play on it, with 180+ online at once at peak hours. I built every part and run it on my own.";
+export const W3A_LINE = "A platform people use every day: players from South America to Asia meet, talk and play on it, with 200+ online at once at peak hours. I built every part and run it on my own.";
 // The registered count is left to the stats above (9,400+): the picture is from a day with fewer, and two different
 // registered counts an inch apart would read as a mistake.
 export const W3A_LIVE = "180+ players online at once and 7+ matches running.";
