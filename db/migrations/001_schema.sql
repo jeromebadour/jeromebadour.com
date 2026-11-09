@@ -97,6 +97,8 @@ create table messages (
   id            uuid primary key default gen_random_uuid(),
   -- The status link holds a random token; only its SHA-256 is stored.
   token_hash    bytea not null unique check (length(token_hash) = 32),
+  -- The reply email carries its own link (the first token isn't kept, so it can't be sent again); both open the page.
+  reply_token_hash bytea unique check (reply_token_hash is null or length(reply_token_hash) = 32),
   name          text not null check (length(name) between 1 and 80),
   email         text not null check (email = lower(email) and email like '%_@_%.%' and length(email) <= 200),
   brief         text not null check (length(brief) between 10 and 4000),

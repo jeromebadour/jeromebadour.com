@@ -1,23 +1,34 @@
 "use client";
-import { useState } from "react";
+import { useActionState, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { EFooter, EHeader, ETabbar } from "./Shell";
 import { out } from "@/lib/links";
 import { Glyph, type GlyphName } from "./Glyph";
+import { sendMessageAction, type MessageState } from "@/app/actions/message";
 
 // /message (plan §7): the brief, written from the Ask conversation (or empty without one), checked and edited by the
 // client, then sent. 3 messages an hour per visitor, a hidden trap field, no captcha. Sending lands on /m/<token>.
-// The design picture shows the brief written from the Ask page's example question.
 const stacks = ["Node.js", "React / Next.js", "Python", "PHP", "WordPress", "Not sure yet"];
-const urgency: [string, string][] = [["amber", "This week"], ["blue", "This month"], ["green", "No rush"]];
+const urgency: [string, string, string][] = [["amber", "this_week", "This week"], ["blue", "this_month", "This month"], ["green", "no_rush", "No rush"]];
 const next: [GlyphName, string, string, string][] = [
   ["mail", "green", "Received", "Right away: a status page, and an email with its link."],
   ["search", "blue", "Read", "When I open it. The status page shows the time."],
   ["message", "violet", "Replied", "My answer by email, and on the same status page."],
 ];
 
-export function MessagePage() {
-  const [stack, setStack] = useState<string[]>(["Not sure yet"]);
-  const [when, setWhen] = useState("This month");
+function Send() {
+  const { pending } = useFormStatus();
+  return <button className="e-btn e-hire" type="submit" disabled={pending}><Glyph name="arrow" size={15} />{pending ? "Sending" : "Send"}</button>;
+}
+
+const Err = ({ text }: { text?: string }) => (text ? <span className="m-err"><Glyph name="close" size={13} />{text}</span> : null);
+
+export function MessagePage({ from, draft = "", paused = false }: { from?: { id: string; question: string } | null; draft?: string; paused?: boolean }) {
+  const [state, action] = useActionState<MessageState, FormData>(sendMessageAction, {});
+  const v = state.values ?? {};
+  const [stack, setStack] = useState<string[]>(Array.isArray(v.built_with) && v.built_with.length ? v.built_with : ["Not sure yet"]);
+  const [when, setWhen] = useState(typeof v.how_soon === "string" && v.how_soon ? v.how_soon : "this_month");
+  const e = state.errors ?? {};
   const flip = (s: string) => setStack((x) => {
     if (s === "Not sure yet") return [s];
     const y = x.includes(s) ? x.filter((v) => v !== s) : [...x.filter((v) => v !== "Not sure yet"), s];
@@ -39,22 +50,28 @@ export function MessagePage() {
       </section>
 
       <section className="m-board">
-        <form className="m-form" action="#" onSubmit={(e) => e.preventDefault()}>
-          <div className="m-from">
-            <Glyph name="ask" size={14} />
-            <span>Written from your question</span>
-            <b>“Have you built a payment system?”</b>
-            <a href="/ask"><Glyph name="arrow" size={12} />Back to Ask</a>
-          </div>
+        <form className="m-form" action={action}>
+          {from && (
+            <div className="m-from">
+              <Glyph name="ask" size={14} />
+              <span>Written from your question</span>
+              <b>“{from.question}”</b>
+              <a href="/ask"><Glyph name="arrow" size={12} />Back to Ask</a>
+              <input type="hidden" name="from" value={from.id} />
+            </div>
+          )}
+          {paused && <p className="m-paused"><Glyph name="pause" size={14} />Messages are paused for a short while. Upwork reaches me in the meantime.</p>}
 
           <label className="m-field">
             <span className="m-l"><Glyph name="release" size={14} />What you need</span>
-            <textarea rows={4} defaultValue="Payments for my web app: a checkout, a receipt for every purchase, refunds, and an admin page to see and manage all of it." />
+            <textarea name="brief" rows={4} maxLength={4000} required defaultValue={typeof v.brief === "string" ? v.brief : draft} aria-invalid={!!e.brief} />
+            <Err text={e.brief} />
           </label>
 
           <div className="m-field">
             <span className="m-l"><Glyph name="code" size={14} />Built with</span>
             <div className="m-chips">
+              {stack.map((s) => <input key={s} type="hidden" name="built_with" value={s} />)}
               {stacks.map((s) => (
                 <button key={s} type="button" className={stack.includes(s) ? "on" : ""} aria-pressed={stack.includes(s)} onClick={() => flip(s)}>
                   {stack.includes(s) && <Glyph name="tested" size={13} />}{s}
@@ -66,22 +83,24 @@ export function MessagePage() {
           <div className="m-field">
             <span className="m-l"><Glyph name="pulse" size={14} />How soon</span>
             <div className="m-chips">
-              {urgency.map(([t, s]) => (
-                <button key={s} type="button" className={`t-${t}${when === s ? " on" : ""}`} aria-pressed={when === s} onClick={() => setWhen(s)}>
-                  {when === s && <Glyph name="tested" size={13} />}{s}
+              <input type="hidden" name="how_soon" value={when} />
+              {urgency.map(([t, k, s]) => (
+                <button key={k} type="button" className={`t-${t}${when === k ? " on" : ""}`} aria-pressed={when === k} onClick={() => setWhen(k)}>
+                  {when === k && <Glyph name="tested" size={13} />}{s}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="m-two">
-            <label className="m-field"><span className="m-l"><Glyph name="about" size={14} />Your name</span><input defaultValue="Daniel Moreau" /></label>
-            <label className="m-field"><span className="m-l"><Glyph name="mail" size={14} />Your email</span><input type="email" defaultValue="daniel@example.com" /></label>
+            <label className="m-field"><span className="m-l"><Glyph name="about" size={14} />Your name</span><input name="name" autoComplete="name" maxLength={80} required defaultValue={typeof v.name === "string" ? v.name : ""} aria-invalid={!!e.name} /><Err text={e.name} /></label>
+            <label className="m-field"><span className="m-l"><Glyph name="mail" size={14} />Your email</span><input name="email" type="email" autoComplete="email" maxLength={200} required defaultValue={typeof v.email === "string" ? v.email : ""} aria-invalid={!!e.email} /><Err text={e.email} /></label>
           </div>
           <input className="m-trap" tabIndex={-1} autoComplete="off" aria-hidden="true" name="website" />
 
+          {e.form && <p className="m-err m-err-form"><Glyph name="pause" size={14} />{e.form}</p>}
           <div className="m-send">
-            <button className="e-btn e-hire" type="submit"><Glyph name="arrow" size={15} />Send</button>
+            <Send />
             <span>Replies come from jerome@jeromebadour.com.</span>
           </div>
         </form>

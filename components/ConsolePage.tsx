@@ -2,6 +2,8 @@ import { Brand, Glyph, type BrandName, type GlyphName } from "./Glyph";
 import { page } from "@/lib/links";
 import { nowLabel, weekday, when } from "@/lib/time";
 import type { BrakeRow, MessageRow, ProposalRow, QuestionRow, SocialRow } from "@/lib/server/console";
+import type { MessageDetail } from "@/lib/server/messages";
+import { ReplyForm } from "./ReplyForm";
 
 // /admin (plan §9): Jerome's own console. Hidden: anyone else gets 404. Every table starts with #, pages of 15, every
 // column carries its meaning in colour and glyph (BUILD-RULES §3). Edits open in dialogs. Every action is on record.
@@ -18,7 +20,7 @@ const tabs: [Tab, GlyphName, string, string][] = [
 ];
 
 export type ConsoleData =
-  | { tab: "inbox"; counts: { new: number; read: number; replied_week: number; total: number }; rows: MessageRow[] }
+  | { tab: "inbox"; counts: { new: number; read: number; replied_week: number; total: number }; rows: MessageRow[]; open: MessageDetail | null }
   | { tab: "questions"; counts: { week: number; answered: number; refused: number; total: number }; rows: QuestionRow[] }
   | { tab: "proposals"; total: number; rows: ProposalRow[] }
   | { tab: "visits"; days: { day: string; views: number }[]; pages: { path: string; views: number }[]; from: { referrer: string; views: number }[]; messages: number }
@@ -71,7 +73,7 @@ function Inbox({ d, pageNo }: { d: Extract<ConsoleData, { tab: "inbox" }>; pageN
           {d.rows.map((r, i) => (
             <tr key={r.id} className={r.status === "new" ? "c-new" : ""}>
               <td className="c-n">{first + i + 1}</td>
-              <td><span className="c-who"><span className="c-av t-violet">{initials(r.name)}</span><span><b>{r.name}</b><em>{r.email}</em></span></span></td>
+              <td><a className="c-who" href={`?tab=inbox&page=${pageNo}&open=${r.id}`}><span className="c-av t-violet">{initials(r.name)}</span><span><b>{r.name}</b><em>{r.email}</em></span></a></td>
               <td className="c-brief">{r.brief}</td>
               <td><span className="c-tag t-sage"><Glyph name="code" size={12} />{r.built_with.length ? r.built_with.join(", ") : "Not said"}</span></td>
               <td><span className={`c-tag t-${SOON[r.how_soon][0]}`}><Glyph name="pulse" size={12} />{SOON[r.how_soon][1]}</span></td>
@@ -82,7 +84,34 @@ function Inbox({ d, pageNo }: { d: Extract<ConsoleData, { tab: "inbox" }>; pageN
         </tbody>
       </table>
       <Pager tab="inbox" pageNo={pageNo} total={d.counts.total} />
+      {d.open && <MessageDialog m={d.open} back={`?tab=inbox&page=${pageNo}`} />}
     </>
+  );
+}
+
+function MessageDialog({ m, back }: { m: MessageDetail; back: string }) {
+  return (
+    <div className="c-dlg-wrap">
+      <div className="c-dlg" role="dialog" aria-label={`Message from ${m.name}`}>
+        <header><span className="e-tile t-violet"><Glyph name="message" size={15} /></span><b>{m.name}</b><St k={m.status} /><a href={back} aria-label="Close"><Glyph name="close" size={16} /></a></header>
+        <ul className="a-list c-facts">
+          <li><b>Email</b><span><a href={`mailto:${m.email}`}>{m.email}</a></span></li>
+          <li><b>What they need</b><span className="c-pre">{m.brief}</span></li>
+          <li><b>Built with</b><span>{m.built_with.length ? m.built_with.join(", ") : "Not said"}</span></li>
+          <li><b>How soon</b><span>{SOON[m.how_soon][1]}</span></li>
+          {m.from_question && <li><b>Asked first</b><span>“{m.from_question}”</span></li>}
+          <li><b>Received</b><span>{nowLabel(m.created_at)}</span></li>
+        </ul>
+        {m.reply ? (
+          <div className="c-replied">
+            <span className="m-l"><Glyph name="message" size={14} />Your reply, {nowLabel(m.replied_at!)}</span>
+            <p className="c-pre">{m.reply}</p>
+            <footer><a className="e-btn e-ghost" href={back}>Close</a></footer>
+          </div>
+        ) : m.open ? <ReplyForm id={m.id} to={m.email} />
+          : <p className="c-foot"><Glyph name="shield" size={13} />The status link is closed (90 days); answer by email.</p>}
+      </div>
+    </div>
   );
 }
 

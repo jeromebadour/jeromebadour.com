@@ -1,19 +1,25 @@
 import { EFooter, EHeader, ETabbar } from "./Shell";
 import { Glyph, type GlyphName } from "./Glyph";
+import { AutoRefresh } from "./AutoRefresh";
+import { pagesIn } from "@/lib/links";
+import { nowLabel } from "@/lib/time";
+import type { Status } from "@/lib/server/messages";
 
 // /m/<token> (plan §7): the sender's live status page. Received, Read (when Jerome opens it in the console), Replied
-// (his answer, also sent by email). Not indexed by search engines. The design picture shows the Replied state for the
-// brief from /message; the reply is a sample of the form, not a quote of real correspondence.
-const steps: [GlyphName, string, string, string][] = [
-  ["mail", "green", "Received", "Mon 9 Nov, 00:31"],
-  ["search", "blue", "Read", "Mon 9 Nov, 09:12"],
-  ["message", "violet", "Replied", "Mon 9 Nov, 09:40"],
-];
+// (his answer, also sent by email). Not indexed by search engines. Checks for news every 30 seconds until replied.
+const SOON = { this_week: "This week", this_month: "This month", no_rush: "No rush" } as const;
 
-export function StatusPage() {
+export function StatusPage({ m }: { m: Status }) {
+  const steps: [GlyphName, string, string, Date | null][] = [
+    ["mail", "green", "Received", m.created_at],
+    ["search", "blue", "Read", m.read_at],
+    ["message", "violet", "Replied", m.replied_at],
+  ];
+  const first = m.name.split(/\s+/)[0];
   return (
     <div className="page" data-v="e">
       <EHeader on="message" />
+      {m.status !== "replied" && <AutoRefresh seconds={30} />}
 
       <section className="w-top">
         <div className="w-crumb"><Glyph name="message" size={13} /><span>Your message</span></div>
@@ -27,37 +33,46 @@ export function StatusPage() {
       </section>
 
       <section className="st-track">
-        {steps.map(([g, t, k, when], n) => (
-          <div key={k} className={`st-step t-${t} done`}>
+        {steps.map(([g, t, k, at], n) => (
+          <div key={k} className={`st-step t-${t}${at ? " done" : ""}`}>
             <span className="a-dot"><Glyph name={g} size={15} /></span>
-            <div><b>{k}</b><span>{when}</span></div>
-            {n < steps.length - 1 && <i className="st-line" aria-hidden="true" />}
+            <div><b>{k}</b><span>{at ? nowLabel(at) : "Not yet"}</span></div>
+            {n < steps.length - 1 && <i className={`st-line${steps[n + 1][3] ? "" : " wait"}`} aria-hidden="true" />}
           </div>
         ))}
       </section>
 
       <section className="st-body">
-        <article className="st-reply">
-          <header>
-            <img src="/jerome.jpg" alt="" className="st-photo" />
-            <div><b>Jerome Badour</b><span>jerome@jeromebadour.com · Mon 9 Nov, 09:40</span></div>
-          </header>
-          <p>Hi Daniel, thanks for the clear brief.</p>
-          <p>Payments like these are close to what runs in the W3Arena shop: a checkout, a receipt for every purchase, refunds, and an admin page that shows all of it. For your app I'd start by agreeing which provider fits, then build the checkout and receipts as the first step, with refunds and the admin page right after.</p>
-          <p>Could you share what your app is built with and where it runs today? I'll come back with a short plan and a clear quote.</p>
-          <div className="e-pc">
-            <a href="/work/w3arena/shop" className="pc-page"><Glyph name="arrow" size={12} />Shop</a>
-            <a href="/work/w3arena/console" className="pc-page"><Glyph name="arrow" size={12} />Admin console</a>
-          </div>
-        </article>
+        {m.reply ? (
+          <article className="st-reply">
+            <header>
+              <img src="/jerome.jpg" alt="" className="st-photo" />
+              <div><b>Jerome Badour</b><span>jerome@jeromebadour.com · {nowLabel(m.replied_at!)}</span></div>
+            </header>
+            {m.reply.split(/\n{2,}/).map((p, i) => <p key={i}>{p}</p>)}
+            {pagesIn(m.reply).length > 0 && (
+              <div className="e-pc">
+                {pagesIn(m.reply).map((x) => <a key={x.href} href={x.href} className="pc-page"><Glyph name="arrow" size={12} />{x.title}</a>)}
+              </div>
+            )}
+          </article>
+        ) : (
+          <article className="st-reply st-wait">
+            <header>
+              <img src="/jerome.jpg" alt="" className="st-photo" />
+              <div><b>Jerome Badour</b><span>{m.read_at ? "Read, answer on its way" : "Not read yet"}</span></div>
+            </header>
+            <p>Thanks, {first}. My answer will show here and come to {m.email}.</p>
+          </article>
+        )}
 
         <aside className="st-brief">
           <div className="h-k t-sage"><span className="e-tile"><Glyph name="release" size={15} /></span>Your brief</div>
           <ul className="a-list">
-            <li><b>What you need</b><span>Payments for my web app: a checkout, a receipt for every purchase, refunds, and an admin page to see and manage all of it.</span></li>
-            <li><b>Built with</b><span>Not sure yet</span></li>
-            <li><b>How soon</b><span>This month</span></li>
-            <li><b>From</b><span>Daniel Moreau · daniel@example.com</span></li>
+            <li><b>What you need</b><span>{m.brief}</span></li>
+            <li><b>Built with</b><span>{m.built_with.length ? m.built_with.join(", ") : "Not said"}</span></li>
+            <li><b>How soon</b><span>{SOON[m.how_soon]}</span></li>
+            <li><b>From</b><span>{m.name} · {m.email}</span></li>
           </ul>
           <p className="st-note"><Glyph name="mail" size={13} />Answering the email reaches me directly.</p>
         </aside>

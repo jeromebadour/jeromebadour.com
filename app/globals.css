@@ -876,3 +876,24 @@ button.e-btn.e-ghost { background: none; }
 .c-pager a { color: var(--ink); }
 .c-pager .newer svg { transform: rotate(180deg); }
 .c-pager .off { opacity: .45; }
+
+/* /message: what the server says about a field, and the calm notes (paused, limit reached) */
+.m-err { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--t-red); }
+.m-err-form, .m-paused { padding: 10px 12px; border-radius: 8px; font-size: 13.5px; color: var(--t-blue); background: color-mix(in srgb, var(--t-blue) 10%, transparent); }
+.m-paused { display: flex; align-items: center; gap: 8px; }
+.m-form button[type=submit]:disabled { opacity: .7; cursor: default; }
+.m-field [aria-invalid=true] { border-color: color-mix(in srgb, var(--t-red) 60%, transparent); }
+/* /m/<token>: steps not reached yet, and the card before the reply */
+.st-step:not(.done) b { color: var(--muted); }
+.st-step:not(.done) .a-dot { opacity: .55; }
+.st-line.wait { background: repeating-linear-gradient(90deg, var(--rule-strong) 0 6px, transparent 6px 11px); }
+.st-wait p { color: var(--muted); }
+/* Console: the message dialog */
+.c-who { color: inherit; }
+a.c-who:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.c-dlg header .c-tag { margin-left: 4px; }
+.c-facts { margin: 0; }
+.c-pre { white-space: pre-wrap; }
+.c-reply, .c-replied { display: flex; flex-direction: column; gap: 12px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.c-replied p { font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+.c-reply footer, .c-replied footer { display: flex; justify-content: flex-end; gap: 10px; }
