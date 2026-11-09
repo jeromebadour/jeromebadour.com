@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Brand, brandColour, Glyph } from "./Glyph";
-import type { Tech } from "./W3Page";
+import type { Tech } from "@/lib/tech";
 import type { ToolPlace } from "./W3Part";
 
 // A tool in the home toolbox. Used on one page: a link to it. Used on several: a short list of those pages.

@@ -1,4 +1,5 @@
 import { LegalDoc, type LegalSection } from "./LegalDoc";
+import { APPS } from "@/lib/apps";
 
 const RETENTION = "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention";
 const mail = <a href="mailto:privacy@jeromebadour.com">privacy@jeromebadour.com</a>;
@@ -11,9 +12,9 @@ const sections: LegalSection[] = [
       <>This policy covers jeromebadour.com: its pages, <b>Ask</b>, the message form and its status links, and the
         proposal pages under /for/.</>,
       <>The site is run by <b>Jerome Badour, an individual</b>, who decides what is collected and why. Contact: {mail}.</>,
-      <>Apps shown on this site, such as <a href="https://w3arena.pro/privacy">W3Arena</a> and{" "}
-        <a href="https://distill.jeromebadour.com/privacy">Distill</a>, run on their own sites and have their own privacy
-        policies. This policy does not cover them.</>,
+      <>Apps shown on this site, such as {APPS.map((a, i) => (
+        <span key={a.id}>{i > 0 && (i === APPS.length - 1 ? " and " : ", ")}<a href={a.privacy}>{a.name}</a></span>
+      ))}, run on their own sites and have their own privacy policies. This policy does not cover them.</>,
       <>It sits alongside the <a href="/terms">Terms of Use</a>. Where this policy describes your data and the terms
         describe the use of the site, both apply.</>,
     ],

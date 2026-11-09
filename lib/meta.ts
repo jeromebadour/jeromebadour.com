@@ -3,6 +3,7 @@ import { HOW_COUNT } from "@/components/HowPage";
 import { W3A_LINE } from "@/components/W3Page";
 import { proofCard, type PartId } from "@/components/W3Part";
 import { LEGAL_UPDATED } from "@/lib/legal";
+import { appById } from "@/lib/apps";
 
 // Link previews (plan §11): each public page's title and line, and the card shown when its address is shared. Every
 // line is the page's own approved header line, so a preview never says anything the page doesn't.
@@ -31,15 +32,15 @@ const pages: Record<string, Card & { path: string; tab: string }> = {
   terms: { path: "/terms", tab: "Terms of Use", kicker: "Legal", title: "Terms of Use", line: `Last updated ${LEGAL_UPDATED}` },
 };
 
-/** The card for a key: a page above, or a W3Arena part / Distill ("part-<id>"). Null when there's no such card. */
+/** The card for a key: a page above, a W3Arena part, or an app's own page ("part-<id>"). Null when there's none. */
 export function cardFor(key: string): Card | null {
   if (pages[key]) return pages[key];
   if (key.startsWith("part-")) {
     const c = proofCard(key.slice(5));
     if (!c) return null;
-    // The address next to the part's title on its page: its own app's, or w3arena.pro.
-    const host = c.app === "W3Arena" ? "w3arena.pro" : c.app;
-    return { kicker: c.id === "distill" ? "Case study · Distill" : `W3Arena · ${host}`, title: c.title, line: c.line };
+    // An app's own page is a case study; a W3Arena part shows the address next to its title on its page.
+    const app = appById(c.id);
+    return { kicker: app ? `Case study · ${app.name}` : `W3Arena · ${c.app === "W3Arena" ? "w3arena.pro" : c.app}`, title: c.title, line: c.line };
   }
   return null;
 }
@@ -60,7 +61,7 @@ export function pageMeta(key: keyof typeof pages): Metadata {
   return meta(p.tab, p.path, key, p);
 }
 
-/** A W3Arena part's (or Distill's) page: its own title and line. */
+/** A W3Arena part's or an app's own page: its own title and line. */
 export function partMeta(id: PartId, path: string): Metadata {
   const c = cardFor(`part-${id}`)!;
   return meta(c.title, path, `part-${id}`, c);

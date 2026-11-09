@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { q, tx } from "./db";
 import { giveBack, takeUse } from "./limits";
 import { isPaused } from "./messages";
-import { PAGES, proofFor, siteKnowledge, type Proof } from "./knowledge";
+import { OUTSIDE, PAGES, proofFor, siteKnowledge, type Proof } from "./knowledge";
 import { ZONE } from "@/lib/time";
 
 // Ask about my work (plan §6). Answers come only from the site's own pages; each point carries proofs by id, ids the
@@ -37,7 +37,7 @@ Answer in this exact form, one JSON object per line and nothing else:
 {"brief": "<one or two sentences, in the visitor's own voice, saying what they need, for a message they may send>"}
 
 Rules:
-- Every point names the pages that prove it, by the page id given in its <page id="..."> tag (such as /work/w3arena/shop). You may also use these outside proofs: changelog, w3arena-live, distill-live, distill-demo, distill-code, distill-tests.
+- Every point names the pages that prove it, by the page id given in its <page id="..."> tag (such as /work/w3arena/shop). You may also use these outside proofs: ${Object.keys(OUTSIDE).join(", ")}.
 - Plain, warm, direct English, written as Jerome ("I"). No marketing words. No prices, rates or quotes, ever.
 - Never answer "no" or "only these two apps". When the site shows no project of exactly that kind, say what Jerome would build for it and point to the closest real proof (for example the shop for payments, the admin console for roles and permissions).
 - Every count that can grow keeps its "+" as the site writes it.

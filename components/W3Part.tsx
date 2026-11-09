@@ -1,19 +1,15 @@
 import { EFooter, EHeader, ETabbar } from "./Shell";
 import { Brand, brandColour, Glyph, type GlyphName } from "./Glyph";
-import { B, G, stack, type Tech } from "./W3Page";
+import { stack } from "./W3Page";
+import { B, G, type Tech } from "@/lib/tech";
 import { ScreenViewer, type Shot } from "./ScreenViewer";
 import { out, page, proofHref, w3aPart } from "@/lib/links";
+import { APPS, STUDY_APPS, type CaseStudy } from "@/lib/apps";
 
-type Part = {
-  title: string; g: GlyphName; tone: string; line: string;
-  need: string; built: string; result: string;
-  stats: { v: string; l: string; g: GlyphName; tone: string }[];
-  screens: Shot[];
-  gives: { g: GlyphName; t: string }[];
-  tech: Tech[];
-  proofs: { kind: "live" | "release" | "demo" | "code"; label: string }[];
+// A W3Arena part, or an app's own page (lib/apps.ts): the case study plus its neighbours. An app also has its own
+// crumb, mark, address and buttons.
+type Part = CaseStudy & {
   prev: string; next: string;
-  // An app of its own (Distill), not a W3Arena part: its own crumb, mark, address and links.
   app?: { host: string; mark: string; links: { g: GlyphName; label: string; href: string; primary?: boolean }[] };
 };
 
@@ -277,46 +273,22 @@ const standby: Part = {
   prev: "AI translation", next: "W3Arena",
 };
 
-const distill: Part = {
-  title: "Distill", g: "ai", tone: "blue",
-  line: "AI summaries you can check: every point links to the sentences it came from, and every number is checked by code.",
-  need: "AI summaries read well even when a number is wrong, so the reader still has to check everything.",
-  built: "A web app on Anthropic's Claude API where every point links to the sentences it came from and every number is checked by code. Accounts, a saved library, phone layouts, dark and light themes, plus an owner's console with roles, an audit log, spend caps and live server health.",
-  result: "Live at distill.jeromebadour.com with a public admin demo, code on GitHub, tests on every push and backups restored every week.",
-  stats: [
-    { v: "Every point", l: "linked to the sentences it came from", g: "search", tone: "blue" },
-    { v: "Every push", l: "runs the tests before it ships", g: "tested", tone: "green" },
-    { v: "Weekly", l: "backups restored to prove they work", g: "shield", tone: "violet" },
-  ],
-  screens: [
-    { src: "/p/distill/summary.jpg", thumb: "/p/distill/summary-t.jpg", cap: "Traced summary", g: "search", fit: "contain" },
-    { src: "/p/distill/column.jpg", thumb: "/p/distill/column-t.jpg", cap: "Column view", g: "grid", fit: "contain" },
-    { src: "/p/distill/library.jpg", thumb: "/p/distill/library-t.jpg", cap: "Saved library", g: "release", fit: "contain" },
-    { src: "/p/distill/phone.jpg", thumb: "/p/distill/phone-t.jpg", cap: "On a phone", g: "app", fit: "contain" },
-    { src: "/p/distill/admin.jpg", thumb: "/p/distill/admin-t.jpg", cap: "Admin overview", g: "console", fit: "contain" },
-    { src: "/p/distill/server.jpg", thumb: "/p/distill/server-t.jpg", cap: "Server, backups", g: "server", fit: "contain" },
-    { src: "/p/distill/activity.jpg", thumb: "/p/distill/activity-t.jpg", cap: "Activity", g: "pulse", fit: "contain" },
-  ],
-  gives: [
-    { g: "search", t: "AI output a reader can check, every point linked to its source" },
-    { g: "tested", t: "Numbers verified by code, not taken on trust from the model" },
-    { g: "console", t: "An owner's console: roles, audit log, spend caps, server health" },
-    { g: "shield", t: "Built to run: tests on every push, backups restored every week" },
-  ],
-  tech: [B("TypeScript", "ts"), B("React", "react"), B("Next.js", "next"), B("PostgreSQL", "postgres"), G("PL/pgSQL", "code"), G("Row-level security", "shield"), B("Python", "python"), B("Docker", "docker"), B("Claude API", "claude")],
-  proofs: [{ kind: "live", label: "distill.jeromebadour.com" }, { kind: "demo", label: "Admin demo" }, { kind: "code", label: "GitHub" }],
-  prev: "W3Arena", next: "",
-  app: { host: "distill.jeromebadour.com", mark: "/distill-mark.svg", links: [{ g: "live", label: "Open Distill", href: out.distill, primary: true }, { g: "demo", label: "Admin demo", href: out.distillDemo }, { g: "code", label: "Code", href: out.distillCode }] },
-};
 
-const parts = { website, forum, desktop, shop, console: console_, servers, ai, standby, distill };
-export type PartId = keyof typeof parts;
+const w3aParts = { website, forum, desktop, shop, console: console_, servers, ai, standby };
+// Every app with a page of its own, after W3Arena's parts; "Also live" links go to the apps before and after it.
+const appParts: Record<string, Part> = Object.fromEntries(STUDY_APPS.map((a) => {
+  const i = APPS.indexOf(a);
+  return [a.id, { ...a.study, prev: APPS[i - 1]?.name ?? "", next: APPS[i + 1]?.name ?? "", app: { host: a.host, mark: a.mark, links: a.links } }];
+}));
+const parts: Record<string, Part> = { ...w3aParts, ...appParts };
+export type PartId = string;
 
 // Where a tool is used: read from each page's own Built with row, so the home toolbox never drifts from the pages.
-const partHref: Record<PartId, string> = { ...w3aPart, distill: page.distill };
+const partHref: Record<PartId, string> = { ...w3aPart, ...Object.fromEntries(STUDY_APPS.map((a) => [a.id, a.page])) };
 // Prev and next name a part by its title, or W3Arena for the overview.
 function partHrefByTitle(title: string): string {
-  if (title === "W3Arena") return page.w3arena;
+  const app = APPS.find((a) => a.name === title);
+  if (app) return app.page;
   const id = (Object.keys(parts) as PartId[]).find((k) => parts[k].title === title);
   if (!id) throw new Error(`No part titled "${title}"`);
   return partHref[id];
@@ -399,7 +371,7 @@ export function W3Part({ id = "website" }: { id?: PartId }) {
 
       <nav className="p-next">
         <a href={partHrefByTitle(p.prev)}><Glyph name="arrow" size={14} /><span><small>{p.app ? "Also live" : p.prev === "W3Arena" ? "Back to" : "Previous part"}</small><b>{p.prev}</b></span></a>
-        {p.next && <a href={partHrefByTitle(p.next)} className="r"><span><small>{p.next === "W3Arena" ? "Back to" : "Next part"}</small><b>{p.next}</b></span><Glyph name="arrow" size={14} /></a>}
+        {p.next && <a href={partHrefByTitle(p.next)} className="r"><span><small>{p.app ? "Also live" : p.next === "W3Arena" ? "Back to" : "Next part"}</small><b>{p.next}</b></span><Glyph name="arrow" size={14} /></a>}
       </nav>
 
       <EFooter />

@@ -33,9 +33,8 @@ const stats: { g: GlyphName; tone: string; v: string; l: string }[] = [
   { g: "release", tone: "blue", v: "15+", l: "public releases since August" },
 ];
 
-export type Tech = { name: string; brand?: BrandName; g?: GlyphName };
-export const B = (name: string, brand: BrandName): Tech => ({ name, brand });
-export const G = (name: string, g: GlyphName): Tech => ({ name, g });
+import { B, G, type Tech } from "@/lib/tech";
+export { B, G, type Tech };
 export const stack: { part: string; g: GlyphName; tone: string; tech: Tech[]; note: string }[] = [
   { part: "Website, forum, console", g: "web", tone: "sage", tech: [B("Node.js","node"), B("JavaScript","js"), B("Socket.IO","socketio"), B("HTML","html"), B("CSS","css"), G("SQL","grid"), B("Shell","bash")], note: "Live updates sent as changes only" },
   { part: "Windows app", g: "desktop", tone: "red", tech: [B("Electron","electron"), B("JavaScript","js"), B("C","c"), B("HTML","html"), B("CSS","css"), B("NSIS","nsis")], note: "Signed auto-update, strict content-security policy, Windows 7 to 11, 6+ languages" },

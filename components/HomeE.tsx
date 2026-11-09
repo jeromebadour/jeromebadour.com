@@ -1,32 +1,14 @@
 import { Brand, brandColour, Glyph, type GlyphName } from "./Glyph";
 import { EFooter, EHeader, ESocials, ETabbar } from "./Shell";
 import { out, page, w3aPart } from "@/lib/links";
-import { B, G, type Tech } from "./W3Page";
+import { APPS, type AppId } from "@/lib/apps";
+import { B, G, type Tech } from "@/lib/tech";
 import { usedIn } from "./W3Part";
 import { ToolChip } from "./ToolChip";
 
 
-const W3Mark = () => <img src="/w3a-round-48.png" alt="" className="e-w3a" />;
-const DistillMark = () => <img src="/distill-mark.svg" alt="" className="e-dm" />;
 
 
-type Part = { g: GlyphName; tone: string; title: string; sub: string; href: string };
-const w3aParts: Part[] = [
-  { g: "web", tone: "sage", title: "Website", sub: "Public pages, live stats", href: w3aPart.website },
-  { g: "forum", tone: "blue", title: "Forum", sub: "Community, reports, moderation", href: w3aPart.forum },
-  { g: "desktop", tone: "red", title: "Windows app", sub: "Chat, voice, matchmaking", href: w3aPart.desktop },
-  { g: "shop", tone: "amber", title: "Shop", sub: "Payments, wallet, receipts", href: w3aPart.shop },
-  { g: "console", tone: "violet", title: "Admin console", sub: "Roles, permissions, audit log", href: w3aPart.console },
-  { g: "server", tone: "green", title: "Servers", sub: "80+ servers in 6+ regions", href: w3aPart.servers },
-];
-const distillParts: Part[] = [
-  { g: "about", tone: "blue", title: "Accounts", sub: "Sign-in, saved library", href: page.distill },
-  { g: "ai", tone: "violet", title: "AI summaries", sub: "Every point linked to its source", href: page.distill },
-  { g: "how", tone: "sage", title: "Checked figures", sub: "Every number checked by code", href: page.distill },
-  { g: "console", tone: "amber", title: "Owner console", sub: "Roles, spend caps, audit log", href: out.distillDemo },
-  { g: "code", tone: "green", title: "Tests", sub: "Run on every push", href: out.distillTests },
-  { g: "server", tone: "red", title: "Backups", sub: "Restored every week", href: page.distill },
-];
 const allShots: { img: string; g: GlyphName; tone: string; label: string; pos?: string; href: string }[] = [
   { img: "/p/dash-games.jpg", g: "console", tone: "violet", label: "Admin dashboard", href: w3aPart.console, pos: "0 0" },
   { img: "/p/2-checked-summaries.jpg", g: "ai", tone: "blue", label: "AI you can check", href: page.distill },
@@ -61,8 +43,9 @@ const toolbox: { part: string; g: GlyphName; tone: string; tech: Tech[]; note: s
 ];
 const toolCount = new Set(toolbox.flatMap((r) => r.tech.map((t) => t.name))).size;
 
-export function HomeE({ tab = "all" }: { tab?: "all" | "w3a" | "distill" }) {
-  const parts = tab === "distill" ? distillParts : w3aParts;
+/** tab: "all" (Highlights) or an app's tab (lib/apps.ts). */
+export function HomeE({ tab = "all" }: { tab?: string }) {
+  const app = APPS.find((a) => a.tab === tab);
   return (
     <div className="page" data-v="e">
       <EHeader on="apps" />
@@ -98,10 +81,14 @@ export function HomeE({ tab = "all" }: { tab?: "all" | "w3a" | "distill" }) {
         <div className="e-board">
           <div className="e-tabs">
             <a className={`e-tab t-sage${tab === "all" ? " on" : ""}`} href={page.home}><Glyph name="ai" size={15} />Highlights</a>
-            <a className={`e-tab t-red${tab === "w3a" ? " on" : ""}`} href="/?tab=w3a"><W3Mark /><span className="e-tab-n">W3Arena<span className="e-dom">w3arena.pro</span></span></a>
-            <a className={`e-tab t-blue${tab === "distill" ? " on" : ""}`} href="/?tab=distill"><DistillMark />Distill<span className="e-tab-k">Web app</span></a>
+            {APPS.map((a) => (
+              <a key={a.id} className={`e-tab t-${a.tone}${tab === a.tab ? " on" : ""}`} href={`/?tab=${a.tab}`}>
+                <img src={a.mark} alt="" className={a.markClass} />
+                {"dom" in a.tabNote ? <span className="e-tab-n">{a.name}<span className="e-dom">{a.tabNote.dom}</span></span> : <>{a.name}<span className="e-tab-k">{a.tabNote.kind}</span></>}
+              </a>
+            ))}
           </div>
-          {tab === "all" ? (
+          {!app ? (
             <div className="e-mosaic">
               {allShots.map((m) => (
                 <a key={m.label} className={`e-shot t-${m.tone}`} href={m.href}>
@@ -113,11 +100,11 @@ export function HomeE({ tab = "all" }: { tab?: "all" | "w3a" | "distill" }) {
           ) : (
             <div className="e-board-body">
               <div className="e-win">
-                <div className="e-win-bar"><span className="dot" />{tab === "distill" ? "distill.jeromebadour.com" : "w3arena.pro"}<Glyph name="live" size={13} /></div>
-                <img src={tab === "distill" ? "/p/2-checked-summaries.jpg" : "/p/1-website-home.jpg"} alt="" />
+                <div className="e-win-bar"><span className="dot" />{app.host}<Glyph name="live" size={13} /></div>
+                <img src={app.board.shot} alt="" />
               </div>
               <div className="e-parts">
-                {parts.map((p) => (
+                {app.board.parts.map((p) => (
                   <a key={p.title} className={`e-part t-${p.tone}`} href={p.href}>
                     <span className="e-tile"><Glyph name={p.g} size={16} /></span>
                     <span><b>{p.title}</b><small>{p.sub}</small></span>
@@ -126,15 +113,15 @@ export function HomeE({ tab = "all" }: { tab?: "all" | "w3a" | "distill" }) {
               </div>
             </div>
           )}
-          {tab === "distill" ? (
-            <a className="e-board-foot" href={out.distillCode}>
-              <Brand name="github" size={14} />Code on GitHub<span>tests run on every push</span><Glyph name="arrow" size={14} />
-            </a>
-          ) : (
-            <a className="e-board-foot" href={out.w3aChangelog}>
-              <Glyph name="release" size={14} />Release W3Arena 5.1.5<span>6 Nov 2026 · 6 changes</span><Glyph name="arrow" size={14} />
-            </a>
-          )}
+          {(() => {
+            // Highlights shows the first app's footer link; an app's tab shows its own.
+            const f = (app ?? APPS[0]).board.foot;
+            return (
+              <a className="e-board-foot" href={f.href}>
+                {f.brand ? <Brand name={f.brand} size={14} /> : <Glyph name={f.g!} size={14} />}{f.label}<span>{f.sub}</span><Glyph name="arrow" size={14} />
+              </a>
+            );
+          })()}
         </div>
       </section>
 

@@ -1,7 +1,7 @@
 import { EFooter, EHeader, ETabbar } from "./Shell";
 import { Glyph, type GlyphName } from "./Glyph";
 import { AutoRefresh } from "./AutoRefresh";
-import { pagesIn } from "@/lib/links";
+import { pagesIn } from "@/lib/pages";
 import { nowLabel } from "@/lib/time";
 import type { Status } from "@/lib/server/messages";
 

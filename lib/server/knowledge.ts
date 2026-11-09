@@ -1,20 +1,16 @@
 import "server-only";
-import { out, page, pageTitles, w3aPart } from "@/lib/links";
+import { page, w3aPart } from "@/lib/links";
+import { pageTitles } from "@/lib/pages";
+import { OUTSIDE_PROOFS, STUDY_APPS } from "@/lib/apps";
 
 // What Ask knows: the text of the site's own public pages, read from this same server the first time it's needed
 // and kept in memory, so answers always come from exactly what visitors can read. Header, footer and the phone tab bar
 // are left out. Every page is a proof by its address; a few outside proofs have ids of their own.
 
-export const PAGES: string[] = [page.home, page.w3arena, ...Object.values(w3aPart), page.distill, page.services, page.how, page.about];
+export const PAGES: string[] = [page.home, page.w3arena, ...Object.values(w3aPart), ...STUDY_APPS.map((a) => a.page), page.services, page.how, page.about];
 
-export const OUTSIDE: Record<string, { label: string; href: string; kind: "release" | "demo" | "code" | "live" }> = {
-  changelog: { label: "Changelog", href: out.w3aChangelog, kind: "release" },
-  "w3arena-live": { label: "w3arena.pro", href: out.w3arena, kind: "live" },
-  "distill-live": { label: "distill.jeromebadour.com", href: out.distill, kind: "live" },
-  "distill-demo": { label: "Admin demo", href: out.distillDemo, kind: "demo" },
-  "distill-code": { label: "Code", href: out.distillCode, kind: "code" },
-  "distill-tests": { label: "Distill tests", href: out.distillTests, kind: "code" },
-};
+// Proofs outside this site, from every app (lib/apps.ts).
+export const OUTSIDE = OUTSIDE_PROOFS;
 
 export type Proof = { id: string; label: string; href: string; kind: "page" | "release" | "demo" | "code" | "live" };
 

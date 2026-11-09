@@ -1,17 +1,15 @@
 import { Brand, Glyph } from "./Glyph";
 import { out, page } from "@/lib/links";
+import { APPS } from "@/lib/apps";
 import { SocialChips } from "./Socials";
 
 // The header, footer and phone tab bar every page shares, the home page included.
 export type NavKey = "apps" | "services" | "how" | "about" | "ask" | "message" | "none";
 
-const W3Mark = () => <img src="/w3a-round-48.png" alt="" className="e-w3a" />;
-const DistillMark = () => <img src="/distill-mark.svg" alt="" className="e-dm" />;
-
+// Every app (lib/apps.ts), then what I build.
 const appsMenu = [
-  { mark: <W3Mark />, title: "W3Arena", dom: "w3arena.pro", sub: "Gaming and community platform: website, forum, Windows app, shop, console", tone: "red", href: page.w3arena },
-  { mark: <DistillMark />, title: "Distill", sub: "AI summaries traced to their source", tone: "blue", href: page.distill },
-  { mark: <Glyph name="services" size={17} />, title: "What I build", sub: "Websites, web apps, desktop apps, AI, servers", tone: "sage", href: page.services },
+  ...APPS.map((a) => ({ mark: <img src={a.mark} alt="" className={a.markClass} />, title: a.name, dom: a.menu.dom, sub: a.menu.sub, tone: a.tone, href: a.page })),
+  { mark: <Glyph name="services" size={17} />, title: "What I build", dom: undefined, sub: "Websites, web apps, desktop apps, AI, servers", tone: "sage", href: page.services },
 ];
 
 export function EHeader({ on = "apps", upwork = false }: { on?: NavKey; upwork?: boolean }) {

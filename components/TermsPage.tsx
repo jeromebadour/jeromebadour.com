@@ -1,4 +1,5 @@
 import { LegalDoc, type LegalSection } from "./LegalDoc";
+import { appNames } from "@/lib/apps";
 
 const mail = <a href="mailto:jerome@jeromebadour.com">jerome@jeromebadour.com</a>;
 
@@ -68,7 +69,7 @@ const sections: LegalSection[] = [
     clauses: [
       <>The site&apos;s text, design and code belong to Jerome Badour. <b>All rights reserved.</b> The code is public
         to read, not to reuse.</>,
-      <>W3Arena and Distill, their names, logos and screens, are shown as examples of my own work.</>,
+      <>{appNames()}, their names, logos and screens, are shown as examples of my own work.</>,
       <>Other names and logos on the site, such as Upwork, GitHub and Discord or the tools in &quot;Built with&quot;,
         belong to their owners.</>,
       <>Linking to any page on the site is welcome.</>,
