@@ -2,6 +2,18 @@ import { Brand, Glyph } from "./Glyph";
 import { out, page } from "@/lib/links";
 import { APPS } from "@/lib/apps";
 import { SocialChips } from "./Socials";
+import { LocalTime } from "./LocalTime";
+
+// The Night shift mark: JB inside a status ring with one live segment.
+export function NMark({ size = 36 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 38 38" aria-hidden="true" className="n-mark">
+      <circle cx="19" cy="19" r="16" fill="none" stroke="var(--rule-strong)" strokeWidth="3" />
+      <path d="M19 3a16 16 0 0 1 15.2 11" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
+      <text x="19" y="23.6" textAnchor="middle" fontFamily="Archivo" fontWeight="900" fontSize="12.5" fill="var(--ink)">JB</text>
+    </svg>
+  );
+}
 
 // The header, footer and phone tab bar every page shares, the home page included.
 export type NavKey = "apps" | "services" | "how" | "about" | "ask" | "message" | "none";
@@ -15,7 +27,7 @@ const appsMenu = [
 export function EHeader({ on = "apps", upwork = false }: { on?: NavKey; upwork?: boolean }) {
   return (
   <header className="e-hdr">
-    <a className="e-brand" href={page.home}><span className="e-mono">JB</span>Jerome Badour</a>
+    <a className="e-brand" href={page.home}><NMark /><span className="n-wm">Jerome Badour</span></a>
     <nav className="e-nav">
       <div className="e-dd">
         <a className={`e-nl${on === "apps" ? " on" : ""} t-green`} href={page.home} aria-haspopup="true"><span className="e-nt"><span className="dot" /></span>Apps<Glyph name="chevron" size={13} /></a>
@@ -35,6 +47,7 @@ export function EHeader({ on = "apps", upwork = false }: { on?: NavKey; upwork?:
       {!upwork && <a className={`e-nl${on === "ask" ? " on" : ""} t-sage off-up`} href={page.ask}><span className="e-nt"><Glyph name="ask" size={14} /></span>Ask<span className="e-live">Live</span></a>}
     </nav>
     <div className="e-hdr-r">
+      <span className="n-status"><span className="dot" /><span className="n-live">{APPS.length} products live · </span><LocalTime prefix="local time " /></span>
       {!upwork && <a className={`e-btn e-ghost off-up${on === "message" ? " on" : ""}`} href={page.message}><Glyph name="message" size={15} />Message</a>}
       {upwork
         ? <a className="e-btn e-hire" href={out.upwork}><Brand name="upwork" size={15} />Reply<span className="e-long">on Upwork</span></a>
@@ -52,7 +65,7 @@ export function EFooter({ upwork = false }: { upwork?: boolean }) {
   return (
   <footer className="e-foot">
     <div className="e-foot-l">
-      <a className="e-brand" href={page.home}><span className="e-mono">JB</span>Jerome Badour</a>
+      <a className="e-brand" href={page.home}><NMark size={30} /><span className="n-wm">Jerome Badour</span></a>
       {!upwork && <a className="e-foot-mail off-up" href={out.mail}><Glyph name="mail" size={15} />jerome@jeromebadour.com</a>}
       <span className="e-foot-up on-up"><Brand name="upwork" size={14} />Our conversation stays on Upwork.</span>
     </div>
