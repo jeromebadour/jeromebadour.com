@@ -1,10 +1,11 @@
 import { Brand, brandColour, Glyph, type GlyphName } from "./Glyph";
-import { EFooter, EHeader, ESocials, ETabbar } from "./Shell";
+import { EFooter, EHeader, ETabbar } from "./Shell";
 import { out, page, w3aPart } from "@/lib/links";
 import { APPS, type AppId } from "@/lib/apps";
 import { B, G, type Tech } from "@/lib/tech";
 import { usedIn } from "./W3Part";
 import { ToolChip } from "./ToolChip";
+import { AwakeBand, PersonCard, ServiceBoard, SignalArt } from "./NightHome";
 
 
 
@@ -24,10 +25,10 @@ const builds: { g: GlyphName; tone: string; title: string; sub: string; img: str
   { g: "server", tone: "green", title: "Servers", sub: "Releases that disconnect nobody, backups that are tested", img: "/p/6-reliability.jpg", pos: "50% 40%", href: w3aPart.servers },
 ];
 
-const stats: { g: GlyphName; tone: string; v: string; l: string }[] = [
-  { g: "server", tone: "green", v: "80+ servers", l: "in 6+ regions" },
-  { g: "pulse", tone: "amber", v: "17,000+", l: "games hosted" },
-  { g: "how", tone: "sage", v: "Tested", l: "before every release" },
+const stats: { tone: string; v: string; l: string }[] = [
+  { tone: "blue", v: "80+", l: "servers in 6+ regions" },
+  { tone: "amber", v: "17,000+", l: "games hosted" },
+  { tone: "green", v: "0", l: "players disconnected by a release" },
 ];
 
 
@@ -50,34 +51,29 @@ export function HomeE({ tab = "all" }: { tab?: string }) {
     <div className="page" data-v="e">
       <EHeader on="apps" />
 
-      <section className="e-hero">
-        <div className="e-left">
-          <div className="e-id">
-            <img src="/jerome.jpg" alt="Jerome Badour" className="e-photo" />
-            <div>
-              <span className="e-role">Full-stack developer: web, desktop, AI and servers</span>
-              <div className="e-soc">
-                <ESocials />
-              </div>
-            </div>
-          </div>
+      <section className="n-stage">
+        <SignalArt />
+        <div className="n-stage-l">
+          <PersonCard />
           <h1>I build live products <span>and keep them running.</span></h1>
           <p className="e-line">Websites, web apps, Windows desktop apps, AI features and the servers behind them, from a quick bug fix to a full platform.</p>
           <form className="e-ask" action={page.ask} method="get">
-            <Glyph name="ask" size={17} />
+            <span className="n-prompt" aria-hidden="true">›</span>
             <input name="q" maxLength={500} required placeholder="Have you built a payment system?" aria-label="Ask about my work" />
-            <button type="submit" className="e-btn e-askb"><Glyph name="arrow" size={15} />Ask</button>
+            <button type="submit" className="e-btn e-askb"><Glyph name="ask" size={15} />Ask</button>
           </form>
-          <div className="e-stats">
+          <div className="n-stats">
             {stats.map((s) => (
-              <div key={s.l} className={`e-stat t-${s.tone}`}>
-                <span className="e-tile"><Glyph name={s.g} size={17} /></span>
-                <span><b>{s.v}</b><small>{s.l}</small></span>
-              </div>
+              <div key={s.l} className={`n-stat t-${s.tone}`}><b>{s.v}</b><small>{s.l}</small></div>
             ))}
           </div>
         </div>
+        <div className="n-stage-r"><ServiceBoard /></div>
+      </section>
+      <AwakeBand />
 
+      <section className="n-apps">
+        <div className="e-k"><Glyph name="screen" size={13} />The apps, screen by screen</div>
         <div className="e-board">
           <div className="e-tabs">
             <a className={`e-tab t-sage${tab === "all" ? " on" : ""}`} href={page.home}><Glyph name="ai" size={15} />Highlights</a>
