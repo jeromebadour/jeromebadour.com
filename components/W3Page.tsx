@@ -1,6 +1,14 @@
 import { EFooter, EHeader, ETabbar } from "./Shell";
 import { out, page } from "@/lib/links";
 import { Brand, brandColour, Glyph, type BrandName, type GlyphName } from "./Glyph";
+import { ScreenViewer, type Shot } from "./ScreenViewer";
+
+// The platform live at peak hours: the Windows app's main screen, as it was. Its counts are the caption's.
+const live: Shot = { src: "/p/w3a-live.jpg", thumb: "/p/w3a-live-t.jpg", cap: "The Windows app at peak hours", g: "desktop", fit: "contain" };
+export const W3A_LINE = "A platform people use every day: players from South America to Asia meet, talk and play on it, with 180+ online at once at peak hours. I built every part and run it on my own.";
+// The registered count is left to the stats above (9,400+): the picture is from a day with fewer, and two different
+// registered counts an inch apart would read as a mistake.
+export const W3A_LIVE = "180+ players online at once and 7+ matches running.";
 
 
 type Node = { id: string; g: GlyphName; tone: string; title: string; sub: string; x: number; y: number };
@@ -59,7 +67,7 @@ export function W3Page() {
           <img src="/w3a-round-48.png" alt="" className="w-logo" />
           <div>
             <h1>W3Arena <span className="e-dom">w3arena.pro</span></h1>
-            <p className="e-line">An online gaming and community platform I built end to end and run on my own: a website and forum, a Windows app, a shop, an admin console and a fleet of game servers.</p>
+            <p className="e-line">{W3A_LINE}</p>
           </div>
           <div className="w-links">
             <a className="e-btn e-hire" href={out.w3arena}><Glyph name="live" size={15} />w3arena.pro</a>
@@ -74,6 +82,12 @@ export function W3Page() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="w-live">
+        <div className="e-how-head"><span className="e-k"><Glyph name="live" size={13} />Live at peak hours</span></div>
+        <p className="w-live-cap">{W3A_LIVE}</p>
+        <ScreenViewer shots={[live]} label="W3Arena live" host="W3Arena" frame="app" icon="desktop" />
       </section>
 
       <section className="w-mapsec">

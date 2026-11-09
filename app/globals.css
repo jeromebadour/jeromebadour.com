@@ -243,6 +243,10 @@ html:has([data-v="e"]), body:has([data-v="e"]) { background: #15191c; }
 .w-title .e-line { margin-top: 8px; max-width: 46em; }
 .w-links { display: flex; gap: 10px; }
 .w-stats { display: flex; gap: 12px; margin-top: 22px; }
+.w-live { padding: 20px 56px 34px; border-top: 1px solid var(--rule); }
+.w-live .e-how-head { margin-bottom: 8px; }
+.w-live .e-k svg { color: var(--live); }
+.w-live-cap { margin: 0 0 16px; color: var(--muted); font-size: 15px; }
 .w-mapsec { padding: 20px 56px 40px; border-top: 1px solid var(--rule); }
 .w-map { position: relative; height: 640px; margin-top: 8px; }
 .w-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -264,7 +268,7 @@ html:has([data-v="e"]), body:has([data-v="e"]) { background: #15191c; }
 .w-chain small { display: block; font-size: 12.5px; color: var(--muted); }
 .w-chain li a > svg:last-child { margin-left: auto; color: var(--muted); }
 @media (max-width: 720px) {
-  .w-top { padding: 16px 16px 20px; } .w-mapsec { padding: 16px 16px 28px; }
+  .w-top { padding: 16px 16px 20px; } .w-mapsec { padding: 16px 16px 28px; } .w-live { padding: 16px 16px 24px; }
   .w-title { grid-template-columns: auto 1fr; } .w-links { grid-column: 1 / -1; }
   .w-logo { width: 52px; height: 52px; } .w-title h1 { font-size: 30px; }
   .w-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -402,6 +406,7 @@ html:has([data-v="e"]), body:has([data-v="e"]) { background: #15191c; }
 .sv-body { display: grid; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 1100px) {
   .sv-body { grid-template-columns: minmax(0, 1fr) 236px; }
+  .sv.one .sv-body { grid-template-columns: minmax(0, 1fr); }
   .sv-side { position: relative; border-left: 1px solid var(--rule-strong); }
   .sv-side .sv-strip { position: absolute; inset: 0; flex-direction: column; gap: 2px; padding: 8px; overflow-x: hidden; overflow-y: auto; border-top: 0; }
   .sv-side .sv-strip button { width: 100%; display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: center; gap: 10px; padding: 6px 8px 8px 6px; border-radius: 8px; }

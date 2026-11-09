@@ -31,7 +31,7 @@ def png_size(body):
 
 # 1. Each public page: its own title and line, a card that is a real 1200 x 630 PNG.
 pages = {
-    "/": "Websites, web apps", "/work/w3arena": "An online gaming", "/work/w3arena/shop": "A complete shop",
+    "/": "Websites, web apps", "/work/w3arena": "A platform people use every day", "/work/w3arena/shop": "A complete shop",
     "/work/w3arena/reliability": "A standby kept in sync", "/work/distill": "AI summaries you can check",
     "/services": "From a quick bug fix", "/how-i-work": "things I do on every job", "/about": "I build and run live products",
     "/ask": "Answers come from", "/message": "A short brief", "/privacy": "Last updated", "/terms": "Last updated",

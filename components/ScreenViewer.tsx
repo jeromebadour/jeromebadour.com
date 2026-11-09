@@ -9,6 +9,8 @@ const EVERY_MS = 5000;
 export function ScreenViewer({ shots, label, host, frame = "browser", icon = "desktop" }: {
   shots: Shot[]; label: string; host: string; frame?: "browser" | "app"; icon?: GlyphName;
 }) {
+  // One picture: no strip, counter or arrows, the picture takes the whole width.
+  const one = shots.length === 1;
   const [i, setI] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
   const [hold, setHold] = useState(false);
@@ -76,7 +78,7 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
       <span className="sv-meta">
         {hold && !still && !open && <span className="sv-held"><Glyph name="pause" size={12} />Paused</span>}
         <span className="sv-live"><span className="dot" />Live</span>
-        <span className="sv-n">{String(i + 1).padStart(2, "0")} / {String(shots.length).padStart(2, "0")}</span>
+        {!one && <span className="sv-n">{String(i + 1).padStart(2, "0")} / {String(shots.length).padStart(2, "0")}</span>}
       </span>
     </div>
   );
@@ -104,7 +106,7 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
   );
 
   return (
-    <div className="sv" onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}
+    <div className={one ? "sv one" : "sv"} onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}
       onFocus={() => setHold(true)} onBlur={() => setHold(false)}>
       {chrome}
       <div className="sv-body">
@@ -112,7 +114,7 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
           {stage(false)}
           <span className="sv-zoom"><Glyph name="expand" size={15} /></span>
         </button>
-        <div className="sv-side">{thumbs(strip)}</div>
+        {!one && <div className="sv-side">{thumbs(strip)}</div>}
       </div>
 
       {open && (
@@ -124,10 +126,10 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
             </div>
             <div className="sv-box-stage">
               {stage(true)}
-              <button className="sv-arrow l" onClick={() => go(-1)} aria-label="Previous"><Glyph name="arrow" size={20} /></button>
-              <button className="sv-arrow r" onClick={() => go(1)} aria-label="Next"><Glyph name="arrow" size={20} /></button>
+              {!one && <button className="sv-arrow l" onClick={() => go(-1)} aria-label="Previous"><Glyph name="arrow" size={20} /></button>}
+              {!one && <button className="sv-arrow r" onClick={() => go(1)} aria-label="Next"><Glyph name="arrow" size={20} /></button>}
             </div>
-            {thumbs(boxStrip)}
+            {!one && thumbs(boxStrip)}
           </div>
         </div>
       )}
