@@ -4,7 +4,7 @@
 # suite starts from empty tables. The owner account is set once, as the box would set it.
 set -uo pipefail
 cd "$(dirname "$0")/.."
-suites=${*:-owner messages}
+suites=${*:-owner messages ask}
 export OWNER_EMAIL=${OWNER_EMAIL:-jerome@example.com} OWNER_PASSWORD=${OWNER_PASSWORD:-test-password-123}
 printf '%s\n' "$OWNER_PASSWORD" | OWNER_DATABASE_URL="postgres://$PGUSER:$PGPASSWORD@$PGHOST:${PGPORT:-5432}/$PGDATABASE" \
   node ops/set-owner.mjs || exit 1

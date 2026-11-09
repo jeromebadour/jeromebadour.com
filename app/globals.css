@@ -897,3 +897,14 @@ a.c-who:hover b { text-decoration: underline; text-underline-offset: 3px; }
 .c-reply, .c-replied { display: flex; flex-direction: column; gap: 12px; padding-top: 14px; border-top: 1px solid var(--rule); }
 .c-replied p { font-size: 14.5px; line-height: 1.6; color: var(--ink); }
 .c-reply footer, .c-replied footer { display: flex; justify-content: flex-end; gap: 10px; }
+/* /ask: turns one under another, the stage being worked on, calm notes (refused, paused, limit) */
+.k-turn + .k-turn { margin-top: 26px; }
+.k-now { color: var(--ink); }
+.k-now svg { color: var(--t-amber) !important; animation: k-pulse 1.2s ease-in-out infinite; }
+@keyframes k-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .k-now svg { animation: none; } }
+.k-note { display: flex; align-items: flex-start; gap: 9px; margin-top: 4px; font-size: 14.5px; line-height: 1.55; color: var(--t-blue); }
+.k-note svg { flex: none; margin-top: 3px; }
+.k-chat > .k-note { padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--t-blue) 10%, transparent); margin-bottom: 4px; }
+.k-field textarea:disabled, .k-starters button:disabled { opacity: .55; cursor: default; }
+.k-field button:disabled { opacity: .55; cursor: default; }

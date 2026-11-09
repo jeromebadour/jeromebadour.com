@@ -80,10 +80,10 @@ export function HomeE({ tab = "all" }: { tab?: "all" | "w3a" | "distill" }) {
           </div>
           <h1>I build live products <span>and keep them running.</span></h1>
           <p className="e-line">Websites, web apps, Windows desktop apps, AI features and the servers behind them, from a quick bug fix to a full platform.</p>
-          <form className="e-ask" action="#">
+          <form className="e-ask" action={page.ask} method="get">
             <Glyph name="ask" size={17} />
-            <input placeholder="Have you built a payment system?" aria-label="Ask about my work" />
-            <button type="button" className="e-btn e-askb"><Glyph name="arrow" size={15} />Ask</button>
+            <input name="q" maxLength={500} required placeholder="Have you built a payment system?" aria-label="Ask about my work" />
+            <button type="submit" className="e-btn e-askb"><Glyph name="arrow" size={15} />Ask</button>
           </form>
           <div className="e-stats">
             {stats.map((s) => (
