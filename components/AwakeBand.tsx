@@ -17,10 +17,13 @@ export function AwakeBand() {
     const f = () => { const d = new Date(); setNow(d.getUTCHours() + d.getUTCMinutes() / 60); };
     f(); const id = setInterval(f, 60_000); return () => clearInterval(id);
   }, []);
+  // Night in Istanbul (01:00 to 06:00): the band says so, only when it's true (Kami 2026-11-10).
+  const ist = now === null ? null : (now + 3) % 24;
+  const night = ist !== null && ist >= 1 && ist < 6;
   const hhmm = now === null ? "--:--" : `${String(Math.floor(now)).padStart(2, "0")}:${String(Math.round((now % 1) * 60) % 60).padStart(2, "0")}`;
   return (
     <section className="n-awake" aria-label="Where the players are awake">
-      <div className="n-awake-h"><span>Around the clock · where the players are awake</span><span className="n-ok">now {hhmm} UTC</span></div>
+      <div className="n-awake-h"><span>Around the clock · where the players are awake</span><span className="n-ok">now {hhmm} UTC{night && <span className="n-awake-me">Jerome: also awake.</span>}</span></div>
       <div className="n-awake-rows">
         {REGIONS.map((r) => {
           const a = x(8 - r.off), b = x(23 - r.off);

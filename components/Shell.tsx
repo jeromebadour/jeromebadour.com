@@ -71,6 +71,7 @@ export function EFooter({ upwork = false }: { upwork?: boolean }) {
     </div>
     <div className="e-soc"><ESocials upwork={upwork} /></div>
     <div className="e-foot-r"><a href={page.privacy}><Glyph name="shield" size={14} />Privacy</a><a href={page.terms}><Glyph name="release" size={14} />Terms</a><span>© 2026 Jerome Badour</span></div>
+    <p className="e-foot-one">Built and run by one person. Including this footer.</p>
   </footer>
   );
 }

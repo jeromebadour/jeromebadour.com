@@ -1,5 +1,6 @@
 import { Glyph } from "./Glyph";
-import { ESocials, NMark } from "./Shell";
+import { ESocials } from "./Shell";
+import { SelfRow } from "./SelfRow";
 import { LocalTime } from "./LocalTime";
 import { AwakeBand } from "./AwakeBand";
 import { APPS } from "@/lib/apps";
@@ -92,12 +93,7 @@ export function ServiceBoard() {
           </a>
         );
       })}
-      {/* This site on its own board (Kami 2026-11-10): laid out like the apps' rows, links nowhere, "you're here". */}
-      <div className="n-svc n-self">
-        <span className="n-svc-mark n-self-mark"><NMark size={30} /></span>
-        <span className="n-svc-t"><span><b>This site</b><em>jeromebadour.com</em></span><small>Built and run like the other two</small></span>
-        <span className="n-svc-r"><span className="n-svc-k"><span className="n-ok"><span className="dot" />You&apos;re here</span><span>{RELEASES.site.note}</span></span><Ticks dates={RELEASES.site.dates} /></span>
-      </div>
+      <SelfRow note={RELEASES.site.note} ticks={<Ticks dates={RELEASES.site.dates} />} />
       <a className="n-board-f" href={out.w3aChangelog}><Glyph name="release" size={15} /><b>Latest W3Arena {RELEASES.w3arena.latest}</b><span>8 Nov 2026 · from the public changelog</span><Glyph name="arrow" size={14} /></a>
     </div>
   );

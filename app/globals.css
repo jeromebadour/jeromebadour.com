@@ -1115,6 +1115,13 @@ html:not([data-via="upwork"]) .on-up { display: none !important; }
 /* Home board: every panel is on the page, only the picked one shows (components/BoardTabs.tsx). */
 [data-v="e"] .e-panel:not(.on) { display: none; }
 
-/* Service board: this site's own row (NightHome). Laid out like the apps' rows, but not a link. */
-[data-v="e"] .n-self:hover { background: none; }
+/* Service board: this site's own row (components/SelfRow.tsx). A row like the apps', not a link. */
+[data-v="e"] .n-self { width: 100%; text-align: left; font: inherit; color: inherit; background: none; border: 0; border-top: 1px solid var(--rule); cursor: default; }
+[data-v="e"] .n-self:hover { background: var(--card-2); }
 [data-v="e"] .n-self-mark { display: grid; place-items: center; background: var(--card); border: 1px solid var(--rule-strong); }
+[data-v="e"] .n-self.here .n-ok { color: var(--ink); }
+/* Awake band: "Jerome: also awake." when it's night in Istanbul. Footer: the one-person line. */
+[data-v="e"] .n-awake-me { color: var(--ink); margin-left: 14px; }
+[data-v="e"] .e-foot { flex-wrap: wrap; }
+[data-v="e"] .e-foot-one { flex-basis: 100%; margin: -6px 0 0; text-align: right; color: var(--muted); font-size: 12px; }
+@media (max-width: 720px) { [data-v="e"] .e-foot-one { margin: 0; text-align: left; } }

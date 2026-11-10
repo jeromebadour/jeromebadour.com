@@ -1,7 +1,7 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { q, tx } from "./db";
-import { giveBack, takeUse } from "./limits";
+import { giveBack, LIMITS, takeUse } from "./limits";
 import { isPaused } from "./messages";
 import { OUTSIDE, PAGES, proofFor, siteKnowledge, type Proof } from "./knowledge";
 import { ZONE } from "@/lib/time";
@@ -23,6 +23,7 @@ export type AskEvent =
   | { type: "point"; text: string; proofs: Proof[] }
   | { type: "close"; text: string }
   | { type: "refused"; text: string }
+  | { type: "hello"; text: string }
   | { type: "done"; id: string; points: number }
   | { type: "stopped"; reason: "paused" | "cap" | "limit" | "failed"; text: string };
 
@@ -42,7 +43,12 @@ Rules:
 - Never answer "no" or "only these two apps". When the site shows no project of exactly that kind, say what Jerome would build for it and point to the closest real proof (for example the shop for payments, the admin console for roles and permissions).
 - Every count that can grow keeps its "+" as the site writes it.
 - Don't describe how Jerome uses AI tools in his own work, and don't name any game or game file.
-- If the question isn't about Jerome's work, skills or services (a poem, homework, general help, anything else), answer with exactly one line: {"refuse": "<one polite sentence saying you only answer questions about Jerome's work>"}`;
+- If the question isn't about Jerome's work, skills or services (small talk, a poem, homework, general help, anything else), answer with exactly one line: {"refuse": "<one or two warm, friendly sentences: if they greeted you or made small talk, answer that first like a person would; then say you're here for Jerome and offer one thing they could ask, such as what he has built or whether he could build their project>"}`;
+
+// A plain greeting gets a hello from the site itself: no model call, and it doesn't use up the visitor's questions
+// (Kami 2026-11-10: "Hi" was answered coldly).
+const GREETING = /^(hi+|hello+|hey+|hiya|yo|sup|howdy|greetings|hola|bonjour|salam|salaam|selam|merhaba|marhaba|ahlan|as+alamu? ?alaikum|salam alaikum|good (morning|afternoon|evening|day)|what'?s up|how are you( doing)?|مرحبا|اهلا|أهلا|السلام عليكم|سلام)( there| jerome| bot| claude)?[\s!.,?~]*$/i;
+export const HELLO = "Hi, I'm here for Jerome. Ask me anything about his work: what he's built, how he works, or whether he could build yours.";
 
 function costOf(input: number, output: number): number {
   return input * USD_PER_INPUT + output * USD_PER_OUTPUT;
@@ -82,12 +88,14 @@ const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).trimEnd
 /** Answers one question, sending events as they happen. Never throws: every way out sends one final event. */
 export async function ask(question: string, keys: string[], send: (e: AskEvent) => void, signal?: AbortSignal): Promise<void> {
   const text = question.trim();
+  if (GREETING.test(text)) return send({ type: "hello", text: HELLO });
   if (await isPaused("ask")) return send({ type: "stopped", reason: "paused", text: "Ask is paused for a short while. Every page is still here, and Upwork reaches me." });
   if (await overCap()) return send({ type: "stopped", reason: "cap", text: "Ask has answered all it can for today. Every page is still here, and Upwork reaches me." });
   const use = await tx((db) => takeUse(db, "ask", keys));
   if (!use.ok) {
     const at = use.freeAt.toLocaleTimeString("en-GB", { timeZone: ZONE, hour: "2-digit", minute: "2-digit" });
-    return send({ type: "stopped", reason: "limit", text: `That's the most questions for ${use.window === "hour" ? "this hour" : "today"}. Asking opens again at ${at}, Istanbul time.` });
+    const n = use.window === "hour" ? `${LIMITS.ask.perHour} questions this hour` : `${LIMITS.ask.perDay} questions today`;
+    return send({ type: "stopped", reason: "limit", text: `That's ${n}. Even I take breaks. Asking opens again at ${at}, Istanbul time.` });
   }
   send({ type: "stage", stage: "read" });
 

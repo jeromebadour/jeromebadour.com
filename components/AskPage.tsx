@@ -10,13 +10,14 @@ import { out } from "@/lib/links";
 type Proof = { kind: "live" | "release" | "code" | "demo" | "page"; label: string; href: string };
 type Turn = {
   q: string; live: boolean; read: boolean; found: number; wrote: number;
-  points: { text: string; proofs: Proof[] }[]; close: string; refused: string; stopped: string; id: string;
+  points: { text: string; proofs: Proof[] }[]; close: string; refused: string; hello?: string; stopped: string; id: string;
 };
 type AskEvent =
   | { type: "stage"; stage: "read" | "found" | "wrote"; n?: number }
   | { type: "point"; text: string; proofs: Proof[] }
   | { type: "close"; text: string }
   | { type: "refused"; text: string }
+  | { type: "hello"; text: string }
   | { type: "done"; id: string; points: number }
   | { type: "stopped"; reason: string; text: string };
 
@@ -49,7 +50,7 @@ function Answer({ t }: { t: Turn }) {
     <div className="k-turn">
       <div className="k-q"><span className="k-who"><Glyph name="about" size={14} /></span><p>{t.q}</p></div>
       <div className="k-a">
-        {!t.refused && !(t.stopped && !t.read) && <Stages t={t} />}
+        {!t.refused && !t.hello && !(t.stopped && !t.read) && <Stages t={t} />}
         {t.points.length > 0 && (
           <ol>
             {t.points.map((p, n) => (
@@ -66,6 +67,7 @@ function Answer({ t }: { t: Turn }) {
           </ol>
         )}
         {t.close && <p className="k-close">{t.close}</p>}
+        {t.hello && <p className="k-note k-hello"><Glyph name="ask" size={14} />{t.hello}</p>}
         {t.refused && <p className="k-note"><Glyph name="shield" size={14} />{t.refused}</p>}
         {t.stopped && <p className="k-note"><Glyph name="pause" size={14} />{t.stopped}</p>}
         {!t.live && t.points.length > 0 && t.id && (
@@ -114,6 +116,7 @@ export function AskPage({ first = "", paused = false }: { first?: string; paused
               case "point": return { ...t, points: [...t.points, { text: e.text, proofs: e.proofs }] };
               case "close": return { ...t, close: e.text };
               case "refused": return { ...t, refused: e.text };
+              case "hello": return { ...t, hello: e.text, live: false };
               case "stopped": return { ...t, stopped: e.text, live: false };
               case "done": return { ...t, id: e.id, live: false };
             }

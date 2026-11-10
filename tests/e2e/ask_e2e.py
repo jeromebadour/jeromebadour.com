@@ -60,6 +60,16 @@ with sync_playwright() as p:
     check("a question off topic gets a polite no", "only answer questions about my work" in pg.inner_text(".k-note"))
     check("stored as refused, no points", sql("select points, refused from questions where question like 'Write me%'") == "0|t")
 
+    # 3b. A plain greeting gets a hello from the site: no model call, no use taken, nothing stored.
+    before = (json.dumps(last_request()), sql("select count(*) from limit_hits where kind = 'ask'"), sql("select count(*) from questions"))
+    for hi in ["Hi", "hello!", "Salam", "merhaba", "hey there"]:
+        ask(pg, hi)
+        check(f"'{hi}' gets a hello", "I'm here for Jerome" in pg.locator(".k-turn").last.inner_text())
+    after = (json.dumps(last_request()), sql("select count(*) from limit_hits where kind = 'ask'"), sql("select count(*) from questions"))
+    check("greetings: no model call, no use taken, nothing stored", before == after, f"{before[1:]} -> {after[1:]}")
+    ask(pg, "Hi, have you built a payment system?")
+    check("a greeting with a question still gets an answer", pg.locator(".k-turn").last.locator("li").count() == 3)
+
     # 4. Proofs the model made up are dropped, and so is a point left with none.
     ask(pg, "INVENTED payments please")
     last = pg.locator(".k-turn").last
@@ -78,7 +88,8 @@ with sync_playwright() as p:
     sql("delete from limit_hits")
     sql("insert into limit_hits (kind, visitor_key) select 'ask', 'c:' || '%s' from generate_series(1, 10)" % next(c["value"] for c in ctx.cookies() if c["name"] in ("v", "__Host-v")))
     ask(pg, "Have you built an admin dashboard?")
-    check("the eleventh this hour waits, with the time", "most questions for this hour" in pg.locator(".k-turn").last.inner_text())
+    t = pg.locator(".k-turn").last.inner_text()
+    check("the eleventh this hour waits, with the time", "That's 10 questions this hour. Even I take breaks." in t and "Istanbul time" in t, t)
     sql("delete from limit_hits")
 
     # 7. Spend caps: past $1 today, Ask stops calmly before calling the model.
