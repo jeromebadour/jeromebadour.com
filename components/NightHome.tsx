@@ -1,3 +1,4 @@
+import { SelfRow } from "./SelfRow";
 import { Glyph } from "./Glyph";
 import { ESocials } from "./Shell";
 import { LocalTime } from "./LocalTime";
@@ -81,7 +82,7 @@ function Ticks({ dates }: { dates: string[] }) {
 export function ServiceBoard() {
   return (
     <div className="n-board">
-      <div className="n-board-h"><span>Service board</span><span className="n-ok">{APPS.length} live · run by one person</span></div>
+      <div className="n-board-h"><span>Service board</span><span className="n-ok">{APPS.length} live + this site · run by one person</span></div>
       {APPS.map((a) => {
         const r = RELEASES[a.id];
         return (
@@ -92,6 +93,7 @@ export function ServiceBoard() {
           </a>
         );
       })}
+      <SelfRow note={RELEASES.site.note} ticks={<Ticks dates={RELEASES.site.dates} />} />
       <a className="n-board-f" href={out.w3aChangelog}><Glyph name="release" size={15} /><b>Latest W3Arena {RELEASES.w3arena.latest}</b><span>8 Nov 2026 · from the public changelog</span><Glyph name="arrow" size={14} /></a>
     </div>
   );
