@@ -10,8 +10,7 @@ with sync_playwright() as p:
     for path in ["/admin", "/admin?tab=spend", "/admin?tab=brakes"]:
         r = pg.goto(BASE + path)
         check(f"{path} answers 404 when signed out", r.status == 404, str(r.status))
-    check("the 404 is the site's own page", pg.is_visible(".nf-code") and pg.inner_text("#nf-t") in
-          ("This page doesn't exist", "Root cause: this page never existed", "This page failed review"))
+    check("the 404 is the site's own page", pg.is_visible("text=This page doesn't exist"))
 
     # 2. A wrong password is refused with a calm line, and counted.
     sign_in(pg, "not-the-password")

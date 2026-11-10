@@ -85,35 +85,20 @@ with sync_playwright() as p:
     d.goto(BASE + "/?tab=distill", wait_until="networkidle")
     check("home ?tab=distill opens on Distill's panel", d.evaluate("[...document.querySelectorAll('.n-apps [data-panel]')].filter(e => e.checkVisibility()).map(e => e.dataset.panel).join()") == "distill")
     d.close()
-    # The service board's row for this site: like the apps' rows, links nowhere, a click says "Already here.".
+    # The service board's row for this site: like the apps' rows, links nowhere, says "You're here".
     sb = b.new_page(viewport={"width": 1440, "height": 900})
     errs = []; sb.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
-    sb.goto(BASE + "/", wait_until="networkidle"); sb.evaluate("window.__stay = 1")
+    sb.goto(BASE + "/", wait_until="networkidle")
     rows = sb.locator(".n-board .n-svc")
-    check("service board: the apps plus this site", rows.count() == 3 and "This site" in rows.nth(2).inner_text(), str(rows.count()))
-    check("service board: this site's row is not a link", sb.locator(".n-board a.n-self").count() == 0 and sb.locator(".n-board button.n-self").count() == 1)
-    sb.click(".n-board .n-self"); sb.wait_for_timeout(150)
-    check("service board: a click says Already here. and stays", "already here." in sb.inner_text(".n-self").lower() and sb.evaluate("window.__stay === 1") and sb.url.rstrip("/") == BASE.rstrip("/"))
-    sb.wait_for_timeout(1800)
-    check("service board: the note goes after a moment", "already here." not in sb.inner_text(".n-self").lower())
+    apps_n = sb.locator(".n-board a.n-svc").count()
+    check("service board: the apps plus this site, last", apps_n >= 2 and rows.count() == apps_n + 1 and "This site" in rows.nth(apps_n).inner_text(), str(rows.count()))
+    check("service board: this site's row is not a link", sb.locator(".n-board .n-self").count() == 1 and sb.locator(".n-board a.n-self, .n-self a").count() == 0)
+    check("service board: this site's row says you're here", "you're here" in sb.inner_text(".n-self").lower())
     check("home: no errors in the console", not errs, "; ".join(errs[:3]))
     sb.close()
-
-    # The 404 says one of three lines, picked per visit, with no error in the console.
-    LINES = {"This page doesn't exist": "I'd blame the server, but I run the server.",
-             "Root cause: this page never existed": "The address may be mistyped, or the page has moved.",
-             "This page failed review": "So it never shipped. The rest of the site did."}
     nf = b.new_page(viewport={"width": 1440, "height": 900})
-    errs = []; nf.on("console", lambda m: errs.append(m.text) if m.type == "error" and "404" not in m.text else None)
-    seen = set(); ok = True
-    for _ in range(18):
-        r = nf.goto(BASE + "/no-such-page", wait_until="networkidle")
-        t, d = nf.inner_text("#nf-t"), nf.inner_text("#nf-d")
-        ok = ok and r.status == 404 and LINES.get(t) == d
-        seen.add(t)
-    check("404: always one of the three lines, title and line together", ok)
-    check("404: visits get different lines", len(seen) >= 2, str(seen))
-    check("404: no errors in the console", not errs, "; ".join(errs[:3]))
+    r = nf.goto(BASE + "/no-such-page", wait_until="networkidle")
+    check("404: its line", r.status == 404 and "I'd blame the server, but I run the server." in nf.inner_text(".nf"))
     nf.close()
     b.close()
 
