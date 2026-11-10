@@ -1111,3 +1111,6 @@ html:not([data-via="upwork"]) .on-up { display: none !important; }
   /* A first screen never stretches to a tall monitor's full height. */
   [data-v="e"] .nf { min-height: min(calc(100vh - 162px), 738px); }
 }
+
+/* Home board: every panel is on the page, only the picked one shows (components/BoardTabs.tsx). */
+[data-v="e"] .e-panel:not(.on) { display: none; }

@@ -41,7 +41,7 @@ with sync_playwright() as p:
         if tab:
             pg.goto(BASE + tab)
             check(f"{path}: its tab opens its board (picture, parts, footer link)",
-                  pg.locator(".e-win img").count() == 1 and pg.locator(".e-part").count() >= 4 and pg.locator(".e-board-foot").count() == 1)
+                  pg.locator(".e-win img:visible").count() == 1 and pg.locator(".e-part:visible").count() >= 4 and pg.locator(".e-board-foot:visible").count() == 1)
         pg.goto(BASE + path)
         meta = {m.get_attribute("property") or m.get_attribute("name"): m.get_attribute("content") for m in pg.locator("meta[property], meta[name]").all()}
         check(f"{path}: its title and its own line", name in pg.title() and bool(meta.get("description")), pg.title())
@@ -62,6 +62,29 @@ with sync_playwright() as p:
     tf = vp.evaluate("() => { const i = document.querySelector('.sv-stage img.on'); return [getComputedStyle(i).animationName, getComputedStyle(i).transform]; }")
     check("viewer: a picked picture fades in without a zoom", tf[0] in ("sv-fade", "none") and tf[1] in ("none", "matrix(1, 0, 0, 1, 0, 0)"), str(tf))
     check("viewer: the picked picture is shown", vp.locator(".sv-stage img.on").first.get_attribute("src") != first)
+    # The home board's tabs switch in place: no reload, no jump to the top, the address follows (Kami 2026-11-10).
+    for start in ("/", "/?via=upwork"):
+        h = b.new_page(viewport={"width": 1440, "height": 900})
+        h.goto(BASE + start, wait_until="networkidle")
+        h.evaluate("window.__stay = 1")
+        h.locator(".n-apps .e-board").scroll_into_view_if_needed()
+        h.mouse.wheel(0, 200); h.wait_for_timeout(200)
+        y0 = h.evaluate("scrollY")
+        for t in ["w3a", "distill", "all"]:
+            h.click(f".n-apps a.e-tab[data-tab={t}]"); h.wait_for_timeout(250)
+            st = h.evaluate("""(t) => ({ stay: window.__stay === 1, y: scrollY,
+                shown: [...document.querySelectorAll('.n-apps [data-panel]')].filter(e => e.checkVisibility()).map(e => e.dataset.panel),
+                on: document.querySelector('.n-apps a.e-tab.on')?.dataset.tab, url: location.search })""", t)
+            check(f"home board {start} -> {t}: no reload", st["stay"])
+            check(f"home board {start} -> {t}: stays where it was scrolled", abs(st["y"] - y0) <= 1, f"{y0} -> {st['y']}")
+            check(f"home board {start} -> {t}: only its panel shows, its tab is on", st["shown"] == [t] and st["on"] == t, str(st))
+            want_tab = "" if t == "all" else f"tab={t}"
+            check(f"home board {start} -> {t}: the address follows", (want_tab in st["url"]) and (("via=upwork" in st["url"]) == ("via" in start)), st["url"])
+        h.close()
+    d = b.new_page(viewport={"width": 1440, "height": 900})
+    d.goto(BASE + "/?tab=distill", wait_until="networkidle")
+    check("home ?tab=distill opens on Distill's panel", d.evaluate("[...document.querySelectorAll('.n-apps [data-panel]')].filter(e => e.checkVisibility()).map(e => e.dataset.panel).join()") == "distill")
+    d.close()
     b.close()
 
 finish()

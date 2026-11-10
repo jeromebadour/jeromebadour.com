@@ -6,6 +6,16 @@ import { B, G, type Tech } from "@/lib/tech";
 import { usedIn } from "./W3Part";
 import { ToolChip } from "./ToolChip";
 import { AwakeBand, PersonCard, ServiceBoard, SignalArt } from "./NightHome";
+import { BoardTabs } from "./BoardTabs";
+
+// The link under each board panel: Highlights shows the first app's, an app's tab its own.
+function BoardFoot({ f }: { f: (typeof APPS)[number]["board"]["foot"] }) {
+  return (
+    <a className="e-board-foot" href={f.href}>
+      {f.brand ? <Brand name={f.brand} size={14} /> : <Glyph name={f.g!} size={14} />}{f.label}<span>{f.sub}</span><Glyph name="arrow" size={14} />
+    </a>
+  );
+}
 
 
 
@@ -46,7 +56,6 @@ const toolCount = new Set(toolbox.flatMap((r) => r.tech.map((t) => t.name))).siz
 
 /** tab: "all" (Highlights) or an app's tab (lib/apps.ts). */
 export function HomeE({ tab = "all" }: { tab?: string }) {
-  const app = APPS.find((a) => a.tab === tab);
   return (
     <div className="page" data-v="e">
       <EHeader on="apps" />
@@ -75,49 +84,47 @@ export function HomeE({ tab = "all" }: { tab?: string }) {
       <section className="n-apps">
         <div className="e-k"><Glyph name="screen" size={13} />The apps, screen by screen</div>
         <div className="e-board">
-          <div className="e-tabs">
-            <a className={`e-tab t-sage${tab === "all" ? " on" : ""}`} href={page.home}><Glyph name="ai" size={15} />Highlights</a>
+          <div className="e-tabs" role="tablist">
+            <a className={`e-tab t-sage${tab === "all" ? " on" : ""}`} href={page.home} data-tab="all" role="tab" aria-selected={tab === "all"}><Glyph name="ai" size={15} />Highlights</a>
             {APPS.map((a) => (
-              <a key={a.id} className={`e-tab t-${a.tone}${tab === a.tab ? " on" : ""}`} href={`/?tab=${a.tab}`}>
+              <a key={a.id} className={`e-tab t-${a.tone}${tab === a.tab ? " on" : ""}`} href={`/?tab=${a.tab}`} data-tab={a.tab} role="tab" aria-selected={tab === a.tab}>
                 <img src={a.mark} alt="" className={a.markClass} />
                 {"dom" in a.tabNote ? <span className="e-tab-n">{a.name}<span className="e-dom">{a.tabNote.dom}</span></span> : <>{a.name}<span className="e-tab-k">{a.tabNote.kind}</span></>}
               </a>
             ))}
           </div>
-          {!app ? (
+          {/* Every tab's panel is on the page; BoardTabs shows the picked one without loading the page again. */}
+          <div className={`e-panel${tab === "all" ? " on" : ""}`} data-panel="all">
             <div className="e-mosaic">
               {allShots.map((m) => (
                 <a key={m.label} className={`e-shot t-${m.tone}`} href={m.href}>
-                  <img src={m.img} alt="" style={m.pos ? { objectPosition: m.pos } : undefined} />
+                  <img src={m.img} alt="" loading="lazy" style={m.pos ? { objectPosition: m.pos } : undefined} />
                   <span className="e-cap"><span className="e-tile"><Glyph name={m.g} size={14} /></span>{m.label}</span>
                 </a>
               ))}
             </div>
-          ) : (
-            <div className="e-board-body">
-              <div className="e-win">
-                <div className="e-win-bar"><span className="dot" />{app.host}<Glyph name="live" size={13} /></div>
-                <img src={app.board.shot} alt="" />
+            <BoardFoot f={APPS[0].board.foot} />
+          </div>
+          {APPS.map((a) => (
+            <div key={a.id} className={`e-panel${tab === a.tab ? " on" : ""}`} data-panel={a.tab}>
+              <div className="e-board-body">
+                <div className="e-win">
+                  <div className="e-win-bar"><span className="dot" />{a.host}<Glyph name="live" size={13} /></div>
+                  <img src={a.board.shot} alt="" loading="lazy" />
+                </div>
+                <div className="e-parts">
+                  {a.board.parts.map((p) => (
+                    <a key={p.title} className={`e-part t-${p.tone}`} href={p.href}>
+                      <span className="e-tile"><Glyph name={p.g} size={16} /></span>
+                      <span><b>{p.title}</b><small>{p.sub}</small></span>
+                    </a>
+                  ))}
+                </div>
               </div>
-              <div className="e-parts">
-                {app.board.parts.map((p) => (
-                  <a key={p.title} className={`e-part t-${p.tone}`} href={p.href}>
-                    <span className="e-tile"><Glyph name={p.g} size={16} /></span>
-                    <span><b>{p.title}</b><small>{p.sub}</small></span>
-                  </a>
-                ))}
-              </div>
+              <BoardFoot f={a.board.foot} />
             </div>
-          )}
-          {(() => {
-            // Highlights shows the first app's footer link; an app's tab shows its own.
-            const f = (app ?? APPS[0]).board.foot;
-            return (
-              <a className="e-board-foot" href={f.href}>
-                {f.brand ? <Brand name={f.brand} size={14} /> : <Glyph name={f.g!} size={14} />}{f.label}<span>{f.sub}</span><Glyph name="arrow" size={14} />
-              </a>
-            );
-          })()}
+          ))}
+          <BoardTabs />
         </div>
       </section>
 
