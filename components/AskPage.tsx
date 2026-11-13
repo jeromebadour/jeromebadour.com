@@ -45,10 +45,28 @@ function Stages({ t }: { t: Turn }) {
   );
 }
 
+// Ask's own identity (Kami 2026-11-13): Courier, after the DotA courier that delivers and keeps dying on the way.
+// Its mark is drawn for this site in the ring mark's family (a parcel with the signal dot), not the game's courier.
+// The dot pulses while an answer is on its way.
+export const BOT = { name: "Courier", tag: "Delivers answers. Hasn't died on the way yet." };
+function CourierMark({ live }: { live: boolean }) {
+  return (
+    <svg className={`k-mark${live ? " live" : ""}`} viewBox="0 0 40 40" width="38" height="38" aria-hidden="true">
+      <rect x="1" y="1" width="38" height="38" rx="11" className="k-mark-tile" />
+      <path d="M12 15.5l8-4 8 4v9.5l-8 4-8-4zM12 15.5l8 4 8-4M20 19.5v9.5M16 13.5l8 4" fill="none" className="k-mark-box" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx="29.5" cy="10.5" r="2.6" className="k-mark-dot" />
+    </svg>
+  );
+}
+
 function Answer({ t }: { t: Turn }) {
   return (
     <div className="k-turn">
       <div className="k-q"><span className="k-who"><Glyph name="about" size={14} /></span><p>{t.q}</p></div>
+      <div className="k-bot">
+      <CourierMark live={t.live} />
+      <div className="k-body">
+      <div className="k-name"><b>{BOT.name}</b><span>{BOT.tag}</span></div>
       <div className="k-a">
         {!t.refused && !t.hello && !(t.stopped && !t.read) && <Stages t={t} />}
         {t.points.length > 0 && (
@@ -67,8 +85,8 @@ function Answer({ t }: { t: Turn }) {
           </ol>
         )}
         {t.close && <p className="k-close">{t.close}</p>}
-        {t.hello && <p className="k-note k-hello"><Glyph name="ask" size={14} />{t.hello}</p>}
-        {t.refused && <p className="k-note"><Glyph name="shield" size={14} />{t.refused}</p>}
+        {t.hello && <p className="k-say k-hello">{t.hello}</p>}
+        {t.refused && <p className="k-say k-note">{t.refused}</p>}
         {t.stopped && <p className="k-note"><Glyph name="pause" size={14} />{t.stopped}</p>}
         {!t.live && t.points.length > 0 && t.id && (
           <div className="k-next">
@@ -78,6 +96,8 @@ function Answer({ t }: { t: Turn }) {
             <span className="on-up">Our conversation stays on Upwork.</span>
           </div>
         )}
+      </div>
+      </div>
       </div>
     </div>
   );
