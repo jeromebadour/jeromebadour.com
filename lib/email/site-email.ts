@@ -1,65 +1,70 @@
 /**
  * The site's emails: a message received (to the sender), a new message (to Jerome), and Jerome's reply (to the
  * sender). Written for email apps, not browsers: tables and inline styles (Gmail and Outlook drop <style> rules and
- * never run scripts), no images, and a plain-text twin for apps that show text only. Each says why it came, carries a
+ * never run scripts), one small image (the mark, on the site's own domain), and a plain-text twin for apps that show text only. Each says why it came, carries a
  * button and the same link written out, and ends with a footer.
  */
 
 export type SiteEmail = { subject: string; html: string; text: string };
 
-// The site's colours for a light email (email apps don't read CSS variables; most show light backgrounds).
+// The site's Night shift colours, written out: email apps don't read CSS variables. Fully dark (Kami 2026-11-13),
+// so dark-mode inboxes leave it alone. The mark is a small PNG on the site's own domain; blocked images show "JB".
 const c = {
-  page: "#f3f4f1", card: "#ffffff", line: "#e2e4de", text: "#1b1f22", muted: "#535a57", faint: "#7a817d",
-  accent: "#6f7d3f", accentSoft: "#eef1e3", accentLine: "#d3dabb", onAccent: "#ffffff",
+  page: "#0c0e0f", head: "#0c0e0f", card: "#131617", line: "#262c2e", text: "#e9ecea", muted: "#9aa3a0", faint: "#7c8582",
+  accent: "#6cc59c", soft: "#181c1d", btn: "#6cc59c", onBtn: "#0c0e0f",
 };
-const font = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+const font = "'Archivo', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+const mono = "'Martian Mono', 'SFMono-Regular', Menlo, Consolas, monospace";
+const SITE = "https://jeromebadour.com";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const paras = (text: string) =>
-  text.split(/\n{2,}/).map((p) => `<p style="margin:0 0 14px;font:400 15px/1.6 ${font};color:${c.text};">${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
+const paras = (text: string) => {
+  return text.split(/\n{2,}/).map((p) => `<p style="margin:0 0 14px;font:400 15px/1.6 ${font};color:${c.text};">${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
+};
 
 type Row = [string, string];
 
 function layout(o: { title: string; preheader: string; lead: string; body?: string; rows?: Row[]; button: { label: string; url: string }; why: string }): string {
   const rows = (o.rows ?? []).map(([k, v]) => `
-    <tr><td style="padding:10px 0;border-top:1px solid ${c.line};font:600 13px ${font};color:${c.muted};width:120px;vertical-align:top;">${esc(k)}</td>
-    <td style="padding:10px 0;border-top:1px solid ${c.line};font:400 14px/1.55 ${font};color:${c.text};vertical-align:top;">${esc(v).replace(/\n/g, "<br>")}</td></tr>`).join("");
+    <tr><td style="padding:11px 0;border-top:1px solid ${c.line};font:500 10.5px/1.6 ${mono};letter-spacing:.12em;text-transform:uppercase;color:${c.muted};width:130px;vertical-align:top;">${esc(k)}</td>
+    <td style="padding:10px 0;border-top:1px solid ${c.line};font:400 14.5px/1.55 ${font};color:${c.text};vertical-align:top;">${esc(v).replace(/\n/g, "<br>")}</td></tr>`).join("");
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light">
-<meta name="supported-color-schemes" content="light">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
 <title>${esc(o.title)}</title>
 </head>
-<body style="margin:0;padding:0;background:${c.page};">
+<body style="margin:0;padding:0;background:${c.page};" bgcolor="${c.page}">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(o.preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${c.page};">
-<tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${c.page}" style="background:${c.page};">
+<tr><td align="center" style="padding:28px 16px 36px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;">
 
-<tr><td style="padding:0 4px 20px;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-    <td style="width:34px;height:34px;background:${c.accent};border-radius:9px;text-align:center;vertical-align:middle;font:600 13px ${font};color:${c.onAccent};">JB</td>
-    <td style="vertical-align:middle;padding-left:10px;font:600 17px ${font};color:${c.text};">Jerome Badour</td>
+<tr><td bgcolor="${c.head}" style="background:${c.head};border-radius:12px 12px 0 0;padding:18px 24px;border:1px solid ${c.line};border-bottom:0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+    <td style="width:38px;vertical-align:middle;"><img src="${SITE}/email/mark.png" width="38" height="38" alt="JB" style="display:block;border:0;border-radius:9px;font:700 13px ${font};color:#e9ecea;"></td>
+    <td style="vertical-align:middle;padding-left:12px;font:800 13px ${font};letter-spacing:.22em;text-transform:uppercase;color:#e9ecea;">Jerome Badour</td>
   </tr></table>
 </td></tr>
 
-<tr><td style="background:${c.card};border:1px solid ${c.line};border-radius:12px;padding:28px;">
-  <h1 style="margin:0 0 10px;font:600 21px/1.3 ${font};color:${c.text};">${esc(o.title)}</h1>
-  <p style="margin:0 0 18px;font:400 15px/1.6 ${font};color:${c.muted};">${esc(o.lead)}</p>
-  ${o.body ? `<div style="margin:0 0 6px;padding:18px 20px;background:${c.accentSoft};border:1px solid ${c.accentLine};border-radius:10px;">${o.body}</div>` : ""}
-  ${rows ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 6px;">${rows}</table>` : ""}
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 14px;"><tr>
-    <td style="background:${c.accent};border-radius:8px;"><a href="${esc(o.button.url)}" style="display:inline-block;padding:11px 20px;font:600 14px ${font};color:${c.onAccent};text-decoration:none;">${esc(o.button.label)}</a></td>
+<tr><td bgcolor="${c.card}" style="background:${c.card};border:1px solid ${c.line};border-top:2px solid ${c.accent};border-radius:0 0 12px 12px;padding:30px 28px 26px;">
+  <h1 style="margin:0 0 10px;font:800 23px/1.25 ${font};letter-spacing:-.01em;color:${c.text};">${esc(o.title)}</h1>
+  <p style="margin:0 0 20px;font:400 15px/1.6 ${font};color:${c.muted};">${esc(o.lead)}</p>
+  ${o.body ? `<div style="margin:0 0 8px;padding:18px 20px;background:${c.soft};border-left:3px solid ${c.accent};border-radius:6px;">${o.body}</div>` : ""}
+  ${rows ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 4px;">${rows}</table>` : ""}
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 14px;"><tr>
+    <td bgcolor="${c.btn}" style="background:${c.btn};border-radius:8px;"><a href="${esc(o.button.url)}" style="display:inline-block;padding:12px 22px;font:700 14px ${font};color:${c.onBtn};text-decoration:none;">${esc(o.button.label)} &rarr;</a></td>
   </tr></table>
-  <p style="margin:0;font:400 12.5px/1.6 ${font};color:${c.faint};word-break:break-all;">${esc(o.button.url)}</p>
+  <p style="margin:0;font:400 11.5px/1.6 ${mono};color:${c.faint};word-break:break-all;">${esc(o.button.url)}</p>
 </td></tr>
 
-<tr><td style="padding:18px 4px 0;font:400 12.5px/1.6 ${font};color:${c.faint};">
+<tr><td style="padding:18px 6px 0;font:400 12.5px/1.6 ${font};color:${c.faint};">
   ${esc(o.why)}<br>
-  Jerome Badour · <a href="https://jeromebadour.com" style="color:${c.faint};">jeromebadour.com</a> · <a href="https://jeromebadour.com/privacy" style="color:${c.faint};">Privacy</a>
+  Built and run by one person. Including this email.<br>
+  <a href="${SITE}" style="color:${c.faint};">jeromebadour.com</a> · <a href="${SITE}/privacy" style="color:${c.faint};">Privacy</a>
 </td></tr>
 
 </table>

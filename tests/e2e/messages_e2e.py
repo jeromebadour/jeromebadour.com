@@ -36,6 +36,15 @@ with sync_playwright() as p:
     note = newest(NOTIFY)
     check("Jerome gets the brief with the Inbox link", "Payments for my web app" in note["text"] and "/admin?tab=inbox" in note["text"])
     check("Jerome's copy replies to the sender", note.get("replyTo") == "daniel@example.com")
+    # The emails wear the Night shift look: the mark from the site's own domain with JB when images are blocked,
+    # the dark colours, and the one-person footer (2026-11-13).
+    for who, m in (("sender", got), ("Jerome", note)):
+        h = m["html"]
+        check(f"{who}'s email: the mark, JB if blocked, dark, the footer line",
+              'src="https://jeromebadour.com/email/mark.png"' in h and 'alt="JB"' in h and "#0c0e0f" in h
+              and 'content="dark"' in h and "Built and run by one person. Including this email." in h)
+    mk = ctx.request.get(BASE + "/email/mark.png")
+    check("the email mark is served as a PNG", mk.status == 200 and mk.headers.get("content-type") == "image/png")
     check("the page shows Received with its time", pg.is_visible(".st-step.done:has-text('Received')"))
     check("Read and Replied wait", pg.locator(".st-step:not(.done)").count() == 2)
     check("the page shows the brief", pg.is_visible("text=Payments for my web app"))
