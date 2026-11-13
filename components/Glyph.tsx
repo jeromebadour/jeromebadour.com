@@ -5,7 +5,8 @@ type Name =
   | "work" | "how" | "services" | "about" | "arrow" | "github" | "discord" | "pulse"
   | "chevron" | "web" | "app" | "desktop" | "ai" | "server" | "grid"
   | "forum" | "shop" | "console" | "translate" | "region"
-  | "search" | "tested" | "mail" | "shield" | "expand" | "close" | "pause" | "signout";
+  | "search" | "tested" | "mail" | "shield" | "expand" | "close" | "pause" | "signout"
+  | "sun" | "moon" | "system";
 
 // Night shift glyphs (BUILD-RULES 2.27): drawn for this site on a 24 grid, 1.8 stroke, round caps and joins, soft
 // 2-unit corners, and on most glyphs one filled "signal" dot that marks the live or active part. Each action keeps its
@@ -48,6 +49,10 @@ const paths: Record<Name, G> = {
   close: { d: "M6.5 6.5l11 11M17.5 6.5l-11 11" },
   pause: { d: "M9 6v12M15 6v12" },
   signout: { d: "M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 8l-4 4 4 4M6 12h10" },
+  // The theme switch (2026-11-13): light, dark, and following the computer.
+  sun: { d: "M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8zM12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1" },
+  moon: { d: "M19.5 14.6A7.5 7.5 0 0 1 9.4 4.5a7.5 7.5 0 1 0 10.1 10.1z", dot: [17.5, 6.5] },
+  system: { d: "M4 4h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM9 20h6M12 16v4M12 4v12", dot: [8, 10] },
 };
 
 export function Glyph({ name, size = 16 }: { name: Name; size?: number }) {

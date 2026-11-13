@@ -3,6 +3,7 @@ import { out, page } from "@/lib/links";
 import { APPS } from "@/lib/apps";
 import { SocialChips } from "./Socials";
 import { LocalTime } from "./LocalTime";
+import { ThemeSwitch } from "./ThemeSwitch";
 
 // The Night shift mark: JB inside a status ring with one live segment.
 export function NMark({ size = 36 }: { size?: number }) {
@@ -47,6 +48,7 @@ export function EHeader({ on = "apps", upwork = false }: { on?: NavKey; upwork?:
       {!upwork && <a className={`e-nl${on === "ask" ? " on" : ""} t-sage off-up`} href={page.ask}><span className="e-nt"><Glyph name="ask" size={14} /></span>Ask<span className="e-live">Live</span></a>}
     </nav>
     <div className="e-hdr-r">
+      <ThemeSwitch />
       <span className="n-status"><span className="dot" /><span className="n-live">{APPS.length} products live · </span><LocalTime prefix="local time " /></span>
       {!upwork && <a className={`e-btn e-ghost off-up${on === "message" ? " on" : ""}`} href={page.message}><Glyph name="message" size={15} />Message</a>}
       {upwork

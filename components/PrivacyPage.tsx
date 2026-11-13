@@ -99,6 +99,8 @@ const sections: LegalSection[] = [
     clauses: [
       <>One cookie, used only for the limits above. It carries no name and does not follow you to other sites.</>,
       <>No tracking cookies and no advertising cookies.</>,
+      <>If you pick light or dark with the theme switch, that choice is kept in your own browser. It is never sent to
+        this site; clearing your browser&apos;s site data removes it.</>,
     ],
   },
   {

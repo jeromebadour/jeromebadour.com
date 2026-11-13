@@ -1129,3 +1129,37 @@ html:not([data-via="upwork"]) .on-up { display: none !important; }
 /* Case studies: one aside in the site's voice under the plain intro (claude/VOICE-jeromebadour.md). */
 [data-v="e"] .w-aside { margin: 10px 0 0; font: 500 13px/1.5 var(--mono); letter-spacing: .02em; color: var(--muted); }
 [data-v="e"] .w-aside span { color: var(--accent); margin-right: 8px; }
+
+/* ===== Light mode (2026-11-13): Night shift by day =====
+   Picked with the header switch (kept in this browser), or, with no pick, when the computer is in light mode. Only
+   the tokens change; the home art panel stays a dark screen and the app screenshots stay as shot. */
+[data-v="e"] { color-scheme: dark; }
+html[data-theme="light"] [data-v="e"] {
+  --bg: #f3f4f1; --card: #ffffff; --card-2: #eceee9; --field: #fbfcfa; --ink: #15191a; --muted: #4c5553; --faint: #5f6865;
+  --rule: #e0e3de; --rule-strong: #cdd2cc; --accent: #23805a; --on-accent: #ffffff; --live: #23805a;
+  --t-red: #b04a37; --t-blue: #3466a8; --t-sage: #23805a; --t-amber: #8a6526; --t-violet: #6252ad; --t-green: #1f7f87;
+  color-scheme: light;
+}
+html[data-theme="light"] [data-v="e"] .e-nl { color: #2a3032; }
+html[data-theme="light"] [data-v="e"] .t-discord { --tone: #5865c8; } html[data-theme="light"] [data-v="e"] .t-gh { --tone: #24292f; } html[data-theme="light"] [data-v="e"] .t-up { --tone: #3c8a1e; }
+html[data-theme="light"] [data-v="e"] .n-ticks-bg { fill: var(--rule-strong); }
+html[data-theme="light"] [data-v="e"] .n-awake svg rect[fill="#ffffff10"] { fill: var(--rule); }
+html[data-theme="light"] [data-v="e"] .n-stage .e-askb, html[data-theme="light"] [data-v="e"] .c-danger { color: #ffffff; }
+html[data-theme="light"] [data-v="e"] .a-block blockquote footer svg, html[data-theme="light"] [data-v="e"] .f-link svg { color: #3c8a1e; }
+@media (prefers-color-scheme: light) {
+html:not([data-theme="dark"]) [data-v="e"] {
+  --bg: #f3f4f1; --card: #ffffff; --card-2: #eceee9; --field: #fbfcfa; --ink: #15191a; --muted: #4c5553; --faint: #5f6865;
+  --rule: #e0e3de; --rule-strong: #cdd2cc; --accent: #23805a; --on-accent: #ffffff; --live: #23805a;
+  --t-red: #b04a37; --t-blue: #3466a8; --t-sage: #23805a; --t-amber: #8a6526; --t-violet: #6252ad; --t-green: #1f7f87;
+  color-scheme: light;
+}
+html:not([data-theme="dark"]) [data-v="e"] .e-nl { color: #2a3032; }
+html:not([data-theme="dark"]) [data-v="e"] .t-discord { --tone: #5865c8; } html:not([data-theme="dark"]) [data-v="e"] .t-gh { --tone: #24292f; } html:not([data-theme="dark"]) [data-v="e"] .t-up { --tone: #3c8a1e; }
+html:not([data-theme="dark"]) [data-v="e"] .n-ticks-bg { fill: var(--rule-strong); }
+html:not([data-theme="dark"]) [data-v="e"] .n-awake svg rect[fill="#ffffff10"] { fill: var(--rule); }
+html:not([data-theme="dark"]) [data-v="e"] .n-stage .e-askb, html:not([data-theme="dark"]) [data-v="e"] .c-danger { color: #ffffff; }
+html:not([data-theme="dark"]) [data-v="e"] .a-block blockquote footer svg, html:not([data-theme="dark"]) [data-v="e"] .f-link svg { color: #3c8a1e; }
+}
+/* The theme switch in the header. */
+[data-v="e"] .e-theme { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--rule-strong); background: transparent; color: var(--muted); cursor: pointer; }
+[data-v="e"] .e-theme:hover { color: var(--ink); background: var(--card-2); }
