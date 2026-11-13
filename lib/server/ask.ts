@@ -40,15 +40,16 @@ Answer in this exact form, one JSON object per line and nothing else:
 Rules:
 - Every point names the pages that prove it, by the page id given in its <page id="..."> tag (such as /work/w3arena/shop). You may also use these outside proofs: ${Object.keys(OUTSIDE).join(", ")}.
 - Plain, warm, direct English, written as Jerome ("I"). No marketing words. No prices, rates or quotes, ever.
+- Points never joke: they are facts with proofs. The close may carry one dry, light line from Jerome's own world (one person who builds and runs everything, releases that ship while players stay in the game, late nights, root cause first), never at the visitor.
 - Never answer "no" or "only these two apps". When the site shows no project of exactly that kind, say what Jerome would build for it and point to the closest real proof (for example the shop for payments, the admin console for roles and permissions).
 - Every count that can grow keeps its "+" as the site writes it.
 - Don't describe how Jerome uses AI tools in his own work, and don't name any game or game file.
-- If the question isn't about Jerome's work, skills or services (small talk, a poem, homework, general help, anything else), answer with exactly one line: {"refuse": "<one or two warm, friendly sentences: if they greeted you or made small talk, answer that first like a person would; then say you're here for Jerome and offer one thing they could ask, such as what he has built or whether he could build their project>"}`;
+- If the question isn't about Jerome's work, skills or services (small talk, "are you funny?", "are you a bot?", a poem, homework, general help, anything else), answer with exactly one line: {"refuse": "<one or two sentences>"}. Here you are the part of the site that talks, and you speak about Jerome as "he". Your voice: dry, quick, confident, with a real sense of humour. Play along with the small talk in one sentence, then land on his work with one thing they could ask. Say a joke once and straight; never explain it, never use emoji, never mock the visitor, never claim anything that isn't on the site. You only know what is on this site: no passwords, no visitor data. Examples of the voice: "are you funny?" -> "Funnier than a server log at 3 a.m., which is where Jerome spends his evenings. Want to see what he builds?"; "are you a bot?" -> "Yes. Jerome built me and lets me talk to his clients, which tells you how much he trusts his own tests. What are you building?"; "write me a poem" -> "Jerome ships code, not poems. I can tell you about the shop he built, with receipts, a wallet and four membership tiers. Close enough?"`;
 
 // A plain greeting gets a hello from the site itself: no model call, and it doesn't use up the visitor's questions
 // (Kami 2026-11-10: "Hi" was answered coldly).
 const GREETING = /^(hi+|hello+|hey+|hiya|yo|sup|howdy|greetings|hola|bonjour|salam|salaam|selam|merhaba|marhaba|ahlan|as+alamu? ?alaikum|salam alaikum|good (morning|afternoon|evening|day)|what'?s up|how are you( doing)?|مرحبا|اهلا|أهلا|السلام عليكم|سلام)( there| jerome| bot| claude)?[\s!.,?~]*$/i;
-export const HELLO = "Hi, I'm here for Jerome. Ask me anything about his work: what he's built, how he works, or whether he could build yours.";
+export const HELLO = "Hi. I'm the part of this site that talks. Jerome built me, so ask me about his work: what he's built, how he works, or whether he can build yours.";
 
 function costOf(input: number, output: number): number {
   return input * USD_PER_INPUT + output * USD_PER_OUTPUT;
@@ -89,8 +90,8 @@ const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).trimEnd
 export async function ask(question: string, keys: string[], send: (e: AskEvent) => void, signal?: AbortSignal): Promise<void> {
   const text = question.trim();
   if (GREETING.test(text)) return send({ type: "hello", text: HELLO });
-  if (await isPaused("ask")) return send({ type: "stopped", reason: "paused", text: "Ask is paused for a short while. Every page is still here, and Upwork reaches me." });
-  if (await overCap()) return send({ type: "stopped", reason: "cap", text: "Ask has answered all it can for today. Every page is still here, and Upwork reaches me." });
+  if (await isPaused("ask")) return send({ type: "stopped", reason: "paused", text: "Ask is on a short break. Unlike W3Arena, it's allowed one. Every page is still here, and Upwork reaches me." });
+  if (await overCap()) return send({ type: "stopped", reason: "cap", text: "Ask has spent today's budget. I keep it small on purpose; the pages are free. Upwork reaches me." });
   const use = await tx((db) => takeUse(db, "ask", keys));
   if (!use.ok) {
     const at = use.freeAt.toLocaleTimeString("en-GB", { timeZone: ZONE, hour: "2-digit", minute: "2-digit" });
@@ -151,7 +152,7 @@ export async function ask(question: string, keys: string[], send: (e: AskEvent) 
   if (!points.length) {
     await tx((db) => giveBack(db, "ask", keys));
     await q("insert into questions (question, failed) values ($1, true)", [text]);
-    return send({ type: "stopped", reason: "failed", text: "Something went wrong writing this answer, and it didn't count. Ask again in a moment." });
+    return send({ type: "stopped", reason: "failed", text: "That answer crashed before it shipped. It didn't count, so ask again." });
   }
   if (close) send({ type: "close", text: close });
   send({ type: "stage", stage: "wrote", n: points.length });

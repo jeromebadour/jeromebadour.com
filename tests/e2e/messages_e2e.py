@@ -87,7 +87,7 @@ with sync_playwright() as p:
     check("an unknown link is the 404", r.status == 404)
     sql("update messages set link_until = now() - interval '1 minute'")
     pg.reload()
-    check("a link past 90 days says the message is closed", pg.is_visible("text=This message is closed") or "closed" in pg.inner_text("main, body").lower())
+    check("a link past 90 days says the message is closed", pg.is_visible("text=This status page retired") or "closed" in pg.inner_text("main, body").lower())
     sql("update messages set link_until = now() + interval '90 days'")
 
     # 6. Limits: 3 an hour per visitor, said calmly; the trap stores nothing.

@@ -43,7 +43,7 @@ with sync_playwright() as p:
         check(f"the {title} tab opens", pg.inner_text(".c-head h1").strip() == title, pg.inner_text(".c-head h1"))
     pg.goto(BASE + "/admin?tab=nope")
     check("an unknown tab falls back to Inbox", pg.inner_text(".c-head h1").strip() == "Inbox")
-    check("empty tables say so", pg.is_visible("text=No messages yet."))
+    check("empty tables say so", pg.is_visible("text=No messages yet. Proposals don't send themselves."))
     pg.goto(BASE + "/sign-in")
     pg.wait_for_url(BASE + "/admin", timeout=10000)
     check("a signed-in visit to /sign-in goes to the console", pg.url == BASE + "/admin")

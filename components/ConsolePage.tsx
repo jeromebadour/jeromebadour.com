@@ -72,7 +72,7 @@ function Inbox({ d, pageNo }: { d: Extract<ConsoleData, { tab: "inbox" }>; pageN
       <table className="c-table">
         <thead><tr><th>#</th><th>From</th><th>What they need</th><th>Built with</th><th>How soon</th><th>Status</th><th>Received</th></tr></thead>
         <tbody>
-          {d.rows.length === 0 && <Empty cols={7} g="message" text="No messages yet." />}
+          {d.rows.length === 0 && <Empty cols={7} g="message" text="No messages yet. Proposals don't send themselves." />}
           {d.rows.map((r, i) => (
             <tr key={r.id} className={r.status === "new" ? "c-new" : ""}>
               <td className="c-n">{first + i + 1}</td>
@@ -130,7 +130,7 @@ function Questions({ d, pageNo }: { d: Extract<ConsoleData, { tab: "questions" }
       <table className="c-table">
         <thead><tr><th>#</th><th>Question</th><th>Points</th><th>Answer</th><th>Asked</th></tr></thead>
         <tbody>
-          {d.rows.length === 0 && <Empty cols={5} g="ask" text="No questions yet." />}
+          {d.rows.length === 0 && <Empty cols={5} g="ask" text="Nobody asked anything. Suspiciously quiet." />}
           {d.rows.map((r, i) => (
             <tr key={r.id}>
               <td className="c-n">{first + i + 1}</td>
@@ -160,7 +160,7 @@ function Proposals({ d, pageNo }: { d: Extract<ConsoleData, { tab: "proposals" }
       <table className="c-table">
         <thead><tr><th>#</th><th>Job</th><th>Address</th><th>Proofs</th><th>Opens</th><th>Page</th><th>Made</th></tr></thead>
         <tbody>
-          {d.rows.length === 0 && <Empty cols={7} g="release" text="No proposal pages yet." />}
+          {d.rows.length === 0 && <Empty cols={7} g="release" text="No proposal pages. Upwork isn't going to apply to itself." />}
           {d.rows.map((r, i) => (
             <tr key={r.id}>
               <td className="c-n">{first + i + 1}</td>

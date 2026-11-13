@@ -6,8 +6,8 @@ import { Glyph, type GlyphName } from "./Glyph";
 type Kind = "404" | "error" | "closed";
 const copy: Record<Kind, { code: string; tone: string; g: GlyphName; t: string; d: string }> = {
   "404": { code: "404", tone: "amber", g: "search", t: "This page doesn't exist", d: "The address may be mistyped, or the page has moved." },
-  error: { code: "500", tone: "red", g: "pulse", t: "Something broke on my side", d: "It is logged and I see it. The page works again as soon as it is fixed." },
-  closed: { code: "Closed", tone: "blue", g: "mail", t: "This message is closed", d: "Status links stay open for 90 days. The conversation itself is still in your email." },
+  error: { code: "500", tone: "red", g: "pulse", t: "Something broke, and it's mine", d: "It's logged. I'll find the root cause before I touch anything, even at 3 a.m. Back as soon as it's fixed." },
+  closed: { code: "Closed", tone: "blue", g: "mail", t: "This status page retired", d: "It served its 90 days. The conversation itself lives on in your email." },
 };
 // The 404 says one of these (Kami 2026-11-10: a mix of three), picked on each visit by the inline script before the
 // page shows, so no other line flashes first.

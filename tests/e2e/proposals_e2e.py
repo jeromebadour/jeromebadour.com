@@ -12,7 +12,7 @@ with sync_playwright() as p:
 
     # 1. The New page dialog checks its fields on the server.
     op.goto(BASE + "/admin?tab=proposals")
-    check("an empty list says so", op.is_visible("text=No proposal pages yet."))
+    check("an empty list says so", op.is_visible("text=No proposal pages. Upwork isn't going to apply to itself."))
     op.click("text=New page")
     op.wait_for_selector(".c-dlg", timeout=10000)
     op.evaluate("document.querySelectorAll('.c-dlg [required]').forEach(e => e.removeAttribute('required')); document.querySelector('input[name=job_url]').type = 'text'")

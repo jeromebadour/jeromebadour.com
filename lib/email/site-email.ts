@@ -76,7 +76,7 @@ export type BriefFacts = { name: string; email: string; brief: string; builtWith
 export function receivedEmail(m: BriefFacts, statusUrl: string): SiteEmail {
   const first = m.name.split(/\s+/)[0];
   const title = "Your message reached me";
-  const lead = `Hi ${first}, thanks for your brief. I read every message myself and reply by email. The status page shows when I've read it and when I've replied.`;
+  const lead = `Hi ${first}, it landed. I read every message myself: no assistant, no autoresponder (this email excepted). The status page shows when I've read it and when I've replied.`;
   const rows: Row[] = [["What you need", m.brief], ["Built with", m.builtWith.join(", ") || "Not said"], ["How soon", SOON[m.howSoon]]];
   const why = "You got this email because this address was given with a message on jeromebadour.com. The status link stays open for 90 days.";
   return {

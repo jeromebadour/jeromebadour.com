@@ -64,7 +64,7 @@ with sync_playwright() as p:
     before = (json.dumps(last_request()), sql("select count(*) from limit_hits where kind = 'ask'"), sql("select count(*) from questions"))
     for hi in ["Hi", "hello!", "Salam", "merhaba", "hey there"]:
         ask(pg, hi)
-        check(f"'{hi}' gets a hello", "I'm here for Jerome" in pg.locator(".k-turn").last.inner_text())
+        check(f"'{hi}' gets a hello", "the part of this site that talks" in pg.locator(".k-turn").last.inner_text())
     after = (json.dumps(last_request()), sql("select count(*) from limit_hits where kind = 'ask'"), sql("select count(*) from questions"))
     check("greetings: no model call, no use taken, nothing stored", before == after, f"{before[1:]} -> {after[1:]}")
     ask(pg, "Hi, have you built a payment system?")
@@ -95,7 +95,7 @@ with sync_playwright() as p:
     # 7. Spend caps: past $1 today, Ask stops calmly before calling the model.
     sql("insert into ask_spend (input_tokens, output_tokens, usd) values (1, 1, 1.0)")
     ask(pg, "Have you built a Windows app?")
-    check("past the day's cap, Ask stops calmly", "answered all it can for today" in pg.locator(".k-turn").last.inner_text())
+    check("past the day's cap, Ask stops calmly", "spent today's budget" in pg.locator(".k-turn").last.inner_text())
     sql("delete from ask_spend where usd = 1.0")
 
     # 8. The brake.

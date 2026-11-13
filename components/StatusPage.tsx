@@ -27,7 +27,7 @@ export function StatusPage({ m }: { m: Status }) {
           <span className="e-tile p-big t-violet"><Glyph name="message" size={26} /></span>
           <div>
             <h1>Your message</h1>
-            <p className="e-line">This page updates by itself. The same link is in your email.</p>
+            <p className="e-line">This page updates by itself, so you don&apos;t have to refresh it. I refresh my inbox enough for both of us.</p>
           </div>
         </div>
       </section>
@@ -60,7 +60,7 @@ export function StatusPage({ m }: { m: Status }) {
           <article className="st-reply st-wait">
             <header>
               <img src="/jerome.jpg" alt="" className="st-photo" />
-              <div><b>Jerome Badour</b><span>{m.read_at ? "Read, answer on its way" : "Not read yet"}</span></div>
+              <div><b>Jerome Badour</b><span>{m.read_at ? "Read. Answer being written, then rewritten." : "Not read yet"}</span></div>
             </header>
             <p>Thanks, {first}. My answer will show here and come to {m.email}.</p>
           </article>

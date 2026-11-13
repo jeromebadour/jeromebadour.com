@@ -28,13 +28,13 @@ const starters: [GlyphName, string][] = [
   ["search", "How do you fix a bug you can't see?"],
   ["desktop", "Have you built a Windows app?"],
 ];
-const WENT_WRONG = "Something went wrong writing this answer, and it didn't count. Ask again in a moment.";
+const WENT_WRONG = "That answer crashed before it shipped. It didn't count, so ask again.";
 
 function Stages({ t }: { t: Turn }) {
   const stages: [boolean, string][] = [
     [t.read, t.read ? "Read the question" : "Reading the question"],
     [t.found > 0, t.found > 0 ? `Found ${t.found} page${t.found === 1 ? "" : "s"}` : "Finding the work"],
-    [t.wrote > 0, t.wrote > 0 ? `Wrote ${t.wrote} point${t.wrote === 1 ? "" : "s"}` : "Writing"],
+    [t.wrote > 0, t.wrote > 0 ? `Wrote ${t.wrote} point${t.wrote === 1 ? "" : "s"}` : "Writing it up, with receipts"],
   ];
   const next = stages.findIndex(([done]) => !done);
   const shown = t.live ? stages.slice(0, next === -1 ? 3 : next + 1) : stages.filter(([done]) => done);
@@ -144,14 +144,14 @@ export function AskPage({ first = "", paused = false }: { first?: string; paused
           <span className="e-tile p-big t-sage"><Glyph name="ask" size={26} /></span>
           <div>
             <h1>Ask about my work</h1>
-            <p className="e-line">Answers come from this site&apos;s own pages, and every point links to its proof.</p>
+            <p className="e-line">Answers come only from these pages, with a proof under every point. If I can&apos;t prove it, I don&apos;t say it.</p>
           </div>
         </div>
       </section>
 
       <section className="k-board">
         <div className="k-chat">
-          {paused && <p className="k-note"><Glyph name="pause" size={14} />Ask is paused for a short while. Every page is still here, and Upwork reaches me.</p>}
+          {paused && <p className="k-note"><Glyph name="pause" size={14} />Ask is on a short break. Unlike W3Arena, it&apos;s allowed one. Every page is still here, and Upwork reaches me.</p>}
           {turns.map((t, n) => <Answer key={n} t={t} />)}
           <form className="k-field" onSubmit={(e) => { e.preventDefault(); void run(q); }}>
             <Glyph name="ask" size={17} />
@@ -173,7 +173,7 @@ export function AskPage({ first = "", paused = false }: { first?: string; paused
           <div className="h-k t-blue k-gap"><span className="e-tile"><Glyph name="shield" size={15} /></span>How answers work</div>
           <ul className="a-list">
             <li><b>Only from this site</b><span>Every point comes from these pages and links to its proof; a point without one is not shown.</span></li>
-            <li><b>About my work only</b><span>Other questions get a short, polite no.</span></li>
+            <li><b>About my work only</b><span>Small talk is fine. Homework isn&apos;t.</span></li>
             <li><b>10 an hour, 30 a day</b><span>Up to 500 characters each; a failed answer doesn&apos;t count.</span></li>
             <li><b>Kept 30 days</b><span>Questions and answers, then deleted. <a href="/privacy">Privacy</a></span></li>
           </ul>
