@@ -15,6 +15,9 @@ import { out, page, w3aPart } from "./links";
 /** A page of its own for an app: the need, what was built, the result, screens, what it gives a client, its tools. */
 export type CaseStudy = {
   title: string; g: GlyphName; tone: string; line: string;
+  /** One line in the site's voice under the intro, on the case-study page only: never in link previews or proposal
+   *  cards, which keep the plain line (claude/VOICE-jeromebadour.md). */
+  aside: string;
   need: string; built: string; result: string;
   stats: { v: string; l: string; g: GlyphName; tone: string }[];
   screens: Shot[];
@@ -102,6 +105,7 @@ const distill: App = {
   study: {
     title: "Distill", g: "ai", tone: "blue",
     line: "AI summaries you can check: every point links to the sentences it came from, and every number is checked by code.",
+    aside: "Because \"trust me\" isn't a source.",
     need: "AI summaries read well even when a number is wrong, so the reader still has to check everything.",
     built: "A web app on Anthropic's Claude API where every point links to the sentences it came from and every number is checked by code. Accounts, a saved library, phone layouts, dark and light themes, plus an owner's console with roles, an audit log, spend caps and live server health.",
     result: "Live at distill.jeromebadour.com with a public admin demo, code on GitHub, tests on every push and backups restored every week.",

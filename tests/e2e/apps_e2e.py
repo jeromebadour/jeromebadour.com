@@ -132,6 +132,17 @@ with sync_playwright() as p:
     check("404: visits get different lines", len(seen) >= 2, str(seen))
     check("404: no errors in the console", not errs, "; ".join(errs[:3]))
     nf.close()
+    # Each case study has one aside in the site's voice under its plain intro; the preview keeps the plain line.
+    cs = b.new_page(viewport={"width": 1440, "height": 900})
+    for path in ["/work/w3arena", "/work/w3arena/website", "/work/w3arena/forum", "/work/w3arena/desktop-app",
+                 "/work/w3arena/shop", "/work/w3arena/console", "/work/w3arena/game-servers",
+                 "/work/w3arena/ai-translation", "/work/w3arena/reliability", "/work/distill"]:
+        cs.goto(BASE + path, wait_until="networkidle")
+        aside = cs.locator(".w-top .w-aside")
+        ok = aside.count() == 1 and aside.is_visible() and len(aside.inner_text().strip()) > 10
+        desc = cs.get_attribute('meta[name="description"]', "content") or ""
+        check(f"{path}: one aside under the intro, not in the preview", ok and aside.inner_text().lstrip("› ").strip() not in desc and desc == cs.inner_text(".w-top .e-line").strip(), desc[:60])
+    cs.close()
     b.close()
 
 finish()

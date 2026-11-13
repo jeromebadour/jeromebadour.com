@@ -60,6 +60,10 @@ with sync_playwright() as p:
     check("a question off topic gets a polite no", "only answer questions about my work" in pg.inner_text(".k-note"))
     check("stored as refused, no points", sql("select points, refused from questions where question like 'Write me%'") == "0|t")
 
+    # 3a. The case studies' asides are voice, not facts: none reaches the model.
+    sent = json.dumps(last_request())
+    check("the asides never reach the model", "confirmed with 2FA" in sent and "Especially mine." not in sent and "trust me" not in sent and "nobody else to page" not in sent)
+
     # 3b. A plain greeting gets a hello from the site: no model call, no use taken, nothing stored.
     before = (json.dumps(last_request()), sql("select count(*) from limit_hits where kind = 'ask'"), sql("select count(*) from questions"))
     for hi in ["Hi", "hello!", "Salam", "merhaba", "hey there"]:

@@ -16,6 +16,7 @@ type Part = CaseStudy & {
 const website: Part = {
   title: "Website", g: "web", tone: "sage",
   line: "The landing page and the live stats pages of w3arena.pro.",
+  aside: "Ladders and live stats: the page players open to prove they were right.",
   need: "A gaming platform needed a website that brings in new players and shows real results from its game servers.",
   built: "A landing page in 6+ languages, plus live stats pages: a history of every game with its full scoreboard and replay, season ladders, player profiles and head-to-head comparisons. One design system across every page, built to work on phones too.",
   result: "Live at w3arena.pro, with 9,400+ registered accounts and 4,300+ players who have played.",
@@ -54,6 +55,7 @@ const website: Part = {
 const forum: Part = {
   title: "Forum", g: "forum", tone: "blue",
   line: "A forum for 5+ regions, where a report sent from the game becomes a case staff close on record.",
+  aside: "Where \"he was feeding\" becomes a case with the replay attached.",
   need: "A growing player base needed one place for news, help and reports, in each region's own language, with every report handled fairly and on record.",
   built: "A forum for 5+ regions with a rich editor: images, video, polls, live game and player embeds. Reports sent from inside the game arrive as ready cases with the match and replay attached, and staff close them with a decision block linked to the ban.",
   result: "1,100+ topics and 2,800+ posts, including 770+ player reports handled in South America alone.",
@@ -86,6 +88,7 @@ const forum: Part = {
 const desktop: Part = {
   title: "Windows app", g: "desktop", tone: "red",
   line: "One Windows app to find games, talk, buy and get back into a game after a crash.",
+  aside: "Crashes happen. Losing your game to one doesn't.",
   need: "Players needed one Windows app to find games, talk, buy items and get back into a game after a crash, on PCs from Windows 7 to 11.",
   built: "A desktop app (Electron) with chat channels, matchmaking, team voice chat with an in-game overlay, a built-in shop, crash recovery, signed auto-update and 6+ languages. A small Go starter installs each new version and falls back to the working one.",
   result: "Used daily by the platform's players, with 14+ public releases of the app, and one update cut its network traffic by about 97%.",
@@ -120,6 +123,7 @@ const desktop: Part = {
 const shop: Part = {
   title: "Shop", g: "shop", tone: "amber",
   line: "A complete shop inside the Windows app: memberships, previews, a wallet, receipts and refunds.",
+  aside: "Every purchase gets a receipt. Even mine, when I test it.",
   need: "Players in many countries needed a safe way to buy memberships and perks, including where cards and PayPal are not the usual way to pay.",
   built: "A shop built into the Windows app: memberships with try-before-you-buy previews, perks, a wallet that records every shard in and out, receipts and refunds. Players pay by crypto, PayPal or a local seller in 6+ countries; earlier, payments ran through Tebex.",
   result: "Live in the app: every purchase has its receipt, waits in the inventory until the player activates it, and can be refunded within 14 days until then.",
@@ -153,6 +157,7 @@ const shop: Part = {
 const console_: Part = {
   title: "Admin console", g: "console", tone: "violet",
   line: "The back office that runs the platform: roles, rules, payments, and every action confirmed with 2FA.",
+  aside: "Every action needs 2FA. Including mine. Especially mine.",
   need: "Staff needed one place to run a live platform (players, bans, payments, channels, security), with each admin seeing only what their role allows.",
   built: "An admin console with 28+ sections and 137+ permissions in 13+ role tiers: automatic leaver bans with an editable ban ladder, risk scoring for new signups, multi-account detection, matchmaking and channel settings, a shop back office with its catalogue, ledger and payment providers, and a full audit log. Every staff action is confirmed with an authenticator code (2FA) before it runs.",
   result: "Used by 30+ staff, with 1,900+ games judged automatically and 6,800+ staff actions logged.",
@@ -193,6 +198,7 @@ const console_: Part = {
 const servers: Part = {
   title: "Game servers", g: "server", tone: "green",
   line: "80+ game servers in 6+ regions, built from one source and updated without ending a single game.",
+  aside: "Patch day, without the part where everyone gets kicked.",
   need: "An online game platform needed servers in 6+ regions, close to its players, updated often without ending games in progress.",
   built: "80+ game servers in C++ on 3+ providers and 2 types of hardware (x86 and ARM), from one source. Every update is tested, proven inside each server and rolled out as each game ends. Plus rejoin after a crash, fair team balancing, and leaver, AFK and desync detection.",
   result: "17,000+ games hosted. Updates reach every server with 0 games cut, and new games start more than twice as fast.",
@@ -224,6 +230,7 @@ const servers: Part = {
 const ai: Part = {
   title: "AI translation", g: "translate", tone: "blue",
   line: "One-click chat translation on the Claude API, live in production, with a hard spend cap.",
+  aside: "A chat that never sleeps doesn't get an unlimited budget.",
   need: "An international gaming community with players writing in Spanish, Thai, Filipino, Russian, Arabic and English needed to understand each other in chat.",
   built: "One-click chat translation on Anthropic's Claude API, in channels and private messages, into the reader's own language. A hard monthly spend cap, hourly limits per user, an admin page to watch spend and pause it, and a privacy policy update covering what is sent.",
   result: "Live in production and used every day, at about $1 of API cost since launch.",
@@ -251,6 +258,7 @@ const ai: Part = {
 const standby: Part = {
   title: "Standby server", g: "shield", tone: "violet",
   line: "A standby kept in sync that took over the whole platform on the first try, with zero data lost.",
+  aside: "Rehearsed for the day it mattered. That day came with no warning.",
   need: "A live platform with players online at every hour needed to survive outages, updates and growth without losing data or dropping anyone.",
   built: "A standby server kept in sync with production, with a tested switchover and switchback, rehearsed with players online: running games keep going and no data is lost. Automatic restore tests of the backups, releases that move players over with nobody disconnected, and measurements that find slowdowns before players do.",
   result: "When the hosting provider shut down the whole account without warning, the standby took over on the first try with zero data lost. It runs the platform today.",
@@ -317,6 +325,7 @@ export function W3Part({ id = "website" }: { id?: PartId }) {
           <div>
             <h1>{p.title} <span className="e-dom">{p.app ? p.app.host : "w3arena.pro"}</span></h1>
             <p className="e-line">{p.line}</p>
+            <p className="w-aside"><span>›</span>{p.aside}</p>
           </div>
           <div className="w-links">
             {p.app ? p.app.links.map((l) => <a key={l.label} className={`e-btn ${l.primary ? "e-hire" : "e-ghost"}`} href={l.href}><Glyph name={l.g} size={15} />{l.label}</a>)

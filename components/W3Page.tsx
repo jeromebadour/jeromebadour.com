@@ -5,6 +5,8 @@ import { ScreenViewer, type Shot } from "./ScreenViewer";
 
 // The platform live at peak hours: the Windows app's main screen, as it was. Its counts are the caption's.
 const live: Shot = { src: "/p/w3a-live.jpg", thumb: "/p/w3a-live-t.jpg", cap: "The Windows app at peak hours", g: "desktop", fit: "contain" };
+// The overview's aside, in the site's voice (claude/VOICE-jeromebadour.md); the plain line stays the preview.
+export const W3A_ASIDE = "One person, every part. When something breaks at 3 a.m., there's nobody else to page.";
 export const W3A_LINE = "A platform people use every day: players from South America to Asia meet, talk and play on it, with 200+ online at once at peak hours. I built every part and run it on my own.";
 // The registered count is left to the stats above (9,400+): the picture is from a day with fewer, and two different
 // registered counts an inch apart would read as a mistake.
@@ -67,6 +69,7 @@ export function W3Page() {
           <div>
             <h1>W3Arena <span className="e-dom">w3arena.pro</span></h1>
             <p className="e-line">{W3A_LINE}</p>
+            <p className="w-aside"><span>›</span>{W3A_ASIDE}</p>
           </div>
           <div className="w-links">
             <a className="e-btn e-hire" href={out.w3arena}><Glyph name="live" size={15} />w3arena.pro</a>

@@ -27,6 +27,8 @@ function htmlToText(html: string): string {
     .replace(/<header class="e-hdr"[\s\S]*?<\/header>/g, "")
     .replace(/<footer class="e-foot"[\s\S]*?<\/footer>/g, "")
     .replace(/<nav class="e-tabbar"[\s\S]*?<\/nav>/g, "")
+    // The case studies' asides are the site's voice, not facts: Ask never quotes them as proof.
+    .replace(/<p class="w-aside"[\s\S]*?<\/p>/g, "")
     .replace(/<(script|style|svg|noscript|template)[\s\S]*?<\/\1>/g, "")
     .replace(/<(br|\/p|\/li|\/h[1-6]|\/div|\/tr|\/section)[^>]*>/g, "\n")
     .replace(/<[^>]+>/g, " ")

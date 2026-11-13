@@ -1125,3 +1125,7 @@ html:not([data-via="upwork"]) .on-up { display: none !important; }
 [data-v="e"] .e-foot { flex-wrap: wrap; }
 [data-v="e"] .e-foot-one { flex-basis: 100%; margin: -6px 0 0; text-align: right; color: var(--muted); font-size: 12px; }
 @media (max-width: 720px) { [data-v="e"] .e-foot-one { margin: 0; text-align: left; } }
+
+/* Case studies: one aside in the site's voice under the plain intro (claude/VOICE-jeromebadour.md). */
+[data-v="e"] .w-aside { margin: 10px 0 0; font: 500 13px/1.5 var(--mono); letter-spacing: .02em; color: var(--muted); }
+[data-v="e"] .w-aside span { color: var(--accent); margin-right: 8px; }
