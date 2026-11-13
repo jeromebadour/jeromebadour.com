@@ -34,7 +34,7 @@ export function SignalArt() {
         const p = trace(W, 40, i * 5 + 2);
         return (
           <g key={i} transform={`translate(0,${40 + i * 48})`}>
-            <rect y="20" width={W} height="1" fill="#ffffff0b" />
+            <rect y="20" width={W} height="1" className="n-art-rule" />
             <polyline points={p} fill="none" stroke={c} strokeWidth="1.4" opacity=".5" filter="url(#n-glow)" />
             <polyline points={p} fill="none" stroke={c} strokeWidth="1.4" opacity=".55" />
           </g>

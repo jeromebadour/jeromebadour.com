@@ -42,12 +42,17 @@ with sync_playwright() as p:
           pg.get_attribute(sw, "data-theme-now") == "system" and pg.evaluate("localStorage.getItem('theme')") is None and pg.evaluate("document.documentElement.hasAttribute('data-theme')") is False)
     ctx.close()
 
-    # The home stage is a dark screen in light mode too: its text stays light on it (phones show the art behind it).
+    # The home stage is a light panel in light mode: its text is dark, and the muted line still reads on the panel's
+    # darkest point (#e2ece6), where the art glows.
     for w, h in ((1440, 900), (390, 844)):
         pg = b.new_page(viewport={"width": w, "height": h}, color_scheme="light")
         pg.goto(BASE + "/", wait_until="networkidle")
         c = [pg.evaluate(f"getComputedStyle(document.querySelector('{sel}')).color") for sel in (".n-stage h1", ".n-stage .n-stats b, .n-stage .n-stats strong, .n-stage .e-stat b, .n-stage .e-stat")]
-        check(f"light {w}: the stage's headline and stats stay light", all(sum(parse(x)) > 600 for x in c), str(c))
+        check(f"light {w}: the stage's headline and stats are dark", all(sum(parse(x)) < 200 for x in c), str(c))
+        check(f"light {w}: the stage panel is light", "226, 236, 230" in pg.evaluate("getComputedStyle(document.querySelector('.n-stage')).backgroundImage"))
+        m = parse(pg.evaluate("getComputedStyle(document.querySelector('.n-stage .e-line')).color"))
+        r = ratio(m, (226, 236, 230))
+        check(f"light {w}: the stage's line reads at 4.5:1 on the panel", r >= 4.5, f"{r:.2f}")
         pg.close()
 
     # Light palette contrast on the page background.
