@@ -4,12 +4,15 @@ import { stack } from "./W3Page";
 import { B, G, type Tech } from "@/lib/tech";
 import { ScreenViewer, type Shot } from "./ScreenViewer";
 import { out, page, proofHref, w3aPart } from "@/lib/links";
+import { FW_PARTS, FW_PART_HREF } from "./FwParts";
 import { APPS, STUDY_APPS, type CaseStudy } from "@/lib/apps";
 
 // A W3Arena part, or an app's own page (lib/apps.ts): the case study plus its neighbours. An app also has its own
 // crumb, mark, address and buttons.
 type Part = CaseStudy & {
   prev: string; next: string;
+  /** A part of Fernway (components/FwParts), not of W3Arena. */
+  fw?: boolean;
   app?: { host: string; mark: string; links: { g: GlyphName; label: string; href: string; primary?: boolean }[] };
 };
 
@@ -288,11 +291,12 @@ const appParts: Record<string, Part> = Object.fromEntries(STUDY_APPS.map((a) => 
   const i = APPS.indexOf(a);
   return [a.id, { ...a.study, prev: APPS[i - 1]?.name ?? "", next: APPS[i + 1]?.name ?? "", app: { host: a.host, mark: a.mark, links: a.links } }];
 }));
-const parts: Record<string, Part> = { ...w3aParts, ...appParts };
+const fwParts: Record<string, Part> = Object.fromEntries(Object.entries(FW_PARTS).map(([k, v]) => [k, { ...v, fw: true }]));
+const parts: Record<string, Part> = { ...w3aParts, ...fwParts, ...appParts };
 export type PartId = string;
 
 // Where a tool is used: read from each page's own Built with row, so the home toolbox never drifts from the pages.
-const partHref: Record<PartId, string> = { ...w3aPart, ...Object.fromEntries(STUDY_APPS.map((a) => [a.id, a.page])) };
+const partHref: Record<PartId, string> = { ...w3aPart, ...FW_PART_HREF, ...Object.fromEntries(STUDY_APPS.map((a) => [a.id, a.page])) };
 // Prev and next name a part by its title, or W3Arena for the overview.
 function partHrefByTitle(title: string): string {
   const app = APPS.find((a) => a.name === title);
@@ -309,27 +313,31 @@ export function usedIn(name: string): ToolPlace[] {
   const names = [name, ...(sameTool[name] ?? [])];
   return (Object.keys(parts) as PartId[])
     .filter((id) => parts[id].tech.some((t) => names.includes(t.name)) || toolOnPage[name]?.includes(id))
-    .map((id) => ({ title: parts[id].title, g: parts[id].g, tone: parts[id].tone, href: partHref[id], app: parts[id].app ? parts[id].app!.host : "W3Arena" }));
+    .map((id) => ({ title: parts[id].title, g: parts[id].g, tone: parts[id].tone, href: partHref[id], app: parts[id].app ? parts[id].app!.host : parts[id].fw ? "Fernway" : "W3Arena" }));
 }
 
 export function W3Part({ id = "website" }: { id?: PartId }) {
   const p = parts[id];
+  // The platform a part belongs to: W3Arena or Fernway (an app's own page has none).
+  const plat = p.fw ? { name: "Fernway", href: page.fernway, host: "fernway.jeromebadour.com", live: out.fernway, label: "Open Fernway" }
+    : { name: "W3Arena", href: page.w3arena, host: "w3arena.pro", live: out.w3arena, label: "w3arena.pro" };
+  const back = (t: string) => t === "W3Arena" || t === "Fernway";
   return (
     <div className="page" data-v="e">
       <EHeader />
 
       <section className="w-top">
-        <div className="w-crumb"><a href={page.home}><Glyph name="grid" size={13} />Apps</a><span>/</span>{!p.app && <><a href={page.w3arena}>W3Arena</a><span>/</span></>}<span>{p.title}</span></div>
+        <div className="w-crumb"><a href={page.home}><Glyph name="grid" size={13} />Apps</a><span>/</span>{!p.app && <><a href={plat.href}>{plat.name}</a><span>/</span></>}<span>{p.title}</span></div>
         <div className="w-title">
           {p.app ? <img src={p.app.mark} alt="" className="w-logo" /> : <span className={`e-tile p-big t-${p.tone}`}><Glyph name={p.g} size={26} /></span>}
           <div>
-            <h1>{p.title} <span className="e-dom">{p.app ? p.app.host : "w3arena.pro"}</span></h1>
+            <h1>{p.title} <span className="e-dom">{p.app ? p.app.host : plat.host}</span></h1>
             <p className="e-line">{p.line}</p>
             <p className="w-aside"><span>›</span>{p.aside}</p>
           </div>
           <div className="w-links">
             {p.app ? p.app.links.map((l) => <a key={l.label} className={`e-btn ${l.primary ? "e-hire" : "e-ghost"}`} href={l.href}><Glyph name={l.g} size={15} />{l.label}</a>)
-              : <a className="e-btn e-hire" href={out.w3arena}><Glyph name="live" size={15} />w3arena.pro</a>}
+              : <a className="e-btn e-hire" href={plat.live}><Glyph name="live" size={15} />{plat.label}</a>}
           </div>
         </div>
         <div className="w-stats">
@@ -354,7 +362,7 @@ export function W3Part({ id = "website" }: { id?: PartId }) {
             </div>
           </li>
         </ol>
-        <ScreenViewer key={id} shots={p.screens} label={`${p.title} screens`} host={p.app ? p.app.host : id === "desktop" || id === "servers" || id === "ai" || id === "standby" ? "W3Arena" : id === "shop" ? "W3Arena Shop" : id === "console" ? "W3Arena Console" : "w3arena.pro"} frame={id === "website" || id === "forum" || p.app ? "browser" : "app"} icon={id === "console" ? "console" : id === "servers" ? "server" : id === "ai" ? "translate" : id === "standby" ? "shield" : "desktop"} />
+        <ScreenViewer key={id} shots={p.screens} label={`${p.title} screens`} host={p.app ? p.app.host : p.fw ? plat.host : id === "desktop" || id === "servers" || id === "ai" || id === "standby" ? "W3Arena" : id === "shop" ? "W3Arena Shop" : id === "console" ? "W3Arena Console" : "w3arena.pro"} frame={id === "website" || id === "forum" || p.app || p.fw ? "browser" : "app"} icon={id === "console" ? "console" : id === "servers" ? "server" : id === "ai" ? "translate" : id === "standby" ? "shield" : "desktop"} />
       </section>
 
       <section className="p-gives">
@@ -379,8 +387,8 @@ export function W3Part({ id = "website" }: { id?: PartId }) {
       </section>
 
       <nav className="p-next">
-        <a href={partHrefByTitle(p.prev)}><Glyph name="arrow" size={14} /><span><small>{p.app ? "Also live" : p.prev === "W3Arena" ? "Back to" : "Previous part"}</small><b>{p.prev}</b></span></a>
-        {p.next && <a href={partHrefByTitle(p.next)} className="r"><span><small>{p.app ? "Also live" : p.next === "W3Arena" ? "Back to" : "Next part"}</small><b>{p.next}</b></span><Glyph name="arrow" size={14} /></a>}
+        <a href={partHrefByTitle(p.prev)}><Glyph name="arrow" size={14} /><span><small>{p.app ? "Also live" : back(p.prev) ? "Back to" : "Previous part"}</small><b>{p.prev}</b></span></a>
+        {p.next && <a href={partHrefByTitle(p.next)} className="r"><span><small>{p.app ? "Also live" : back(p.next) ? "Back to" : "Next part"}</small><b>{p.next}</b></span><Glyph name="arrow" size={14} /></a>}
       </nav>
 
       <EFooter />
@@ -396,5 +404,5 @@ export function proofCard(id: string): ProofCard | null {
   if (!(id in parts)) return null;
   const p = parts[id as PartId];
   const shot = p.screens[0];
-  return { id: id as PartId, title: p.title, g: p.g, tone: p.tone, line: p.line, img: shot.src, fit: shot.fit === "contain", href: partHref[id as PartId], app: p.app ? p.app.host : "W3Arena" };
+  return { id: id as PartId, title: p.title, g: p.g, tone: p.tone, line: p.line, img: shot.src, fit: shot.fit === "contain", href: partHref[id as PartId], app: p.app ? p.app.host : p.fw ? "Fernway" : "W3Arena" };
 }

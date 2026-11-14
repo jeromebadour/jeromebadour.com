@@ -90,6 +90,17 @@ const proofs: Record<string, string> = {
   GitHub: out.distillCode,
   Code: out.distillCode,
   "Live apps": page.home,
+  "fernway.jeromebadour.com": out.fernway,
+  "Break it": out.fernwayBreak,
+  "Console demo": out.fernwayDemo,
+  "Operator demo": out.fernwayOperator,
+  "How delivery works": out.fernwayDelivery,
+  "Fernway status": out.fernwayStatus,
+  "Fernway code": out.fernwayCode,
+  "API docs": out.fernwayDocs,
+  "Plugin docs": `${out.fernway}/docs/wordpress`,
+  Packagist: out.fernwayLaravel,
+  "alderpike.jeromebadour.com": out.alderpike,
 };
 export function proofHref(label: string): string {
   const h = proofs[label];

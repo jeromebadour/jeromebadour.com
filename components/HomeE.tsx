@@ -85,11 +85,11 @@ export function HomeE({ tab = "all" }: { tab?: string }) {
         <div className="e-k"><Glyph name="screen" size={13} />The apps, screen by screen</div>
         <div className="e-board">
           <div className="e-tabs" role="tablist">
-            <a className={`e-tab t-sage${tab === "all" ? " on" : ""}`} href={page.home} data-tab="all" role="tab" aria-selected={tab === "all"}><Glyph name="ai" size={15} />Highlights</a>
+            <a className={`e-tab t-sage${tab === "all" ? " on" : ""}`} href={page.home} data-tab="all" role="tab" aria-selected={tab === "all"} aria-label="Highlights"><Glyph name="ai" size={15} /><span className="e-tab-l">Highlights</span></a>
             {APPS.map((a) => (
-              <a key={a.id} className={`e-tab t-${a.tone}${tab === a.tab ? " on" : ""}`} href={`/?tab=${a.tab}`} data-tab={a.tab} role="tab" aria-selected={tab === a.tab}>
+              <a key={a.id} className={`e-tab t-${a.tone}${tab === a.tab ? " on" : ""}`} href={`/?tab=${a.tab}`} data-tab={a.tab} role="tab" aria-selected={tab === a.tab} aria-label={a.name}>
                 <img src={a.mark} alt="" className={a.markClass} />
-                {"dom" in a.tabNote ? <span className="e-tab-n">{a.name}<span className="e-dom">{a.tabNote.dom}</span></span> : <>{a.name}<span className="e-tab-k">{a.tabNote.kind}</span></>}
+                {"dom" in a.tabNote ? <span className="e-tab-n e-tab-l">{a.name}<span className="e-dom">{a.tabNote.dom}</span></span> : <span className="e-tab-l">{a.name}<span className="e-tab-k">{a.tabNote.kind}</span></span>}
               </a>
             ))}
           </div>

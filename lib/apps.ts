@@ -139,7 +139,15 @@ const alderpike: App = {
       { v: "2.1 s", l: "a live booking signed for in GoHighLevel", g: "route", tone: "amber" },
     ],
     screens: [
-      { src: "/p/alderpike/board.jpg", thumb: "/p/alderpike/board.jpg", cap: "Home", g: "web", fit: "contain" },
+      { src: "/p/alderpike/home.jpg", thumb: "/p/alderpike/home-t.jpg", cap: "Home", g: "web", fit: "contain" },
+      { src: "/p/alderpike/ladder.jpg", thumb: "/p/alderpike/ladder-t.jpg", cap: "How a check works", g: "how", fit: "contain" },
+      { src: "/p/alderpike/card.jpg", thumb: "/p/alderpike/card-t.jpg", cap: "A whole report card", g: "tested", fit: "contain" },
+      { src: "/p/alderpike/rain.jpg", thumb: "/p/alderpike/rain-t.jpg", cap: "Rain and the countdown", g: "live", fit: "contain" },
+      { src: "/p/alderpike/services.jpg", thumb: "/p/alderpike/services-t.jpg", cap: "Services", g: "services", fit: "contain" },
+      { src: "/p/alderpike/check.jpg", thumb: "/p/alderpike/check-t.jpg", cap: "Book a roof check", g: "route", fit: "contain" },
+      { src: "/p/alderpike/about.jpg", thumb: "/p/alderpike/about-t.jpg", cap: "About", g: "about", fit: "contain" },
+      { src: "/p/alderpike/404.jpg", thumb: "/p/alderpike/404-t.jpg", cap: "404", g: "web", fit: "contain" },
+      { src: "/p/alderpike/phone.jpg", thumb: "/p/alderpike/phone-t.jpg", cap: "On a phone", g: "app", fit: "contain" },
     ],
     gives: [
       { g: "web", t: "A site with its own idea and look, never stock theme pages" },

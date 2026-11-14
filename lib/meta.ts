@@ -45,7 +45,7 @@ export function cardFor(key: string): Card | null {
     if (!c) return null;
     // An app's own page is a case study; a W3Arena part shows the address next to its title on its page.
     const app = appById(c.id);
-    return { kicker: app ? `Case study · ${app.name}` : `W3Arena · ${c.app === "W3Arena" ? "w3arena.pro" : c.app}`, title: c.title, line: c.line };
+    return { kicker: app ? `Case study · ${app.name}` : c.app === "Fernway" ? "Fernway · fernway.jeromebadour.com" : `W3Arena · ${c.app === "W3Arena" ? "w3arena.pro" : c.app}`, title: c.title, line: c.line };
   }
   return null;
 }

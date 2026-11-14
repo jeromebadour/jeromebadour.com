@@ -44,7 +44,7 @@ with sync_playwright() as p:
     sent = last_request()["body"]
     content = sent["messages"][0]["content"]
     check("the model asked is Claude Haiku 5.5", sent["model"] == "claude-haiku-5-5")
-    check("the site's 14 pages are sent", len(re.findall(r'<page id="', content)) == 14)
+    check("the site's 24 pages are sent", len(re.findall(r'<page id="', content)) == 24)
     check("header and footer are left out", "Hire on Upwork" not in content and "© 2026" not in content)
     check("no visitor detail goes to the model", "<question>Have you built a payment system?</question>" in content and "x-real-ip" not in json.dumps(last_request()["headers"]).lower())
 

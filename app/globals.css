@@ -84,7 +84,7 @@ input { font: inherit; }
 .e-tabs { display: flex; gap: 4px; padding: 8px; border-bottom: 1px solid var(--rule); background: var(--bg); }
 .e-tab { display: inline-flex; align-items: center; gap: 9px; padding: 7px 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: var(--muted); }
 .e-tab.on { background: var(--card-2); color: var(--ink); box-shadow: inset 0 -2px 0 var(--tone); }
-.e-tab-k { font-family: var(--mono); font-size: 11px; color: var(--tone); }
+.e-tab-k { font-family: var(--mono); font-size: 11px; color: var(--tone); margin-left: 8px; }
 .e-mosaic { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px; }
 .e-shot { position: relative; display: block; height: 172px; border-radius: 8px; overflow: hidden; border: 1px solid var(--rule-strong); }
 .e-shot img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; display: block; }
@@ -167,6 +167,10 @@ input { font: inherit; }
   .e-tab-n { display: flex; flex-direction: column; line-height: 1.15; }
   .e-tab-n .e-dom { margin-left: 0; font-size: 10px; }
   .e-tabs { gap: 2px; }
+  /* Five tabs don't fit a phone: the open one shows its name, the others only their mark (each keeps its name as its
+     label), so every app is in sight without swiping. */
+  .e-tab:not(.on) .e-tab-l { display: none; }
+  .e-tab:not(.on) { padding: 7px 9px; }
 }
 
 .e-nav { gap: 2px; padding: 4px; border: 1px solid var(--rule-strong); border-radius: 10px; background: var(--card); }
