@@ -2,7 +2,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Glyph, type GlyphName } from "./Glyph";
 
-export type Shot = { src: string; thumb: string; cap: string; g: GlyphName; path?: string; fit?: "contain" };
+/** host: the address bar for this shot when it isn't the viewer's own (a screen inside another product). */
+export type Shot = { src: string; thumb: string; cap: string; g: GlyphName; path?: string; fit?: "contain"; host?: string };
 
 export function ScreenViewer({ shots, label, host, frame = "browser", icon = "desktop" }: {
   shots: Shot[]; label: string; host: string; frame?: "browser" | "app"; icon?: GlyphName;
@@ -61,7 +62,7 @@ export function ScreenViewer({ shots, label, host, frame = "browser", icon = "de
       {frame === "browser" ? (
         <>
           <span className="sv-dots" aria-hidden="true"><i /><i /><i /></span>
-          <span className="sv-addr"><Glyph name="shield" size={13} /><b>{host}</b><span>{s.path ?? ""}</span></span>
+          <span className="sv-addr"><Glyph name="shield" size={13} /><b>{s.host ?? host}</b><span>{s.path ?? ""}</span></span>
         </>
       ) : (
         <span className="sv-addr app"><Glyph name={icon} size={13} /><b>{host}</b><span>{s.cap}</span></span>
