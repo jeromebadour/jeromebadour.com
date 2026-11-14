@@ -82,7 +82,7 @@ const w3arena: App = {
 const fernway: App = {
   id: "fernway", name: "Fernway", host: "fernway.jeromebadour.com", mark: "/fernway-mark.svg", markClass: "e-fw", tone: "green",
   page: page.fernway, tab: "fernway", tabNote: { kind: "SaaS for GoHighLevel" },
-  menu: { sub: "Every lead from a website into GoHighLevel, retried, never doubled, with a receipt" },
+  menu: { sub: "Every lead into GoHighLevel, with a receipt" },
   board: {
     shot: "/p/fernway/board.jpg",
     parts: [
@@ -108,7 +108,7 @@ const fernway: App = {
 const alderpike: App = {
   id: "alderpike", name: "Alder & Pike", host: "alderpike.jeromebadour.com", mark: "/alderpike-mark.svg", markClass: "e-ap", tone: "amber",
   page: page.alderpike, tab: "alderpike", tabNote: { kind: "WordPress site" },
-  menu: { sub: "A roofer's website on WordPress, built from scratch: every roof gets a report card" },
+  menu: { sub: "A roofer's WordPress site, built from scratch" },
   board: {
     shot: "/p/alderpike/board.jpg",
     parts: [

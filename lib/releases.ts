@@ -9,6 +9,9 @@ export const RELEASES: Record<string, { latest: string; dates: string[]; note: s
     dates: ["2026-08-10", "2026-09-10", "2026-09-25", "2026-09-27", "2026-09-30", "2026-10-01", "2026-10-10", "2026-10-15",
       "2026-10-24", "2026-10-25", "2026-10-28", "2026-10-30", "2026-10-31", "2026-11-03", "2026-11-06", "2026-11-08"],
   },
+  // Fernway's and Alder & Pike's: the days they were deployed (GHL-BUILD.md; Fernway's own changelog has every deploy).
+  fernway: { latest: "live", note: "Live since 9 Nov", dates: ["2026-11-09", "2026-11-10", "2026-11-11", "2026-11-12", "2026-11-13", "2026-11-14"] },
+  alderpike: { latest: "live", note: "Live since 14 Nov", dates: ["2026-11-14"] },
   distill: { latest: "live", note: "Live since 7 Nov", dates: ["2026-11-07", "2026-11-08"] },
   // This site: the days it was deployed (the deploy log on the box; add the day with each deploy).
   site: { latest: "live", note: "Live since 9 Nov", dates: ["2026-11-09", "2026-11-10"] },

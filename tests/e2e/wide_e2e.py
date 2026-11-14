@@ -8,6 +8,7 @@ from common import BASE, CHROME, check, finish, sql
 
 COL = 1440
 PAGES = ["/", "/work/w3arena", "/work/w3arena/website", "/work/w3arena/shop", "/work/w3arena/reliability",
+         "/work/fernway", "/work/fernway/delivery-engine", "/work/fernway/inside-ghl", "/work/alderpike",
          "/work/distill", "/services", "/how-i-work", "/about", "/ask", "/message", "/privacy", "/terms",
          "/?via=upwork", "/work/w3arena?via=upwork", "/for/wide-check", "/no-such-page"]
 SIZES = [("1920", 1920, 1080, 1), ("2560", 2560, 1440, 1), ("33% zoom", 5818, 3273, 0.33)]
@@ -52,6 +53,15 @@ with sync_playwright() as p:
             same = all(m[k] == r[k] for k in ("brand", "title", "hire"))
             check(f"{label} {path}: laid out as at 1440", same, f"{ {k: (r[k], m[k]) for k in ('brand', 'title', 'hire')} }")
             check(f"{label} {path}: first section no taller than at 1440", m["firstH"] <= r["firstH"], f"{r['firstH']} -> {m['firstH']}")
+        pg.close()
+    # Laptop widths (BUILD-RULES 2.17): the header's last button inside the window. Found 2026-11-14: the theme
+    # switch made the header 22 px wider than a 1366 screen, cutting Hire on Upwork.
+    for w, h in ((1280, 720), (1366, 650), (1400, 800), (1536, 730)):
+        pg = b.new_page(viewport={"width": w, "height": h})
+        for path in ["/", "/work/fernway", "/?via=upwork"]:
+            pg.goto(BASE + path, wait_until="networkidle")
+            right = pg.evaluate("Math.max(...[...document.querySelectorAll('.e-hdr *')].filter(e => e.checkVisibility()).map(e => e.getBoundingClientRect().right))")
+            check(f"{w} {path}: the header fits the window", right <= w, f"{right:.0f} > {w}")
         pg.close()
     b.close()
 
