@@ -33,7 +33,7 @@ input { font: inherit; }
 [data-v="e"] .t-amber { --tone: var(--t-amber); } [data-v="e"] .t-violet { --tone: var(--t-violet); } [data-v="e"] .t-green { --tone: var(--t-green); }
 [data-v="e"] .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 3px color-mix(in srgb, var(--live) 22%, transparent); flex: none; }
 .e-tile { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 8px; color: var(--tone); background: color-mix(in srgb, var(--tone) 14%, transparent); border: 1px solid color-mix(in srgb, var(--tone) 30%, transparent); }
-.e-w3a { width: 24px; height: 24px; } .e-dm { width: 22px; height: 22px; }
+.e-w3a { width: 24px; height: 24px; } .e-dm { width: 22px; height: 22px; } .e-fw, .e-ap { width: 22px; height: 22px; }
 .e-k { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 
 .e-hdr { display: flex; align-items: center; gap: 26px; padding: 14px 56px; border-bottom: 1px solid var(--rule); background: var(--bg); position: relative; z-index: 5; }
@@ -276,6 +276,33 @@ html:has([data-v="e"]), body:has([data-v="e"]) { background: var(--bg); }
 .w-chain b { display: block; font-weight: 600; font-size: 14.5px; }
 .w-chain small { display: block; font-size: 12.5px; color: var(--muted); }
 .w-chain li a > svg:last-child { margin-left: auto; color: var(--muted); }
+/* Fernway's route map (components/FwPage): ways in, the four scans, GoHighLevel and back out. The lines carry a slow
+   flow in each node's own colour; still under reduced motion. */
+.f-map { height: 720px; }
+.f-lines g path { stroke: var(--rule-strong); }
+.f-lines g path.flow { stroke: var(--tone); stroke-dasharray: 0.1 13; stroke-width: 3.2; stroke-linecap: round; opacity: .9; animation: f-flow 2.6s linear infinite; }
+@keyframes f-flow { to { stroke-dashoffset: -26.2; } }
+@media (prefers-reduced-motion: reduce) { .f-lines g path.flow { animation: none; } }
+.f-col { position: absolute; transform: translate(-50%, -50%); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.f-core { width: 300px; align-items: stretch; text-align: left; gap: 10px; padding: 16px; border-color: var(--tone); }
+.f-core:hover { background: var(--card-2); }
+.f-core-h { display: flex; align-items: center; gap: 10px; }
+.f-core-h img { width: 30px; height: 30px; }
+.f-core-h b { font-family: var(--display); font-weight: 700; font-size: 17px; }
+.f-core-h > svg { margin-left: auto; color: var(--muted); }
+.f-scans { list-style: none; display: grid; gap: 2px; }
+.f-scans li { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.f-scans li + li { border-top: 1px dashed var(--rule); }
+.f-scans .e-tile { width: 26px; height: 26px; color: var(--tone); }
+.f-scans b { display: block; font-weight: 600; font-size: 13.5px; }
+.f-scans small { display: block; font-size: 12px; color: var(--muted); }
+.f-retry { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); padding-top: 8px; border-top: 1px solid var(--rule); }
+.f-retry svg { color: var(--t-amber); flex: none; }
+.f-honest { display: flex; gap: 9px; align-items: flex-start; margin-top: 14px; font-size: 13px; color: var(--muted); max-width: 900px; }
+.f-honest svg { flex: none; margin-top: 2px; color: var(--t-green); }
+.f-chain-core { display: grid; gap: 10px; padding: 14px; margin-bottom: 8px; border: 1px solid var(--tone); border-radius: 12px; background: var(--card); }
+.f-chain-k { display: block; margin-top: 16px; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.f-chain ol { list-style: none; }
 @media (max-width: 720px) {
   .w-top { padding: 16px 16px 20px; } .w-mapsec { padding: 16px 16px 28px; } .w-live { padding: 16px 16px 24px; }
   .w-title { grid-template-columns: auto 1fr; } .w-links { grid-column: 1 / -1; }

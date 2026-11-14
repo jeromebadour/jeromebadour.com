@@ -1,4 +1,7 @@
-import { siDiscord, siGithub, siUpwork, siNodedotjs, siJavascript, siElectron, siCplusplus, siMysql, siRedis, siDocker, siNginx, siCloudflare, siClaude, siPaypal, siLinux, siSocketdotio, siHtml5, siCss, siGnubash, siC, siNsis, siGo, siPython, siWebrtc, siWireguard, siPm2, siGit, siTypescript, siReact, siNextdotjs, siPostgresql } from "simple-icons";
+import { siDiscord, siGithub, siUpwork, siNodedotjs, siJavascript, siElectron, siCplusplus, siMysql, siRedis, siDocker, siNginx, siCloudflare, siClaude, siPaypal, siLinux, siSocketdotio, siHtml5, siCss, siGnubash, siC, siNsis, siGo, siPython, siWebrtc, siWireguard, siPm2, siGit, siTypescript, siReact, siNextdotjs, siPostgresql,
+  siWordpress, siLaravel, siPhp, siStripe, siN8n, siMake, siGooglesheets, siElementor, siDrizzle, siZod, siVitest,
+  siOpenapiinitiative, siComposer, siPackagist, siMariadb, siGithubactions,
+} from "simple-icons";
 // One glyph set for the whole site (BUILD-RULES 2.1): every clickable thing starts with one.
 type Name =
   | "upwork" | "message" | "ask" | "live" | "release" | "demo" | "code" | "screen"
@@ -6,7 +9,7 @@ type Name =
   | "chevron" | "web" | "app" | "desktop" | "ai" | "server" | "grid"
   | "forum" | "shop" | "console" | "translate" | "region"
   | "search" | "tested" | "mail" | "shield" | "expand" | "close" | "pause" | "signout"
-  | "sun" | "moon" | "system";
+  | "sun" | "moon" | "system" | "route" | "retry" | "receipt" | "hook" | "sheet";
 
 // Night shift glyphs (BUILD-RULES 2.27): drawn for this site on a 24 grid, 1.8 stroke, round caps and joins, soft
 // 2-unit corners, and on most glyphs one filled "signal" dot that marks the live or active part. Each action keeps its
@@ -53,6 +56,12 @@ const paths: Record<Name, G> = {
   sun: { d: "M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8zM12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1" },
   moon: { d: "M19.5 14.6A7.5 7.5 0 0 1 9.4 4.5a7.5 7.5 0 1 0 10.1 10.1z", dot: [17.5, 6.5] },
   system: { d: "M4 4h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM9 20h6M12 16v4M12 4v12", dot: [8, 10] },
+  // Fernway's section (2026-11-14): a lead's route, a retry, a receipt, a signed webhook out, a sheet.
+  route: { d: "M7 18h6a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h6.5M4 18a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0z", dot: [19.5, 6] },
+  retry: { d: "M19 12a7 7 0 1 1-2.05-4.95M19 4.5V8h-3.5", dot: [12, 12] },
+  receipt: { d: "M6 3h12v18l-2.5-1.5L13 21l-2-1.5L8.5 21 6 19.5zM9 8h6M9 11.5h6M9 15h3" },
+  hook: { d: "M9 16a3.5 3.5 0 1 1 2.3-6.1M12 12.5l2.5 4.5M15 7.5a3.5 3.5 0 0 1 3 5.3M14.5 17H20", dot: [9, 16] },
+  sheet: { d: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM4 9.5h16M4 14.5h16M10 9.5V20" },
 };
 
 export function Glyph({ name, size = 16 }: { name: Name; size?: number }) {
@@ -75,6 +84,9 @@ const brands = {
   socketio: siSocketdotio, html: siHtml5, css: siCss, bash: siGnubash, c: siC, nsis: siNsis, go: siGo, python: siPython,
   webrtc: siWebrtc, wireguard: siWireguard, pm2: siPm2, git: siGit,
   ts: siTypescript, react: siReact, next: siNextdotjs, postgres: siPostgresql,
+  wordpress: siWordpress, laravel: siLaravel, php: siPhp, stripe: siStripe, n8n: siN8n, make: siMake,
+  sheets: siGooglesheets, elementor: siElementor, drizzle: siDrizzle, zod: siZod, vitest: siVitest,
+  openapi: siOpenapiinitiative, composer: siComposer, packagist: siPackagist, mariadb: siMariadb, actions: siGithubactions,
 } as const;
 // The brand's own colour when it reads on the dark cards (4.5:1 or more on the chip, measured); otherwise the ink colour.
 function lum(hex: string) {

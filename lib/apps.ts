@@ -1,7 +1,7 @@
 import type { BrandName, GlyphName } from "@/components/Glyph";
 import type { Shot } from "@/components/ScreenViewer";
 import { B, G, type Tech } from "./tech";
-import { out, page, w3aPart } from "./links";
+import { fwPart, out, page, w3aPart } from "./links";
 
 // Every app shown on the site, in the order the site shows them. Each one appears in the same places: the Apps menu
 // (header and phone), its tab on the home board (parts, picture, footer link), its own page under /work/, the proof
@@ -26,7 +26,7 @@ export type CaseStudy = {
   proofs: { kind: "live" | "release" | "demo" | "code"; label: string }[];
 };
 
-export type AppId = "w3arena" | "distill";
+export type AppId = "w3arena" | "fernway" | "alderpike" | "distill";
 type BoardPart = { g: GlyphName; tone: string; title: string; sub: string; href: string };
 type Outside = { label: string; href: string; kind: "release" | "demo" | "code" | "live" };
 
@@ -76,6 +76,80 @@ const w3arena: App = {
   },
   privacy: `${out.w3arena}/privacy`,
   links: [{ g: "live", label: "w3arena.pro", href: out.w3arena, primary: true }],
+};
+
+// Fernway is the second platform with an overview and parts of its own (components/FwPage, /work/fernway/<part>).
+const fernway: App = {
+  id: "fernway", name: "Fernway", host: "fernway.jeromebadour.com", mark: "/fernway-mark.svg", markClass: "e-fw", tone: "green",
+  page: page.fernway, tab: "fernway", tabNote: { kind: "SaaS for GoHighLevel" },
+  menu: { sub: "Every lead from a website into GoHighLevel, retried, never doubled, with a receipt" },
+  board: {
+    shot: "/p/fernway/board.jpg",
+    parts: [
+      { g: "route", tone: "green", title: "Delivery engine", sub: "8 tries over 24 h, 0 duplicates", href: fwPart.engine },
+      { g: "retry", tone: "amber", title: "Break it", sub: "Make GHL fail, watch the lead arrive", href: out.fernwayBreak },
+      { g: "console", tone: "violet", title: "Two consoles", sub: "Customer and operator, public demos", href: fwPart.consoles },
+      { g: "app", tone: "blue", title: "Inside GoHighLevel", sub: "Workflow step, trigger, its own page", href: fwPart.ghl },
+      { g: "code", tone: "sage", title: "WordPress and Laravel", sub: "A plugin, a package on Packagist", href: fwPart.wordpress },
+      { g: "hook", tone: "red", title: "Automations", sub: "Signed webhooks, n8n, Make, Sheets", href: fwPart.automations },
+    ],
+    foot: { brand: "github", label: "Code on GitHub", sub: "260+ tests, every change through CI", href: out.fernwayCode },
+  },
+  outside: {
+    "fernway-live": { label: "fernway.jeromebadour.com", href: out.fernway, kind: "live" },
+    "fernway-break": { label: "Break it", href: out.fernwayBreak, kind: "demo" },
+    "fernway-demo": { label: "Console demo", href: out.fernwayDemo, kind: "demo" },
+    "fernway-code": { label: "Fernway code", href: out.fernwayCode, kind: "code" },
+  },
+  privacy: `${out.fernway}/privacy`,
+  links: [{ g: "live", label: "Open Fernway", href: out.fernway, primary: true }, { g: "retry", label: "Break it", href: out.fernwayBreak }, { g: "demo", label: "Console demo", href: out.fernwayDemo }, { g: "code", label: "Code", href: out.fernwayCode }],
+};
+
+const alderpike: App = {
+  id: "alderpike", name: "Alder & Pike", host: "alderpike.jeromebadour.com", mark: "/alderpike-mark.svg", markClass: "e-ap", tone: "amber",
+  page: page.alderpike, tab: "alderpike", tabNote: { kind: "WordPress site" },
+  menu: { sub: "A roofer's website on WordPress, built from scratch: every roof gets a report card" },
+  board: {
+    shot: "/p/alderpike/board.jpg",
+    parts: [
+      { g: "web", tone: "amber", title: "Its own idea", sub: "Every roof gets a report card", href: page.alderpike },
+      { g: "code", tone: "blue", title: "Block theme", sub: "From scratch, edited in the Site Editor", href: page.alderpike },
+      { g: "route", tone: "green", title: "Booking form", sub: "Real free times, into GoHighLevel", href: page.alderpike },
+      { g: "live", tone: "sage", title: "Storm countdown", sub: "Live, so it never goes stale", href: page.alderpike },
+      { g: "tested", tone: "violet", title: "Lighthouse", sub: "91+ speed, 100 accessibility, mobile", href: page.alderpike },
+      { g: "server", tone: "red", title: "Backups", sub: "Nightly, off the box, restore tested", href: page.alderpike },
+    ],
+    foot: { g: "live", label: "alderpike.jeromebadour.com", sub: "an invented business, a real site", href: out.alderpike },
+  },
+  outside: {
+    "alderpike-live": { label: "alderpike.jeromebadour.com", href: out.alderpike, kind: "live" },
+  },
+  privacy: `${out.alderpike}/privacy`,
+  links: [{ g: "live", label: "Open the site", href: out.alderpike, primary: true }, { g: "code", label: "Code", href: out.fernwayCode }],
+  study: {
+    title: "Alder & Pike", g: "web", tone: "amber",
+    line: "A complete WordPress site for an invented Tacoma roofer, built from scratch, that books roof checks straight into GoHighLevel.",
+    aside: "This page has a leak. Only the 404, though.",
+    need: "WordPress jobs ask for a finished site to look at, not a theme demo: a real-looking business, its own look, a form that actually goes somewhere.",
+    built: "A block theme made from scratch (theme.json, templates, patterns of core blocks), so the owner edits words and pictures in the Site Editor without breaking the design. Its idea: every roof gets a report card, each part graded A to F with a photo. A live storm-season countdown, Tacoma's rain by month, and a booking form that picks a real free time and sends the lead into GoHighLevel through Fernway's plugin.",
+    result: "Live at alderpike.jeromebadour.com. A real booking from the live site was signed for in GoHighLevel in 2.1 s on the first try. Kept out of search on purpose: the roofer is invented.",
+    stats: [
+      { v: "91+", l: "Lighthouse mobile speed on every page", g: "tested", tone: "green" },
+      { v: "100", l: "accessibility and best practices", g: "shield", tone: "violet" },
+      { v: "2.1 s", l: "a live booking signed for in GoHighLevel", g: "route", tone: "amber" },
+    ],
+    screens: [
+      { src: "/p/alderpike/board.jpg", thumb: "/p/alderpike/board.jpg", cap: "Home", g: "web", fit: "contain" },
+    ],
+    gives: [
+      { g: "web", t: "A site with its own idea and look, never stock theme pages" },
+      { g: "code", t: "A block theme you edit in WordPress itself, without breaking the design" },
+      { g: "route", t: "Forms that reach your CRM, with real free times and a receipt" },
+      { g: "tested", t: "Fast on phones, measured, and backed up every night" },
+    ],
+    tech: [B("WordPress", "wordpress"), B("PHP", "php"), G("Block theme", "code"), B("Elementor widget", "elementor"), B("MariaDB", "mariadb"), B("Docker", "docker"), B("Nginx", "nginx")],
+    proofs: [{ kind: "live", label: "alderpike.jeromebadour.com" }],
+  },
 };
 
 const distill: App = {
@@ -134,7 +208,7 @@ const distill: App = {
   },
 };
 
-export const APPS: App[] = [w3arena, distill];
+export const APPS: App[] = [w3arena, fernway, alderpike, distill];
 
 /** Apps with a page of their own at /work/<id> (every app but W3Arena). */
 export const STUDY_APPS = APPS.filter((a): a is App & { study: CaseStudy } => !!a.study);

@@ -5,6 +5,8 @@ export const page = {
   home: "/",
   w3arena: "/work/w3arena",
   distill: "/work/distill",
+  fernway: "/work/fernway",
+  alderpike: "/work/alderpike",
   services: "/services",
   how: "/how-i-work",
   about: "/about",
@@ -13,6 +15,18 @@ export const page = {
   privacy: "/privacy",
   terms: "/terms",
   admin: "/admin",
+} as const;
+
+// Fernway's parts, in the order the site walks through them (one lead's route, then what's around it).
+export const fwPart = {
+  engine: "/work/fernway/delivery-engine",
+  site: "/work/fernway/public-site",
+  ghl: "/work/fernway/inside-ghl",
+  wordpress: "/work/fernway/wordpress",
+  laravel: "/work/fernway/api-and-laravel",
+  automations: "/work/fernway/automations",
+  consoles: "/work/fernway/consoles",
+  billing: "/work/fernway/accounts-and-billing",
 } as const;
 
 // W3Arena's parts, in the order the site walks through them.
@@ -38,6 +52,17 @@ export const out = {
   distillDemo: "https://distill.jeromebadour.com/demo/admin",
   distillCode: "https://github.com/jeromebadour/ai-summarizer",
   distillTests: "https://github.com/jeromebadour/ai-summarizer/actions",
+  fernway: "https://fernway.jeromebadour.com",
+  fernwayBreak: "https://fernway.jeromebadour.com/break-it",
+  fernwayDemo: "https://fernway.jeromebadour.com/demo/console",
+  fernwayOperator: "https://fernway.jeromebadour.com/demo/operator",
+  fernwayDelivery: "https://fernway.jeromebadour.com/delivery",
+  fernwayDocs: "https://fernway.jeromebadour.com/docs",
+  fernwayStatus: "https://fernway.jeromebadour.com/status",
+  fernwayChangelog: "https://fernway.jeromebadour.com/changelog",
+  fernwayCode: "https://github.com/jeromebadour/fernway",
+  fernwayLaravel: "https://packagist.org/packages/jeromebadour/fernway-laravel",
+  alderpike: "https://alderpike.jeromebadour.com",
 } as const;
 
 // Where each proof chip leads, by its label. A label missing here fails the build's link check.

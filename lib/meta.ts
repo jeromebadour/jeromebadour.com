@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { HOW_COUNT } from "@/components/HowPage";
 import { W3A_LINE } from "@/components/W3Page";
+import { FW_LINE } from "@/components/FwPage";
 import { proofCard, type PartId } from "@/components/W3Part";
 import { LEGAL_UPDATED } from "@/lib/legal";
 import { appById } from "@/lib/apps";
@@ -21,6 +22,10 @@ const pages: Record<string, Card & { path: string; tab: string }> = {
   w3arena: {
     path: "/work/w3arena", tab: "W3Arena", kicker: "Case study · w3arena.pro", title: "W3Arena",
     line: W3A_LINE,
+  },
+  fernway: {
+    path: "/work/fernway", tab: "Fernway", kicker: "Case study · fernway.jeromebadour.com", title: "Fernway",
+    line: FW_LINE,
   },
   services: { path: "/services", tab: "Services", kicker: "Services", title: "Services", line: "From a quick bug fix to a full platform. Small jobs are welcome." },
   "how-i-work": { path: "/how-i-work", tab: "How I work", kicker: "How I work", title: "How I work", line: `${HOW_COUNT} things I do on every job, each with the proof it happened.` },
