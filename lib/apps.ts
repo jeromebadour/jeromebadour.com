@@ -68,7 +68,8 @@ const w3arena: App = {
       { g: "console", tone: "violet", title: "Admin console", sub: "Roles, permissions, audit log", href: w3aPart.console },
       { g: "server", tone: "green", title: "Servers", sub: "80+ servers in 6+ regions", href: w3aPart.servers },
     ],
-    foot: { g: "release", label: "Release W3Arena 5.1.5", sub: "6 Nov 2026 · 6 changes", href: out.w3aChangelog },
+    // The home page draws this footer from W3Arena's changelog feed (lib/server/board.ts); this is its fallback.
+    foot: { g: "release", label: "Release W3Arena 5.1.10", sub: "14 Nov 2026 · 34 changes", href: out.w3aChangelog },
   },
   outside: {
     changelog: { label: "Changelog", href: out.w3aChangelog, kind: "release" },

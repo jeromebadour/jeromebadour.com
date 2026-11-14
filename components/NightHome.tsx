@@ -4,7 +4,7 @@ import { SelfRow } from "./SelfRow";
 import { LocalTime } from "./LocalTime";
 import { AwakeBand } from "./AwakeBand";
 import { APPS } from "@/lib/apps";
-import { BOARD_SINCE, RELEASES } from "@/lib/releases";
+import { BOARD_SINCE, type Board } from "@/lib/releases";
 import { out } from "@/lib/links";
 
 // Night shift pieces only the home page has (BUILD-RULES 2.27): the framed art stage, the person card and the service
@@ -79,7 +79,11 @@ function Ticks({ dates }: { dates: string[] }) {
   );
 }
 
-export function ServiceBoard() {
+const fmtDay = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
+/** The board, as read by lib/server/board.ts. */
+export function ServiceBoard({ releases: RELEASES }: { releases: Board }) {
+  const w = RELEASES.w3arena;
   return (
     <div className="n-board">
       <div className="n-board-h"><span>Service board</span><span className="n-ok">{APPS.length} live + this site · run by one person</span></div>
@@ -94,7 +98,7 @@ export function ServiceBoard() {
         );
       })}
       <SelfRow note={RELEASES.site.note} ticks={<Ticks dates={RELEASES.site.dates} />} />
-      <a className="n-board-f" href={out.w3aChangelog}><Glyph name="release" size={15} /><b>Latest W3Arena {RELEASES.w3arena.latest}</b><span>8 Nov 2026 · from the public changelog</span><Glyph name="arrow" size={14} /></a>
+      <a className="n-board-f" href={w.latestUrl ?? out.w3aChangelog}><Glyph name="release" size={15} /><b>Latest W3Arena {w.latest}</b><span>{w.latestDate ? `${fmtDay(w.latestDate)} · ` : ""}from the public changelog</span><Glyph name="arrow" size={14} /></a>
     </div>
   );
 }

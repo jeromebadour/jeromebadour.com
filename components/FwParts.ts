@@ -94,6 +94,9 @@ export const FW_PARTS: Record<FwPartId, FwPart> = {
       { v: "Signed", l: "every webhook from GHL checked, Ed25519", g: "shield", tone: "green" },
     ],
     screens: [
+      shot("ghl", "in-ghl", "Fernway in GHL's own menu", "app"),
+      shot("ghl", "workflow-step", "Track with Fernway, a GHL workflow step", "route"),
+      shot("ghl", "pipeline", "The pipeline Fernway fills", "grid"),
       shot("ghl", "connection", "GHL connection", "app"),
       shot("ghl", "connection-2", "Token health, answers", "shield"),
       shot("ghl", "routes", "Routes from GHL's pipelines", "route"),

@@ -88,6 +88,17 @@ print("PASSED" if ok else "NOT PASSED")') || stop "could not read CI from GitHub
   code=$(curl -s -o /dev/null -w '%{http_code}' "$site/api/health")
   [ "$code" = 200 ] || stop "$site/api/health answered $code"
 
+  # Every deploy, recorded for the home page's service board: one row per deploy log (YYYYMMDD-HHMM-<commit>.log) whose
+  # build started the app, so the days since the first deploy are all there, a failed build is never counted, and a
+  # deploy never has to be typed in by hand.
+  echo "== recording the deploys"
+  local rows
+  rows=$(cd "$logs" && grep -l 'jeromebadour-app-1 *Started' ./*.log 2>/dev/null | sed -n 's#^\./\([0-9]\{8\}\)-\([0-9]\{4\}\)-\([0-9a-f]\{7\}\)\.log$#(\x27\3\x27, \x27\1 \2 UTC\x27::timestamptz)#p' | paste -sd, -)
+  [ -n "$rows" ] || stop "no deploy logs to record in $logs"
+  docker compose --env-file "$env" exec -T db psql -X -q -v ON_ERROR_STOP=1 -U postgres -d site \
+    -c "insert into deploys (commit, at) values $rows on conflict (commit) do nothing" || stop "could not record the deploys"
+  echo "   $(docker compose --env-file "$env" exec -T db psql -X -At -U postgres -d site -c "select count(*) || ' deploys on ' || count(distinct (at at time zone 'UTC')::date) || ' days' from deploys")"
+
   # The site's timers, installed from this commit: visits every 15 minutes, the purge hourly, the nightly backup and
   # the weekly restore test. The visits and the purge run once now, so the console is current at once.
   echo "== the site's timers"

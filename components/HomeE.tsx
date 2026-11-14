@@ -7,6 +7,7 @@ import { usedIn } from "./W3Part";
 import { ToolChip } from "./ToolChip";
 import { AwakeBand, PersonCard, ServiceBoard, SignalArt } from "./NightHome";
 import { BoardTabs } from "./BoardTabs";
+import { board } from "@/lib/server/board";
 
 // The link under each board panel: Highlights shows the first app's, an app's tab its own.
 function BoardFoot({ f }: { f: (typeof APPS)[number]["board"]["foot"] }) {
@@ -59,7 +60,12 @@ const toolbox: { part: string; g: GlyphName; tone: string; tech: Tech[]; note: s
 const toolCount = new Set(toolbox.flatMap((r) => r.tech.map((t) => t.name))).size;
 
 /** tab: "all" (Highlights) or an app's tab (lib/apps.ts). */
-export function HomeE({ tab = "all" }: { tab?: string }) {
+export async function HomeE({ tab = "all" }: { tab?: string }) {
+  const releases = await board();
+  // W3Arena's newest release, as the board read it: the footer of the Highlights and W3Arena panels.
+  const w = releases.w3arena;
+  const w3aFoot = { g: "release" as GlyphName, label: `Release W3Arena ${w.latest}`, sub: `${w.latestDate ? new Date(`${w.latestDate}T00:00:00Z`).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : ""}${w.latestChanges ? ` · ${w.latestChanges} changes` : ""}`, href: w.latestUrl ?? out.w3aChangelog };
+  const footFor = (a: (typeof APPS)[number]) => (a.id === "w3arena" ? w3aFoot : a.board.foot);
   return (
     <div className="page" data-v="e">
       <EHeader on="apps" />
@@ -81,7 +87,7 @@ export function HomeE({ tab = "all" }: { tab?: string }) {
             ))}
           </div>
         </div>
-        <div className="n-stage-r"><ServiceBoard /></div>
+        <div className="n-stage-r"><ServiceBoard releases={releases} /></div>
       </section>
       <AwakeBand />
 
@@ -107,7 +113,7 @@ export function HomeE({ tab = "all" }: { tab?: string }) {
                 </a>
               ))}
             </div>
-            <BoardFoot f={APPS[0].board.foot} />
+            <BoardFoot f={footFor(APPS[0])} />
           </div>
           {APPS.map((a) => (
             <div key={a.id} className={`e-panel${tab === a.tab ? " on" : ""}`} data-panel={a.tab}>
@@ -125,7 +131,7 @@ export function HomeE({ tab = "all" }: { tab?: string }) {
                   ))}
                 </div>
               </div>
-              <BoardFoot f={a.board.foot} />
+              <BoardFoot f={footFor(a)} />
             </div>
           ))}
           <BoardTabs />

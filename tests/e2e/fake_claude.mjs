@@ -9,6 +9,12 @@ import http from "node:http";
 const port = Number(process.argv[2] || 4010);
 const host = process.argv[3] || "127.0.0.1";
 let last = null;
+// W3Arena's public changelog feed (the home page's service board reads it): POST /__w3a {status, body} sets the answer.
+let w3a = { status: 200, body: { success: true, versions: [
+  { version: "9.9.9", date: "2026-11-13", intro: "x", sections: [{ title: "Launcher", items: [{ text: "a" }, { text: "b", tag: "Fixed" }] }, { title: "Site", items: [{ text: "c" }] }] },
+  { version: "9.9.8", date: null, intro: "x", sections: [] },
+  { version: "9.9.7", date: "2026-09-01", intro: "x", sections: [{ title: "Site", items: [{ text: "d" }] }] },
+] } };
 
 async function sse(res, lines, delayMs, inputTokens) {
   res.writeHead(200, { "content-type": "text/event-stream", "request-id": "req_fake" });
@@ -42,6 +48,16 @@ http
     if (req.method === "GET" && req.url === "/last") {
       res.writeHead(200, { "content-type": "application/json" });
       return res.end(JSON.stringify(last));
+    }
+    if (req.method === "GET" && req.url === "/w3a-changelog") {
+      res.writeHead(w3a.status, { "content-type": "application/json", "cache-control": "no-store" });
+      return res.end(typeof w3a.body === "string" ? w3a.body : JSON.stringify(w3a.body));
+    }
+    if (req.method === "POST" && req.url === "/__w3a") {
+      let raw = "";
+      req.on("data", (c) => (raw += c));
+      req.on("end", () => { w3a = { ...w3a, ...JSON.parse(raw) }; res.writeHead(204); res.end(); });
+      return;
     }
     let raw = "";
     req.on("data", (c) => (raw += c));

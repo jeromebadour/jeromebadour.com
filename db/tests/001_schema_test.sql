@@ -145,5 +145,25 @@ begin
   assert (select count(*) from limit_hits) = 1, 'a recent limit hit was purged';
 end $$;
 
+-- 8. The service board: the app reads the deploy records but can't write them (only deploy.sh, as the owner); it
+--    keeps the feeds' last good copy, but only under a plain name.
+do $$ begin
+  perform count(*) from deploys;
+  begin
+    insert into deploys (commit, at) values ('aaaaaaa', now());
+    raise exception 'site_app wrote a deploy';
+  exception when insufficient_privilege then null; end;
+  insert into feeds (name, body) values ('w3arena', '{"success": true}');
+  update feeds set body = '{"success": false}' where name = 'w3arena';
+  begin
+    delete from feeds;
+    raise exception 'site_app deleted a feed';
+  exception when insufficient_privilege then null; end;
+  begin
+    insert into feeds (name, body) values ('../etc', '{}');
+    raise exception 'a feed took a bad name';
+  exception when check_violation then null; end;
+end $$;
+
 reset role;
 \echo 001 schema ok

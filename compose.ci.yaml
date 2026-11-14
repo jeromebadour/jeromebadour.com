@@ -7,6 +7,9 @@ services:
   app:
     environment:
       ANTHROPIC_BASE_URL: http://host.docker.internal:4010
+      # W3Arena's changelog feed, from the same fake, read every second so the board suite sees changes.
+      W3A_FEED_URL: http://host.docker.internal:4010/w3a-changelog
+      W3A_FEED_EVERY_MS: "1000"
       # Emails land as files the browser suites read (no Resend in CI).
       EMAIL_OUTBOX: /outbox
       APP_URL: http://localhost:3102
