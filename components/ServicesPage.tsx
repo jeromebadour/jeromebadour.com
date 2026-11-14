@@ -29,7 +29,14 @@ const services: Service[] = [
     d: "From one landing page to a full web app with accounts, live data and an admin behind it, on phone and desktop.",
     stats: [["14+", "public pages on w3arena.pro"], ["9,400+", "accounts on it"]],
     shot: { src: "/p/web/home.jpg", frame: "browser", host: "w3arena.pro", path: "/" },
-    links: [{ kind: "page", label: "W3Arena website", href: "/work/w3arena/website" }, { kind: "page", label: "Distill", href: "/work/distill" }, { kind: "live", label: "w3arena.pro", href: "https://w3arena.pro" }],
+    links: [{ kind: "page", label: "W3Arena website", href: "/work/w3arena/website" }, { kind: "page", label: "Alder & Pike", href: "/work/alderpike" }, { kind: "page", label: "Distill", href: "/work/distill" }, { kind: "live", label: "w3arena.pro", href: "https://w3arena.pro" }],
+  },
+  {
+    id: "crm", kind: "build", g: "hook", t: "Connect your website or app to GoHighLevel",
+    d: "Forms, bookings and payments into your CRM: no contact made twice, nothing lost when the CRM is down, and every hand-off on record. Webhooks, n8n and Make flows too.",
+    stats: [["8 tries", "over 24 h when GoHighLevel says no"], ["0", "duplicate contacts, matched by email, then phone"]],
+    shot: { src: "/p/fernway/consoles/board.jpg", frame: "browser", host: "fernway.jeromebadour.com", path: "/demo/console", fit: true },
+    links: [{ kind: "page", label: "Fernway", href: "/work/fernway" }, { kind: "demo", label: "Break it", href: out.fernwayBreak }, { kind: "page", label: "WordPress plugin", href: "/work/fernway/wordpress" }],
   },
   {
     id: "feature", kind: "build", g: "grid", t: "Add a feature to a project you already have",
@@ -57,7 +64,7 @@ const services: Service[] = [
     d: "Checkout, receipts and refunds with Stripe, PayPal, crypto or a local provider, and an admin view of every payment.",
     stats: [["3+", "ways to pay in the W3Arena shop"], ["6+", "countries with local sellers"], ["14 days", "to refund until a purchase is used"]],
     shot: { src: "/p/shop/receipt.jpg", frame: "app", host: "W3Arena Shop", path: "Receipt", icon: "shop" },
-    links: [{ kind: "page", label: "Shop", href: "/work/w3arena/shop" }, { kind: "page", label: "Admin console", href: "/work/w3arena/console" }],
+    links: [{ kind: "page", label: "Shop", href: "/work/w3arena/shop" }, { kind: "page", label: "Admin console", href: "/work/w3arena/console" }, { kind: "page", label: "Stripe billing", href: "/work/fernway/accounts-and-billing" }],
   },
   {
     id: "rules", kind: "run", g: "shield", t: "Write your app's privacy policy and terms",
