@@ -52,6 +52,9 @@ export type App = {
   links: { g: GlyphName; label: string; href: string; primary?: boolean }[];
   /** Its page under /work/<id>; W3Arena has its overview and parts instead. */
   study?: CaseStudy;
+  /** Its line in the About page's story, on the day it went live (UTC, as the service board counts). Every app has
+   *  one, so a new app can't be left out of the story (the apps suite checks). W3Arena's founding has its own. */
+  story?: { at: string; when: string; t: string; d: string };
 };
 
 const w3arena: App = {
@@ -103,6 +106,7 @@ const fernway: App = {
     "fernway-code": { label: "Fernway code", href: out.fernwayCode, kind: "code" },
   },
   privacy: `${out.fernway}/privacy`,
+  story: { at: "2026-11-09", when: "November 2026", t: "Fernway goes live", d: "A SaaS that carries every lead from a website into GoHighLevel, re-sent when GHL fails and never doubled, with two consoles, Stripe billing, a WordPress plugin and a Laravel package. Its code and demos are public." },
   links: [{ g: "live", label: "Open Fernway", href: out.fernway, primary: true }, { g: "retry", label: "Break it", href: out.fernwayBreak }, { g: "demo", label: "Console demo", href: out.fernwayDemo }, { g: "code", label: "Code", href: out.fernwayCode }],
 };
 
@@ -126,6 +130,7 @@ const alderpike: App = {
     "alderpike-live": { label: "alderpike.jeromebadour.com", href: out.alderpike, kind: "live" },
   },
   privacy: `${out.alderpike}/privacy`,
+  story: { at: "2026-11-13", when: "November 2026", t: "Alder & Pike goes live", d: "A WordPress site built from scratch for an invented Tacoma roofer, booking roof checks straight into GoHighLevel through Fernway's plugin." },
   links: [{ g: "live", label: "Open the site", href: out.alderpike, primary: true }, { g: "code", label: "Code", href: out.fernwayCode }],
   study: {
     title: "Alder & Pike", g: "web", tone: "amber",
@@ -184,6 +189,7 @@ const distill: App = {
     "distill-tests": { label: "Distill tests", href: out.distillTests, kind: "code" },
   },
   privacy: `${out.distill}/privacy`,
+  story: { at: "2026-11-07", when: "November 2026", t: "Distill goes live", d: "An AI app where every point of a summary links to the sentences it came from. Its code and its admin demo are public." },
   links: [{ g: "live", label: "Open Distill", href: out.distill, primary: true }, { g: "demo", label: "Admin demo", href: out.distillDemo }, { g: "code", label: "Code", href: out.distillCode }],
   study: {
     title: "Distill", g: "ai", tone: "blue",

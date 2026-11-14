@@ -1,5 +1,5 @@
 """Every app shows up in every place an app belongs (lib/apps.ts): the Apps menu, its home tab with its board, its own
-page with its title and link preview, the proof list of proposal pages, the Privacy Policy and the Terms of Use. The
+page with its title and link preview, its day in the About story, the proof list of proposal pages, the Privacy Policy and the Terms of Use. The
 apps are read from the sitemap, so a new app is checked without touching this file."""
 import re
 import struct
@@ -26,6 +26,7 @@ with sync_playwright() as p:
     tabs = [(a.get_attribute("href"), a.inner_text()) for a in pg.locator(".e-tabs a").all()]
     pg.goto(BASE + "/privacy"); privacy = pg.inner_text("body")
     pg.goto(BASE + "/terms"); terms = pg.inner_text("body")
+    pg.goto(BASE + "/about"); about = [a.get_attribute("href") for a in pg.locator(".a-story a").all()]
 
     op = b.new_page(viewport={"width": 1440, "height": 900}); sign_in(op); op.wait_for_url(BASE + "/admin", timeout=10000)
     op.goto(BASE + "/admin?tab=proposals&new=1"); op.wait_for_selector(".c-dlg")
@@ -38,6 +39,7 @@ with sync_playwright() as p:
         check(f"{path}: in the Apps menu", path in menu and name in menu[path], name)
         tab = next((h for h, t in tabs if name in t), None)
         check(f"{path}: its own home tab", tab is not None and tab.startswith("/?tab="), str(tabs))
+        check(f"{path}: its day in the About page's story", path in about, str(about))
         if tab:
             pg.goto(BASE + tab)
             check(f"{path}: its tab opens its board (picture, parts, footer link)",
@@ -49,8 +51,12 @@ with sync_playwright() as p:
         s, ctype, body = get(re.sub(r"^https?://[^/]+", "", card)) if card else (0, "", b"")
         check(f"{path}: its link-preview card", s == 200 and body[:8] == b"\x89PNG\r\n\x1a\n" and struct.unpack(">II", body[16:24]) == (1200, 630), card)
         check(f"{path}: named in the Privacy Policy and the Terms of Use", name in privacy and name in terms)
-        if path != "/work/w3arena":
+        # A platform (W3Arena, Fernway) is a proof through its parts; every other app is a proof itself.
+        if path not in ("/work/w3arena", "/work/fernway"):
             check(f"{path}: a proof for proposal pages", name in proof_chips, str(proof_chips))
+        else:
+            parts = [x for x in pages if x.startswith(path + "/")]
+            check(f"{path}: its parts are proofs for proposal pages", len(parts) >= 6, str(parts))
     # Picture viewers never move on their own (Kami 2026-11-09): no autoplay, no zoom when a picture changes.
     vp = b.new_page(viewport={"width": 1440, "height": 900})
     vp.goto(BASE + "/work/w3arena/shop")
@@ -136,7 +142,8 @@ with sync_playwright() as p:
     cs = b.new_page(viewport={"width": 1440, "height": 900})
     for path in ["/work/w3arena", "/work/w3arena/website", "/work/w3arena/forum", "/work/w3arena/desktop-app",
                  "/work/w3arena/shop", "/work/w3arena/console", "/work/w3arena/game-servers",
-                 "/work/w3arena/ai-translation", "/work/w3arena/reliability", "/work/distill"]:
+                 "/work/w3arena/ai-translation", "/work/w3arena/reliability", "/work/distill", "/work/alderpike",
+                 "/work/fernway", *[x for x in pages if x.startswith("/work/fernway/")]]:
         cs.goto(BASE + path, wait_until="networkidle")
         aside = cs.locator(".w-top .w-aside")
         ok = aside.count() == 1 and aside.is_visible() and len(aside.inner_text().strip()) > 10

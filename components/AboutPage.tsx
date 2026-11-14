@@ -1,5 +1,7 @@
 import { EFooter, EHeader, ESocials, ETabbar } from "./Shell";
 import { Brand, Glyph, type GlyphName } from "./Glyph";
+import { APPS } from "@/lib/apps";
+import { board } from "@/lib/server/board";
 
 type Kind = "learn" | "work" | "ship";
 const kinds: Record<Kind, { label: string; tone: string; g: GlyphName }> = {
@@ -8,16 +10,23 @@ const kinds: Record<Kind, { label: string; tone: string; g: GlyphName }> = {
   ship: { label: "Shipped", tone: "green", g: "live" },
 };
 
-const story: { when: string; kind: Kind; t: string; d: string; link?: [string, string, "page" | "release"] }[] = [
+type Step = { when: string; kind: Kind; t: string; d: string; link?: [string, string, "page" | "release"] };
+// The typed steps; each app's own "goes live" step is added from lib/apps.ts, in the order they went live.
+const typed: Step[] = [
   { when: "2018", kind: "learn", t: "Started teaching myself to code", d: "By building small things to see how they work: a calculator, tic-tac-toe, mock-up forums and many more." },
   { when: "2018 to 2025", kind: "learn", t: "From small apps to full web apps", d: "Each project a step bigger than the last, with Harvard's CS50 and online courses along the way: HTML, CSS, JavaScript, Python, then Node.js and full-stack development." },
   { when: "Before W3Arena", kind: "work", t: "Local clients in Turkey and Lebanon", d: "Bug fixes and web apps for companies there, shipping and logistics firms among them, found locally rather than on Upwork." },
   { when: "May 2026", kind: "ship", t: "Founded W3Arena", d: "An online gaming and community platform, built end to end and run on my own: website, forum, Windows app, shop, admin console and game servers.", link: ["W3Arena", "/work/w3arena", "page"] },
-  { when: "August 2026", kind: "ship", t: "W3Arena's releases go public", d: "Every release since is on its public changelog, written for the people who use it: 15+ since August.", link: ["Changelog", "https://w3arena.pro/changelog", "release"] },
-  { when: "November 2026", kind: "ship", t: "Distill goes live", d: "An AI app where every point of a summary links to the sentences it came from. Its code and its admin demo are public.", link: ["Distill", "/work/distill", "page"] },
+  { when: "August 2026", kind: "ship", t: "W3Arena's releases go public", d: "RELEASES", link: ["Changelog", "https://w3arena.pro/changelog", "release"] },
 ];
 
-export function AboutPage() {
+export async function AboutPage() {
+  // W3Arena's release count as the service board reads it from the changelog (lib/server/board.ts).
+  const w = (await board()).w3arena;
+  const releases = `Every release since is on its public changelog, written for the people who use it: ${w.dates.length} since August.`;
+  const apps: Step[] = APPS.filter((a) => a.story).sort((a, b) => a.story!.at.localeCompare(b.story!.at))
+    .map((a) => ({ when: a.story!.when, kind: "ship", t: a.story!.t, d: a.story!.d, link: [a.name, a.page, "page"] }));
+  const story = [...typed.map((s) => (s.d === "RELEASES" ? { ...s, d: releases } : s)), ...apps];
   return (
     <div className="page" data-v="e">
       <EHeader on="about" />
