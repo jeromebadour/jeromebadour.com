@@ -10,6 +10,16 @@ import { BOARD_SINCE, RELEASES, type Board } from "@/lib/releases";
 // never empties the board. Anything unreadable falls back to the typed list in lib/releases.ts.
 
 const FEED = process.env.W3A_FEED_URL ?? "https://w3arena.pro/public/changelog";
+// The apps' own deploy days (GHL Build and Freelance Distill, 2026-11-14): {live_since, deploys: [YYYY-MM-DD], commit}.
+// Tests point them all at the fake with DEPLOY_FEEDS_BASE (<base>/<name>).
+const BASE = process.env.DEPLOY_FEEDS_BASE;
+const DEPLOY_FEEDS: Record<string, string> = BASE
+  ? { fernway: `${BASE}/fernway`, alderpike: `${BASE}/alderpike`, distill: `${BASE}/distill` }
+  : {
+      fernway: "https://fernway.jeromebadour.com/api/public/deploys",
+      alderpike: "https://fernway.jeromebadour.com/api/public/deploys?site=alderpike",
+      distill: "https://distill.jeromebadour.com/api/public/deploys",
+    };
 // How often the feed is read: an hour; CI shortens it to test a feed going down and coming back.
 const EVERY = Number(process.env.W3A_FEED_EVERY_MS) || 3_600_000;
 type Release = { version: string; date: string; changes: number; url: string };
@@ -29,31 +39,43 @@ export function parseW3aFeed(body: unknown): Release[] | null {
   return out.length ? out : null;
 }
 
-const g = globalThis as unknown as { w3aFeed?: { at: number; p: Promise<Release[] | null> } };
+/** An app's deploy days, oldest first; null when the body isn't the agreed shape. */
+export function parseDeploys(body: unknown): { since: string; days: string[] } | null {
+  const b = body as { live_since?: unknown; deploys?: unknown };
+  const day = (d: unknown) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d);
+  if (!day(b?.live_since) || !Array.isArray(b.deploys) || !b.deploys.length || !b.deploys.every(day)) return null;
+  return { since: b.live_since as string, days: [...(b.deploys as string[])].sort() };
+}
 
-async function readW3a(): Promise<Release[] | null> {
-  const row = (await q<{ body: unknown; fresh: boolean }>("select body, fetched_at > now() - make_interval(secs => $1::float8 / 1000) as fresh from feeds where name = 'w3arena'", [EVERY]))[0];
-  const kept = row ? parseW3aFeed(row.body) : null;
+const g = globalThis as unknown as { boardFeeds?: Record<string, { at: number; p: Promise<unknown> }> };
+
+/** One outside feed, read at most once per EVERY per server, its last good copy kept in `feeds`. */
+async function readFeed<T>(name: string, url: string, parse: (b: unknown) => T | null): Promise<T | null> {
+  const row = (await q<{ body: unknown; fresh: boolean }>("select body, fetched_at > now() - make_interval(secs => $2::float8 / 1000) as fresh from feeds where name = $1", [name, EVERY]))[0];
+  const kept = row ? parse(row.body) : null;
   if (row?.fresh && kept) return kept;
   try {
-    const res = await fetch(FEED, { signal: AbortSignal.timeout(8_000), headers: { accept: "application/json", "user-agent": "jeromebadour.com service board" } });
+    const res = await fetch(url, { signal: AbortSignal.timeout(8_000), headers: { accept: "application/json", "user-agent": "jeromebadour.com service board" } });
     if (!res.ok) throw new Error(`answered ${res.status}`);
     const body = await res.json();
-    const got = parseW3aFeed(body);
+    const got = parse(body);
     if (!got) throw new Error("not the agreed shape");
-    await q("insert into feeds (name, body, fetched_at) values ('w3arena', $1, now()) on conflict (name) do update set body = excluded.body, fetched_at = now()", [JSON.stringify(body)]);
+    await q("insert into feeds (name, body, fetched_at) values ($1, $2, now()) on conflict (name) do update set body = excluded.body, fetched_at = now()", [name, JSON.stringify(body)]);
     return got;
   } catch (e) {
-    console.error(`service board: W3Arena feed: ${(e as Error).message}; keeping the last good copy`);
+    console.error(`service board: ${name} feed: ${(e as Error).message}; keeping the last good copy`);
     return kept;
   }
 }
 
-/** W3Arena's releases, refreshed at most once an hour per server (a failed read waits the hour too). */
-function w3a(): Promise<Release[] | null> {
-  if (!g.w3aFeed || Date.now() - g.w3aFeed.at > EVERY) g.w3aFeed = { at: Date.now(), p: readW3a().catch(() => null) };
-  return g.w3aFeed.p;
+function feed<T>(name: string, url: string, parse: (b: unknown) => T | null): Promise<T | null> {
+  g.boardFeeds ??= {};
+  const c = g.boardFeeds[name];
+  if (!c || Date.now() - c.at > EVERY) g.boardFeeds[name] = { at: Date.now(), p: readFeed(name, url, parse).catch(() => null) };
+  return g.boardFeeds[name].p as Promise<T | null>;
 }
+
+const w3a = () => feed("w3arena", FEED, parseW3aFeed);
 
 async function siteDays(): Promise<string[]> {
   const rows = await q<{ d: string }>("select distinct to_char(at at time zone 'UTC', 'YYYY-MM-DD') as d from deploys order by d");
@@ -65,7 +87,20 @@ const short = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleString("en-GB", 
 /** The board as it stands now: the typed list, with each part replaced by what could be read. */
 export async function board(): Promise<Board> {
   const b: Board = structuredClone(RELEASES);
-  const [w, days] = await Promise.all([w3a().catch(() => null), siteDays().catch(() => [] as string[])]);
+  const ids = Object.keys(DEPLOY_FEEDS);
+  const [w, days, ...apps] = await Promise.all([
+    w3a().catch(() => null), siteDays().catch(() => [] as string[]),
+    ...ids.map((id) => feed(id, DEPLOY_FEEDS[id], parseDeploys).catch(() => null)),
+  ]);
+  // An app's feed adds to its typed days, never replaces them: a feed whose records start late (Distill's said live
+  // since 14 Nov on its first day) can't make the board say an app is newer than it is.
+  ids.forEach((id, i) => {
+    const f = apps[i] as { since: string; days: string[] } | null;
+    if (!f || !b[id]) return;
+    const all = [...new Set([...b[id].dates, ...f.days])].sort();
+    const since = [all[0], f.since].sort()[0];
+    b[id] = { ...b[id], dates: all, note: `Live since ${short(since)}` };
+  });
   if (w) {
     const since = w.filter((r) => r.date >= BOARD_SINCE);
     const first = since[since.length - 1];

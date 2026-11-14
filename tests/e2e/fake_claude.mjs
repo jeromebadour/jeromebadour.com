@@ -9,6 +9,11 @@ import http from "node:http";
 const port = Number(process.argv[2] || 4010);
 const host = process.argv[3] || "127.0.0.1";
 let last = null;
+const feeds = {
+  fernway: { status: 200, body: { live_since: "2026-11-09", deploys: ["2026-11-09", "2026-11-12"], commit: "aaaaaaa" } },
+  alderpike: { status: 200, body: { live_since: "2026-11-13", deploys: ["2026-11-13"], commit: "aaaaaaa" } },
+  distill: { status: 200, body: { live_since: "2026-11-14", deploys: ["2026-11-14"], commit: "bbbbbbb" } },
+};
 // W3Arena's public changelog feed (the home page's service board reads it): POST /__w3a {status, body} sets the answer.
 let w3a = { status: 200, body: { success: true, versions: [
   { version: "9.9.9", date: "2026-11-13", intro: "x", sections: [{ title: "Launcher", items: [{ text: "a" }, { text: "b", tag: "Fixed" }] }, { title: "Site", items: [{ text: "c" }] }] },
@@ -52,6 +57,18 @@ http
     if (req.method === "GET" && req.url === "/w3a-changelog") {
       res.writeHead(w3a.status, { "content-type": "application/json", "cache-control": "no-store" });
       return res.end(typeof w3a.body === "string" ? w3a.body : JSON.stringify(w3a.body));
+    }
+    // The apps' deploy feeds (the service board reads them): GET /feed/<name>; POST /__feed {name, status, body}.
+    if (req.method === "GET" && req.url.startsWith("/feed/")) {
+      const f = feeds[req.url.slice(6)] ?? { status: 404, body: {} };
+      res.writeHead(f.status, { "content-type": "application/json" });
+      return res.end(typeof f.body === "string" ? f.body : JSON.stringify(f.body));
+    }
+    if (req.method === "POST" && req.url === "/__feed") {
+      let raw = "";
+      req.on("data", (c) => (raw += c));
+      req.on("end", () => { const { name, ...f } = JSON.parse(raw); feeds[name] = { status: 200, ...f }; res.writeHead(204); res.end(); });
+      return;
     }
     if (req.method === "POST" && req.url === "/__w3a") {
       let raw = "";

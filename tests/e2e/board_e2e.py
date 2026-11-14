@@ -57,6 +57,22 @@ with sync_playwright() as p:
     n0 = pg.eval_on_selector_all(".n-board .n-tick", "e => e.length")
     check("this site's deploy days come from the deploy records", n >= n0 + 2, f"{n0} -> {n}")
     check("the site row still says when it went live", "Live since 9 Nov" in self_row or "LIVE SINCE 9 NOV" in self_row.upper())
+
+    # The apps' deploy feeds: Fernway's days are added; Distill's feed starting on 14 Nov can't make it newer than it is.
+    def svc(name):
+        return pg.eval_on_selector(f".n-board a.n-svc[href$='{name}']", "a => [a.innerText, a.querySelectorAll('.n-tick').length]")
+    feedset = lambda **f: urllib.request.urlopen(urllib.request.Request(FAKE + "/__feed", data=json.dumps(f).encode(), method="POST"))
+    feedset(name="fernway", body={"live_since": "2026-11-08", "deploys": ["2026-11-08", "2026-11-12"], "commit": "aaaaaaa"})
+    feedset(name="distill", body={"live_since": "2026-11-14", "deploys": ["2026-11-14"], "commit": "bbbbbbb"})
+    home(pg)
+    fw, fw_ticks = svc("/work/fernway")
+    di, di_ticks = svc("/work/distill")
+    check("Fernway's row reads its feed: its deploy days added", fw_ticks == 7 and "LIVE SINCE 8 NOV" in fw.upper(), f"{fw_ticks} {fw!r}")
+    check("Distill's feed adds its day but can't move its start", "LIVE SINCE 7 NOV" in di.upper() and di_ticks == 3, f"{di_ticks} {di!r}")
+    feedset(name="distill", status=200, body={"live_since": "soon", "deploys": "x"})
+    home(pg)
+    di2, _ = svc("/work/distill")
+    check("an app feed in another shape keeps its last good copy", "LIVE SINCE 7 NOV" in di2.upper())
     b.close()
 
 sql("delete from feeds; delete from deploys")
