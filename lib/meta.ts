@@ -5,6 +5,7 @@ import { FW_LINE } from "@/components/FwPage";
 import { proofCard, type PartId } from "@/components/W3Part";
 import { LEGAL_UPDATED } from "@/lib/legal";
 import { appById } from "@/lib/apps";
+import { POSTS, postBySlug, postDate, postPath, type Post } from "@/lib/posts";
 
 // Link previews (plan §11): each public page's title and line, and the card shown when its address is shared. Every
 // line is the page's own approved header line, so a preview never says anything the page doesn't.
@@ -27,6 +28,7 @@ const pages: Record<string, Card & { path: string; tab: string }> = {
     path: "/work/fernway", tab: "Fernway", kicker: "Case study · fernway.jeromebadour.com", title: "Fernway",
     line: FW_LINE,
   },
+  writing: { path: "/writing", tab: "Writing", kicker: "Writing", title: "Writing", line: POSTS.map((p) => p.title).join(" · ") },
   services: { path: "/services", tab: "Services", kicker: "Services", title: "Services", line: "From a quick bug fix to a full platform. Small jobs are welcome." },
   "how-i-work": { path: "/how-i-work", tab: "How I work", kicker: "How I work", title: "How I work", line: `${HOW_COUNT} things I do on every job, each with the proof it happened.` },
   about: { path: "/about", tab: "About", kicker: "About", title: site, line: "I build and run live products: websites, web apps, Windows desktop apps, AI features and the servers behind them." },
@@ -40,6 +42,13 @@ const pages: Record<string, Card & { path: string; tab: string }> = {
 /** The card for a key: a page above, a W3Arena part, or an app's own page ("part-<id>"). Null when there's none. */
 export function cardFor(key: string): Card | null {
   if (pages[key]) return pages[key];
+  if (key.startsWith("post-")) {
+    const p = postBySlug(key.slice(5));
+    if (!p) return null;
+    // The title's last sentence in the accent colour, as the home card does.
+    const m = p.title.match(/^(.*?\.)\s+(.+)$/);
+    return { kicker: `Writing · ${postDate(p)}`, title: m ? m[1] : p.title, accent: m ? m[2] : undefined, line: p.summary };
+  }
   if (key.startsWith("part-")) {
     const c = proofCard(key.slice(5));
     if (!c) return null;
@@ -57,6 +66,16 @@ function meta(tab: string, path: string, key: string, card: Card): Metadata {
     title, description: card.line, alternates: { canonical: path },
     openGraph: { type: "website", siteName: site, title, description: card.line, url: path, images: [image] },
     twitter: { card: "summary_large_image", title, description: card.line, images: [image.url] },
+  };
+}
+
+/** A post's title, description and link preview, as an article with its date and author. */
+export function postMeta(p: Post): Metadata {
+  const m = meta(p.title, postPath(p), `post-${p.slug}`, cardFor(`post-${p.slug}`)!);
+  return {
+    ...m, description: p.summary, authors: [{ name: site, url: "https://jeromebadour.com/about" }],
+    openGraph: { ...m.openGraph, type: "article", publishedTime: `${p.published}T09:00:00+03:00`, authors: [site], description: p.summary },
+    twitter: { ...m.twitter, description: p.summary },
   };
 }
 

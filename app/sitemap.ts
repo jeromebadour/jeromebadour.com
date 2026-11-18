@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { fwPart, page, w3aPart } from "@/lib/links";
 import { STUDY_APPS } from "@/lib/apps";
+import { POSTS, postPath } from "@/lib/posts";
 
 // The public pages, for search engines. Proposal pages and status links are left out on purpose.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const paths = [page.home, page.w3arena, ...Object.values(w3aPart), page.fernway, ...Object.values(fwPart), ...STUDY_APPS.map((a) => a.page), page.services, page.how, page.about, page.ask, page.message, page.privacy, page.terms];
+  const paths = [page.home, page.w3arena, ...Object.values(w3aPart), page.fernway, ...Object.values(fwPart), ...STUDY_APPS.map((a) => a.page), page.services, page.how, page.about, "/writing", ...POSTS.map(postPath), page.ask, page.message, page.privacy, page.terms];
   return paths.map((p) => ({ url: `https://jeromebadour.com${p === "/" ? "" : p}` }));
 }

@@ -1,5 +1,6 @@
 import "server-only";
 import { fwPart, page, w3aPart } from "@/lib/links";
+import { POSTS, postPath } from "@/lib/posts";
 import { pageTitles } from "@/lib/pages";
 import { OUTSIDE_PROOFS, STUDY_APPS } from "@/lib/apps";
 
@@ -7,7 +8,7 @@ import { OUTSIDE_PROOFS, STUDY_APPS } from "@/lib/apps";
 // and kept in memory, so answers always come from exactly what visitors can read. Header, footer and the phone tab bar
 // are left out. Every page is a proof by its address; a few outside proofs have ids of their own.
 
-export const PAGES: string[] = [page.home, page.w3arena, ...Object.values(w3aPart), page.fernway, ...Object.values(fwPart), ...STUDY_APPS.map((a) => a.page), page.services, page.how, page.about];
+export const PAGES: string[] = [page.home, page.w3arena, ...Object.values(w3aPart), page.fernway, ...Object.values(fwPart), ...STUDY_APPS.map((a) => a.page), page.services, page.how, page.about, ...POSTS.map(postPath)];
 
 // Proofs outside this site, from every app (lib/apps.ts).
 export const OUTSIDE = OUTSIDE_PROOFS;

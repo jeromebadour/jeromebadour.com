@@ -8,6 +8,7 @@ import { ToolChip } from "./ToolChip";
 import { AwakeBand, PersonCard, ServiceBoard, SignalArt } from "./NightHome";
 import { BoardTabs } from "./BoardTabs";
 import { board } from "@/lib/server/board";
+import { POSTS, postDate, postPath } from "@/lib/posts";
 
 // The link under each board panel: Highlights shows the first app's, an app's tab its own.
 function BoardFoot({ f }: { f: (typeof APPS)[number]["board"]["foot"] }) {
@@ -90,6 +91,13 @@ export async function HomeE({ tab = "all" }: { tab?: string }) {
         <div className="n-stage-r"><ServiceBoard releases={releases} /></div>
       </section>
       <AwakeBand />
+      {/* The newest post, one line under the clock: the writing section's door from the home page. */}
+      <a className="e-latest" href={postPath(POSTS[0])}>
+        <span className="e-k"><Glyph name="how" size={13} />Writing</span>
+        <b>{POSTS[0].title}</b>
+        <time dateTime={POSTS[0].published}>{postDate(POSTS[0])}</time>
+        <Glyph name="arrow" size={14} />
+      </a>
 
       <section className="n-apps">
         <div className="e-k"><Glyph name="screen" size={13} />The apps, screen by screen</div>

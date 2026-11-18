@@ -1,4 +1,5 @@
 import { fwPart, page, w3aPart } from "./links";
+import { POSTS, postPath } from "./posts";
 import { STUDY_APPS } from "./apps";
 
 // Pages a reply or an answer can point to, by address, with the title its chip shows.
@@ -7,6 +8,7 @@ export const pageTitles: Record<string, string> = {
   [w3aPart.website]: "Website", [w3aPart.forum]: "Forum", [w3aPart.desktop]: "Windows app", [w3aPart.shop]: "Shop",
   [w3aPart.console]: "Admin console", [w3aPart.servers]: "Game servers", [w3aPart.ai]: "AI translation", [w3aPart.standby]: "Standby server",
   [page.fernway]: "Fernway",
+  ...Object.fromEntries(POSTS.map((p) => [postPath(p), p.title])),
   [fwPart.engine]: "Delivery engine", [fwPart.site]: "Fernway's public site", [fwPart.ghl]: "Inside GoHighLevel", [fwPart.wordpress]: "WordPress plugin",
   [fwPart.laravel]: "API and Laravel", [fwPart.automations]: "Automations", [fwPart.consoles]: "Two consoles", [fwPart.billing]: "Accounts and billing",
 };
