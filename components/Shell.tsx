@@ -2,7 +2,6 @@ import { Brand, Glyph } from "./Glyph";
 import { out, page } from "@/lib/links";
 import { APPS } from "@/lib/apps";
 import { SocialChips } from "./Socials";
-import { LocalTime } from "./LocalTime";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 // The Night shift mark: JB inside a status ring with one live segment.
@@ -49,7 +48,6 @@ export function EHeader({ on = "apps", upwork = false }: { on?: NavKey; upwork?:
     </nav>
     <div className="e-hdr-r">
       <ThemeSwitch />
-      <span className="n-status"><span className="dot" /><span className="n-live">{APPS.length} products live · </span><LocalTime prefix="local time " /></span>
       {!upwork && <a className={`e-btn e-ghost off-up${on === "message" ? " on" : ""}`} href={page.message}><Glyph name="message" size={15} />Message</a>}
       {upwork
         ? <a className="e-btn e-hire" href={out.upwork}><Brand name="upwork" size={15} />Reply<span className="e-long">on Upwork</span></a>

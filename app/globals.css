@@ -1004,18 +1004,14 @@ html:not([data-via="upwork"]) .on-up { display: none !important; }
 [data-v="e"] .e-nl:hover { color: var(--ink); background: var(--card); border-color: transparent; }
 [data-v="e"] .e-nl.on { color: var(--ink); background: var(--card); border-color: var(--rule); }
 [data-v="e"] .e-nl .e-live { font-size: 9.5px; }
-[data-v="e"] .n-status { display: inline-flex; align-items: center; gap: 9px; margin-right: 6px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-[data-v="e"] .n-status .dot { width: 7px; height: 7px; }
 [data-v="e"] .n-tz { color: var(--faint); }
 [data-v="e"] .e-btn { border-radius: 8px; font-weight: 600; }
 [data-v="e"] .e-hire { background: var(--accent); color: var(--on-accent); }
 [data-v="e"] .e-k { font-size: 10.5px; letter-spacing: .14em; }
-@media (max-width: 1400px) { [data-v="e"] .n-status { display: none; } }
+
 [data-v="e"] .e-nav { background: none; border: 0; padding: 0; box-shadow: none; }
 [data-v="e"] .e-nl, [data-v="e"] .e-btn, [data-v="e"] .n-wm { white-space: nowrap; }
 [data-v="e"] .n-wm { line-height: 1; }
-[data-v="e"] .n-status .n-live { display: inline; }
-@media (max-width: 1560px) { [data-v="e"] .n-status .n-live { display: none; } }
 
 /* ===== Night shift: the home page ===== */
 [data-v="e"] .n-stage { position: relative; margin: 28px 40px 0; min-height: 600px; display: grid; grid-template-columns: minmax(0, 620px) minmax(0, 620px); justify-content: space-between; gap: 40px; padding: 36px 36px 36px; border: 1px solid var(--rule); border-radius: 16px; overflow: hidden; background: radial-gradient(900px 420px at 78% 30%, #12201b 0%, #0a0f0e 70%); }
@@ -1143,7 +1139,6 @@ html:not([data-via="upwork"]) .on-up { display: none !important; }
   [data-v="e"].page > .e-hdr { max-width: none; padding-left: calc(40px + (100% - 1440px) / 2); padding-right: calc(40px + (100% - 1440px) / 2); }
   [data-v="e"].page > .e-foot { max-width: none; padding-left: calc(56px + (100% - 1440px) / 2); padding-right: calc(56px + (100% - 1440px) / 2); }
   /* The header holds what it holds at 1440 (the column never gets wider). */
-  [data-v="e"] .n-status .n-live { display: none; }
   /* A first screen never stretches to a tall monitor's full height. */
   [data-v="e"] .nf { min-height: min(calc(100vh - 162px), 738px); }
 }
