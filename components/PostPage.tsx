@@ -30,7 +30,8 @@ function Figure({ marker }: { marker: string }) {
   const m = marker.match(/^\[Screenshot (\d\d)[^:]*: ([\s\S]*)\]$/);
   if (!m || !PICS[m[1]]) throw new Error(`post: unknown picture ${marker}`);
   const pics = PICS[m[1]];
-  const cap = m[2];
+  // A caption is the marker's words after the colon, its first letter capitalised (Freelance Strategy 2026-11-18).
+  const cap = m[2].charAt(0).toUpperCase() + m[2].slice(1);
   const narrow = pics[0][1] < 600;
   return (
     <figure className={`p-fig${pics.length > 1 ? " p-two" : ""}${narrow ? " p-narrow" : ""}`}>

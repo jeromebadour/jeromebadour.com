@@ -16,7 +16,7 @@ body = json.loads(re.search(r"export const BODY = (\".*\");", ts, re.S).group(1)
 
 
 def words(md):
-    md = re.sub(r"\[Screenshot \d\d[^:]*: ([\s\S]*?)\]", r"\1", md)
+    md = re.sub(r"\[Screenshot \d\d[^:]*: ([\s\S]*?)\]", lambda m: m.group(1)[0].upper() + m.group(1)[1:], md)
     md = md.replace("**", "").replace("```", "").replace("## ", "")
     md = re.sub(r"^\|[-|]+\|$", "", md, flags=re.M).replace("|", " ")
     md = re.sub(r"^---$", "", md, flags=re.M)
@@ -37,7 +37,9 @@ with sync_playwright() as p:
     b = p.chromium.launch(executable_path=CHROME)
     pg = b.new_page(viewport={"width": 1440, "height": 900})
     errs = []
+    # Page errors and console errors both (a hydration mismatch, React #418, is only a console error).
     pg.on("pageerror", lambda e: errs.append(str(e)))
+    pg.on("console", lambda m: m.type == "error" and errs.append(m.text[:160]))
     pg.goto(BASE + URL, wait_until="networkidle")
     text = pg.inner_text(".p-post").replace("Writing\n", "", 1)
     text = re.sub(r"Jerome Badour\s*\d+ \w+ \d{4}", "", text, count=1)
@@ -51,6 +53,8 @@ with sync_playwright() as p:
         pg.wait_for_timeout(40)
     pg.wait_for_timeout(600)
     imgs = pg.evaluate("[...document.querySelectorAll('.p-fig img')].map(i => [i.naturalWidth, i.alt])")
+    caps = pg.locator(".p-fig figcaption").all_inner_texts()
+    check("every caption starts with a capital", len(caps) == 9 and all(c[:1].isupper() or c[:1] == '"' for c in caps), str([c[:20] for c in caps]))
     check("every picture loads, with its caption as its alt text", len(imgs) == 10 and all(w > 0 and len(a) > 10 for w, a in imgs), str(imgs[:3]))
     meta = pg.evaluate("Object.fromEntries([...document.querySelectorAll('meta[property],meta[name]')].map(m => [m.getAttribute('property') || m.getAttribute('name'), m.content]))")
     summary = "Oracle Cloud terminated a paid account over a €16.32 card decline, with no warning and no way back. How a standby on another provider kept the platform up."
@@ -73,7 +77,11 @@ with sync_playwright() as p:
         v.close()
 
     hp = b.new_page(viewport={"width": 1440, "height": 900})
+    herrs = []
+    hp.on("console", lambda m: m.type == "error" and herrs.append(m.text[:160]))
     hp.goto(BASE + "/", wait_until="networkidle")
+    hp.wait_for_timeout(500)
+    check("the home page loads with no console errors", not herrs, "; ".join(herrs))
     check("the home page leads to the post", hp.locator(f".e-latest[href='{URL}']").count() == 1)
     check("the footer leads to the writing section", hp.locator(".e-foot a[href='/writing']").count() == 1)
     hp.goto(BASE + "/writing", wait_until="networkidle")
