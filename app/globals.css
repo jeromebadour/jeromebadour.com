@@ -1277,5 +1277,6 @@ html:not([data-theme="dark"]) [data-v="e"] .n-stage { background: radial-gradien
   [data-v="e"] .p-body h2 { font-size: 23px; margin-top: 40px; }
   [data-v="e"] .p-code { font-size: 12px; padding: 14px; }
   [data-v="e"] .p-two .p-shots { flex-direction: column; }
+  [data-v="e"] .p-two .p-shot { flex: none; }
   [data-v="e"] .p-narrow { max-width: 300px; }
 }

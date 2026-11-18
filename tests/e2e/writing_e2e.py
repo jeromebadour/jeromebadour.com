@@ -71,6 +71,13 @@ with sync_playwright() as p:
         sw = v.evaluate("document.documentElement.scrollWidth")
         right = v.evaluate("Math.max(...[...document.querySelectorAll('.p-post p, .p-post h1, .p-post h2, .p-post li, .p-fig, .p-code, .p-table')].map(e => e.getBoundingClientRect().right))")
         check(f"{w}: nothing past the window", sw == w and right <= w, f"{sw} {right:.0f}")
+        for y in range(0, 30000, 800):
+            v.evaluate(f"scrollTo(0, {y})")
+            v.wait_for_timeout(30)
+        v.wait_for_timeout(500)
+        # The frame each picture is shown in (it clips its picture), so a frame that collapses is caught.
+        shown = v.evaluate("[...document.querySelectorAll('.p-fig .p-shot')].map(i => Math.round(i.getBoundingClientRect().height))")
+        check(f"{w}: every picture is drawn, none collapsed", len(shown) == 10 and min(shown) > 100, str(shown))
         if w == 390:
             inner = v.evaluate("[...document.querySelectorAll('.p-code, .p-table')].map(e => [e.scrollWidth > e.clientWidth, e.getBoundingClientRect().right <= 390])")
             check("390: the promote output scrolls inside itself", inner[1][0] and all(r for _, r in inner), str(inner))
